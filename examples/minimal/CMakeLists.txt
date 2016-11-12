@@ -3,7 +3,7 @@ project(minimal)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_subdirectory(../.. ${CMAKE_BINARY_DIR}/framework)
+add_subdirectory(../../framework ${CMAKE_BINARY_DIR}/build-framework)
 
 add_executable(${PROJECT_NAME} main.cpp)
 add_dependencies(${PROJECT_NAME} zombie_framework)

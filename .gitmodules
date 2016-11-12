@@ -1,18 +1,18 @@
-[submodule "dependencies/littl"]
-	path = dependencies/littl
+[submodule "framework/dependencies/littl"]
+	path = framework/dependencies/littl
 	url = https://github.com/minexew/littl.git
-[submodule "dependencies/libcfx2"]
-	path = dependencies/libcfx2
+[submodule "framework/dependencies/libcfx2"]
+	path = framework/dependencies/libcfx2
 	url = https://github.com/minexew/libcfx2.git
-[submodule "dependencies/reflector"]
-	path = dependencies/reflector
+[submodule "framework/dependencies/reflector"]
+	path = framework/dependencies/reflector
 	url = https://github.com/minexew/reflector.git
-[submodule "dependencies/lodepng"]
-	path = dependencies/lodepng
+[submodule "framework/dependencies/lodepng"]
+	path = framework/dependencies/lodepng
 	url = https://github.com/lvandeve/lodepng
-[submodule "dependencies/bleb"]
-	path = dependencies/bleb
+[submodule "framework/dependencies/bleb"]
+	path = framework/dependencies/bleb
 	url = https://github.com/minexew/bleb.git
-[submodule "dependencies/glm"]
-	path = dependencies/glm
+[submodule "framework/dependencies/glm"]
+	path = framework/dependencies/glm
 	url = https://github.com/g-truc/glm.git
