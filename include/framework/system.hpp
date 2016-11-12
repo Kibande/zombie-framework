@@ -19,6 +19,8 @@ namespace zfw
     enum
     {
         kSysNoInitFileSystem = 1,
+
+		/** Currently this affects the way error messages are displayed */
         kSysNonInteractive = 2,
     };
 
