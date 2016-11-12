@@ -9,12 +9,18 @@ set(library ${PROJECT_NAME})
 
 add_subdirectory(dependencies/libcfx2)
 
+# Also add headers so that they're included in generated projects
 file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/framework/*.cpp
     ${PROJECT_SOURCE_DIR}/src/framework/utility/*.cpp
     ${PROJECT_SOURCE_DIR}/src/gameui/*.cpp
     ${PROJECT_SOURCE_DIR}/src/zshared/*.c
     ${PROJECT_SOURCE_DIR}/src/zshared/*.cpp
+
+    ${PROJECT_SOURCE_DIR}/src/framework/*.hpp
+    ${PROJECT_SOURCE_DIR}/include/framework/*.hpp
+    ${PROJECT_SOURCE_DIR}/include/framework/utility/*.hpp
+    ${PROJECT_SOURCE_DIR}/include/gameui/*.hpp
 )
 
 list(APPEND sources ${PROJECT_SOURCE_DIR}/src/framework/codecs/bmpcodec.cpp)
