@@ -1,5 +1,4 @@
-
-#include "ztype.hpp"
+#include <ztype/ztype.hpp>
 
 #include <littl/Allocator.hpp>
 #include <littl/Stream.hpp>

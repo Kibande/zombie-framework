@@ -1,5 +1,5 @@
 
-#include "ztype.hpp"
+#include <ztype/ztype.hpp>
 
 #include <littl/File.hpp>
 

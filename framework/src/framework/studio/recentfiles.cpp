@@ -1,5 +1,5 @@
 
-#include "recentfiles.hpp"
+#include <framework/studio/recentfiles.hpp>
 
 #include <framework/framework.hpp>
 

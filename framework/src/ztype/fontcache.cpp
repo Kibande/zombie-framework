@@ -1,5 +1,5 @@
-
-#include "ztype.hpp"
+#if 0
+#include <ztype/ztype.hpp>
 
 #include <littl/File.hpp>
 #include <littl/String.hpp>
@@ -484,3 +484,4 @@ namespace ztype
         return filename.c_str();
     }
 }
+#endif

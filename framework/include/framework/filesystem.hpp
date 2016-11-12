@@ -77,6 +77,7 @@ namespace zfw
 
             virtual IFileSystem* GetFileSystem() = 0;
 
+			/// LOWER priority = preferred
             virtual void AddFileSystem(shared_ptr<IFileSystem>&& fs, int priority, const char* mountPoint) = 0;
             virtual bool RemoveFileSystem(IFileSystem* fs) = 0;
 
