@@ -37,6 +37,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 # OpenGL
 if (WIN32)
     target_link_libraries(${library} opengl32)
+else()
+    target_link_libraries(${library} GL)
 endif()
 
 # SDL2

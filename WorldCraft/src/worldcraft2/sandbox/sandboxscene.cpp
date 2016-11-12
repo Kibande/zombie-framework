@@ -405,7 +405,7 @@ namespace sandbox
         
         InputStream* is_ = nullptr;
         if (!ifs->OpenFileStream(sprintf_255("%s.bleb", map), 0, &is_, nullptr, nullptr))
-            return nullptr;
+            return false;
 
         unique_ptr<InputStream> is(is_);
 
