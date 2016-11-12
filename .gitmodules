@@ -16,3 +16,6 @@
 [submodule "dependencies/libpng"]
 	path = dependencies/libpng
 	url = git://git.code.sf.net/p/libpng/code
+[submodule "dependencies/glm"]
+	path = dependencies/glm
+	url = https://github.com/g-truc/glm.git
