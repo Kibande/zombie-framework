@@ -1,5 +1,5 @@
 
-#include "algebrahelpers.hpp"
+#include <framework/utility/algebrahelpers.hpp>
 
 namespace zfw
 {

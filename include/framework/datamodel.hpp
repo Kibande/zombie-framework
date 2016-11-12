@@ -42,13 +42,13 @@ namespace zfw
     typedef glm::dvec3 Double3;
     typedef glm::dvec4 Double4;
 
-    typedef glm::detail::tvec2<uint8_t, glm::defaultp> Byte2;
-    typedef glm::detail::tvec3<uint8_t, glm::defaultp> Byte3;
-    typedef glm::detail::tvec4<uint8_t, glm::defaultp> Byte4;
+    typedef glm::tvec2<uint8_t, glm::defaultp> Byte2;
+    typedef glm::tvec3<uint8_t, glm::defaultp> Byte3;
+    typedef glm::tvec4<uint8_t, glm::defaultp> Byte4;
 
-    typedef glm::detail::tvec2<short, glm::defaultp> Short2;
-    typedef glm::detail::tvec3<short, glm::defaultp> Short3;
-    typedef glm::detail::tvec4<short, glm::defaultp> Short4;
+    typedef glm::tvec2<short, glm::defaultp> Short2;
+    typedef glm::tvec3<short, glm::defaultp> Short3;
+    typedef glm::tvec4<short, glm::defaultp> Short4;
 
     // data model structures
     struct NamedValueDesc

@@ -1,5 +1,5 @@
 
-#include "gameui.hpp"
+#include <gameui/gameui.hpp>
 
 #include <framework/colorconstants.hpp>
 #include <framework/errorbuffer.hpp>

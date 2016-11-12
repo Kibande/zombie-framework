@@ -1,5 +1,5 @@
 
-#include "gameui.hpp"
+#include <gameui/gameui.hpp>
 
 namespace gameui
 {

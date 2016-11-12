@@ -1,8 +1,9 @@
 
+#include "private.hpp"
+
 #include <framework/entity.hpp>
 #include <framework/entityhandler.hpp>
 #include <framework/framework.hpp>
-#include <framework/private.hpp>
 
 #include <littl/cfx2.hpp>
 #include <littl/HashMap.hpp>

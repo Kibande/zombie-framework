@@ -1,4 +1,6 @@
 
+#include "private.hpp"
+
 #include <framework/entity.hpp>
 #include <framework/entityhandler.hpp>
 #include <framework/errorbuffer.hpp>
@@ -8,7 +10,6 @@
 #include <framework/mediacodechandler.hpp>
 #include <framework/modulehandler.hpp>
 #include <framework/nativedialogs.hpp>
-#include <framework/private.hpp>
 #include <framework/profiler.hpp>
 #include <framework/scene.hpp>
 #include <framework/timer.hpp>
@@ -333,8 +334,8 @@ namespace zfw
         clock0 = timer.getCurrentMicros();
         time(&time0);
 
-        Printf(kLogAlways, "Zombie Framework 2014." ZOMBIE_BUILDNAME " " ZOMBIE_PLATFORM "-" ZOMBIE_BUILDTYPENAME);
-        Printf(kLogAlways, "Copyright (c) 2012, 2013, 2014 Minexew Games; some rights reserved");
+        Printf(kLogAlways, "Zombie Framework " ZOMBIE_BUILDNAME " " ZOMBIE_PLATFORM "-" ZOMBIE_BUILDTYPENAME);
+        Printf(kLogAlways, "Copyright (c) 2012, 2013, 2014, 2016 Minexew Games; some rights reserved");
         Printf(kLogAlways, "Compiled using " li_compiled_using);
 
         // Pre-Init
@@ -410,7 +411,8 @@ namespace zfw
     {
         const char* normalizedPath = NormalizePath(path);
 
-        char* buffer = (char*) alloca(strlen(normalizedPath) + 1);
+        std::vector<char> buffer_(strlen(normalizedPath) + 1);
+        char* buffer = &buffer_[0];
         const char* path_end = path, * slash;
 
         do
@@ -447,10 +449,12 @@ namespace zfw
         return p_CreateResourceManager2(this);
     }
 
+#ifdef ZOMBIE_WITH_BLEB
     shared_ptr<IFileSystem> System::CreateBlebFileSystem(const char* path, int access)
     {
         return p_CreateBlebFileSystem(this, path, access);
     }
+#endif
 
     shared_ptr<IFileSystem> System::CreateStdFileSystem(const char* basePath_in, int access)
     {
