@@ -31,8 +31,4 @@ namespace zfw
     IPixmapDecoder*     p_CreateLodePngDecoder(ISystem* sys);
     IPixmapEncoder*     p_CreateLodePngEncoder(ISystem* sys);
 #endif
-
-#ifdef ZOMBIE_WITH_PNG
-    IPixmapDecoder*     p_CreatePngDecoder();
-#endif
 }

@@ -790,9 +790,6 @@ namespace zfw
             mediaCodecHandler->RegisterDecoder(typeID<IPixmapDecoder>(), unique_ptr<IDecoder>(p_CreateLodePngDecoder(this)));
             mediaCodecHandler->RegisterEncoder(typeID<IPixmapEncoder>(), unique_ptr<IEncoder>(p_CreateLodePngEncoder(this)));
 #endif
-#ifdef ZOMBIE_WITH_PNG
-            mediaCodecHandler->RegisterDecoder(typeID<IPixmapDecoder>(), unique_ptr<IDecoder>(p_CreatePngDecoder()));
-#endif
         }
 
         return mediaCodecHandler.get();
