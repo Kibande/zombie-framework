@@ -6,7 +6,11 @@
 
 #include <setjmp.h>
 
+#ifdef ZOMBIE_WINNT
+// On Windows, system headers define boolean
 #define HAVE_BOOLEAN
+#endif
+
 #include <jpeglib.h>
 
 namespace zfw
