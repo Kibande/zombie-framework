@@ -18,6 +18,11 @@ file(GLOB sources
 
 list(APPEND sources ${PROJECT_SOURCE_DIR}/src/framework/codecs/bmpcodec.cpp)
 
+if (UNIX AND NOT APPLE)
+    file(GLOB add_sources src/framework/linux/*)
+    list(APPEND sources ${add_sources})
+endif()
+
 if (WIN32)
     file(GLOB add_sources src/framework/win32/*)
     list(APPEND sources ${add_sources})
@@ -26,6 +31,11 @@ endif()
 add_library(${library} ${sources})
 add_dependencies(${library} cfx2)
 target_link_libraries(${library} cfx2)
+
+if (UNIX)
+    target_link_libraries(${library} dl)
+    target_link_libraries(${library} pthread)
+endif()
 
 # TODO: gather libcfx2 through CMake
 target_include_directories(${PROJECT_NAME} PUBLIC
