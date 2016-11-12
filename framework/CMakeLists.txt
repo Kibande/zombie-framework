@@ -2,21 +2,27 @@ cmake_minimum_required(VERSION 3.1)
 project(zombie_framework)
 
 set(WITH_BLEB ON CACHE BOOL "Enable Bleb support")
-set(WITH_JPEG ON CACHE BOOL "Enable JPEG support (requires jpeglib)")
+set(WITH_JPEG ON CACHE BOOL "Enable JPEG support (requires libjpeg)")
 set(WITH_LODEPNG ON CACHE BOOL "Enable PNG support via LodePNG")
+set(WITH_ZTYPE ON CACHE BOOL "Enable ztype (depends on freetype2)")
 
 set(CMAKE_CXX_STANDARD 14)
 set(library ${PROJECT_NAME})
 
 add_subdirectory(dependencies/bleb)
+add_subdirectory(dependencies/freetype2)
 add_subdirectory(dependencies/libcfx2)
 add_subdirectory(dependencies/littl)
+add_subdirectory(dependencies/libjpeg)
 
 # Also add headers so that they're included in generated projects
 file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/framework/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/framework/studio/*.cpp
     ${PROJECT_SOURCE_DIR}/src/framework/utility/*.cpp
     ${PROJECT_SOURCE_DIR}/src/gameui/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/gameui/dialogs/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/gameui/utility/*.cpp
     ${PROJECT_SOURCE_DIR}/src/zshared/*.c
     ${PROJECT_SOURCE_DIR}/src/zshared/*.cpp
 
@@ -24,6 +30,7 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/include/framework/*.hpp
     ${PROJECT_SOURCE_DIR}/include/framework/utility/*.hpp
     ${PROJECT_SOURCE_DIR}/include/gameui/*.hpp
+    ${PROJECT_SOURCE_DIR}/include/ztype/*.hpp
 )
 
 list(APPEND sources ${PROJECT_SOURCE_DIR}/src/framework/codecs/bmpcodec.cpp)
@@ -34,21 +41,26 @@ if (UNIX AND NOT APPLE)
 endif()
 
 if (WITH_BLEB)
-    add_definitions(-DZOMBIE_WITH_BLEB=1)
     file(GLOB add_sources src/framework/bleb/*.cpp)
     list(APPEND sources ${add_sources})
 endif()
 
+if (WITH_ZTYPE)
+    file(GLOB add_sources src/ztype/*.cpp)
+    list(APPEND sources ${add_sources})
+endif()
+
+if (WITH_JPEG)
+    list(APPEND sources ${PROJECT_SOURCE_DIR}/src/framework/codecs/jfifcodec.cpp)
+endif()
+
 if (WITH_LODEPNG)
-    add_definitions(-DZOMBIE_WITH_LODEPNG=1)
     list(APPEND sources ${PROJECT_SOURCE_DIR}/src/framework/codecs/lodepngcodec.cpp)
 endif()
 
 if (WIN32)
     file(GLOB add_sources src/framework/win32/*)
     list(APPEND sources ${add_sources})
-
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
 endif()
 
 add_library(${library} ${sources})
@@ -56,7 +68,21 @@ add_library(${library} ${sources})
 # Bleb
 if (WITH_BLEB)
     add_dependencies(${library} bleb)
+    target_compile_definitions(${library} PUBLIC -DZOMBIE_WITH_BLEB=1)
     target_link_libraries(${library} bleb)
+endif()
+
+# freetype2
+if (WITH_ZTYPE)
+    add_dependencies(${library} freetype)
+    target_link_libraries(${library} freetype)
+endif()
+
+# jpeg
+if (WITH_JPEG)
+    add_dependencies(${library} jpeg)
+    target_compile_definitions(${library} PUBLIC -DZOMBIE_WITH_JPEG=1)
+    target_link_libraries(${library} jpeg)
 endif()
 
 # libcfx2
@@ -67,15 +93,20 @@ target_link_libraries(${library} cfx2)
 add_dependencies(${library} littl)
 target_link_libraries(${library} littl)
 
+# lodepng
+if (WITH_LODEPNG)
+    target_compile_definitions(${library} PRIVATE -DZOMBIE_WITH_LODEPNG=1)
+endif()
+
 if (UNIX)
     target_link_libraries(${library} dl)
     target_link_libraries(${library} pthread)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        include
-        dependencies/glm
-        dependencies/reflector/include
+    include
+    dependencies/glm
+    dependencies/reflector/include
 )
 
 if (WITH_LODEPNG)

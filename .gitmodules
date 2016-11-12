@@ -16,3 +16,9 @@
 [submodule "framework/dependencies/glm"]
 	path = framework/dependencies/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "framework/dependencies/freetype2"]
+	path = framework/dependencies/freetype2
+	url = git://git.sv.nongnu.org/freetype/freetype2.git
+[submodule "framework/dependencies/libjpeg"]
+	path = framework/dependencies/libjpeg
+	url = https://github.com/LuaDist/libjpeg.git
