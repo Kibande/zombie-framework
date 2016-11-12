@@ -1,0 +1,18 @@
+[submodule "dependencies/littl"]
+	path = dependencies/littl
+	url = https://github.com/minexew/littl.git
+[submodule "dependencies/libcfx2"]
+	path = dependencies/libcfx2
+	url = https://github.com/minexew/libcfx2.git
+[submodule "dependencies/reflector"]
+	path = dependencies/reflector
+	url = https://github.com/minexew/reflector.git
+[submodule "dependencies/lodepng"]
+	path = dependencies/lodepng
+	url = https://github.com/lvandeve/lodepng
+[submodule "dependencies/bleb"]
+	path = dependencies/bleb
+	url = https://github.com/minexew/bleb.git
+[submodule "dependencies/libpng"]
+	path = dependencies/libpng
+	url = git://git.code.sf.net/p/libpng/code
