@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.1)
 project(zombie_framework)
 
+set(WITH_BLEB ON CACHE BOOL "Enable Bleb support")
 set(WITH_JPEG ON CACHE BOOL "Enable JPEG support (requires jpeglib)")
 set(WITH_LODEPNG ON CACHE BOOL "Enable PNG support via LodePNG")
 
 set(CMAKE_CXX_STANDARD 14)
 set(library ${PROJECT_NAME})
 
+add_subdirectory(dependencies/bleb)
 add_subdirectory(dependencies/libcfx2)
 
 # Also add headers so that they're included in generated projects
@@ -30,6 +32,12 @@ if (UNIX AND NOT APPLE)
     list(APPEND sources ${add_sources})
 endif()
 
+if (WITH_BLEB)
+    add_definitions(-DZOMBIE_WITH_BLEB=1)
+    file(GLOB add_sources src/framework/bleb/*.cpp)
+    list(APPEND sources ${add_sources})
+endif()
+
 if (WITH_LODEPNG)
     add_definitions(-DZOMBIE_WITH_LODEPNG=1)
     list(APPEND sources ${PROJECT_SOURCE_DIR}/src/framework/codecs/lodepngcodec.cpp)
@@ -41,6 +49,14 @@ if (WIN32)
 endif()
 
 add_library(${library} ${sources})
+
+# Bleb
+if (WITH_BLEB)
+    add_dependencies(${library} bleb)
+    target_link_libraries(${library} bleb)
+endif()
+
+# libcfx2
 add_dependencies(${library} cfx2)
 target_link_libraries(${library} cfx2)
 
