@@ -1,0 +1,15 @@
+# Dependency Graph
+
+## zombie-framework
+- libcfx2
+- littl
+- glm
+- reflector
+- bleb (if ZOMBIE_WITH_BLEB=1)
+- freetype2 (if ZOMBIE_WITH_ZTYPE=1)
+- libjpeg (if ZOMBIE_WITH_JPEG=1)
+- lodepng (if ZOMBIE_WITH_LODEPNG=1)
+
+## RenderingKit
+- GLEW
+- SDL
