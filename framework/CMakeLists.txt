@@ -10,6 +10,7 @@ set(library ${PROJECT_NAME})
 
 add_subdirectory(dependencies/bleb)
 add_subdirectory(dependencies/libcfx2)
+add_subdirectory(dependencies/littl)
 
 # Also add headers so that they're included in generated projects
 file(GLOB sources
@@ -46,6 +47,8 @@ endif()
 if (WIN32)
     file(GLOB add_sources src/framework/win32/*)
     list(APPEND sources ${add_sources})
+
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
 endif()
 
 add_library(${library} ${sources})
@@ -60,6 +63,10 @@ endif()
 add_dependencies(${library} cfx2)
 target_link_libraries(${library} cfx2)
 
+# littl
+add_dependencies(${library} littl)
+target_link_libraries(${library} littl)
+
 if (UNIX)
     target_link_libraries(${library} dl)
     target_link_libraries(${library} pthread)
@@ -68,7 +75,6 @@ endif()
 target_include_directories(${PROJECT_NAME} PUBLIC
         include
         dependencies/glm
-        dependencies/littl
         dependencies/reflector/include
 )
 
