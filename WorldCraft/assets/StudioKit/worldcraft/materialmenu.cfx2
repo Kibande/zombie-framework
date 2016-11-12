@@ -1,0 +1,18 @@
+Window: 'materialMenu' (freeFloat: 1, visible: 0)
+    Table
+        StaticText (label: 'Materials', expands: 0, font: 'path=media/font/DejaVuSans.ttf,size=15')
+        Panel (colour: '0, 0, 0, 0', padding: '6, 0')
+            Table
+                StaticText (label: 'Recent Materials', expands: 0, font: 'wc2_ui_bold')
+                Panel (colour: '0, 0, 0, 0', padding: '6, 0')
+                    Table: 'materialMenu.recentMaterials'
+                        { will be filled dynamically by native code }
+                StaticText (label: 'Other Scene Materials', expands: 0, font: 'wc2_ui_bold')
+                Panel (colour: '0, 0, 0, 0', padding: '6, 0')
+                    Table: 'materialMenu.otherSceneMaterials'
+                        { will be filled dynamically by native code }
+                StaticText (label: 'Built-in Brushes', expands: 0, font: 'wc2_ui_bold')
+                Panel (colour: '0, 0, 0, 0', padding: '6, 0')
+                    Table: 'materialMenu.builtIn'
+                        { will be filled dynamically by native code }
+        Button: 'cmd_open_contentmgr' (label: 'Open Content Manager')

@@ -1,0 +1,26 @@
+Panel: 'toolbar' (align: 'LEFT, VCENTER', colour: '0, 0, 0, 0', maxSize: '32, 256', padding: '0, 0')
+    StaticImage (path: 'media/gameui/vtoolbar.png', mapping: 'VSLICE')
+    StaticImage: 'toolbar.selection_shadow' (path: 'media/gameui/vsel32.png', maxSize: '32, 32', visible: 0)
+    StaticImage: 'toolbar.icons' (path: 'contentkit/worldcraft/wcpui.png', maxSize: '32, 224', align: 'HCENTER, VCENTER')
+
+{ TODO: Use native menu on OS X }
+MenuBar: 'menu' (pos: '0, 0')
+    Item (label: '<c:DEF>worldcraft2')
+        Item
+        Item (label: 'Version 1.0')
+        Item (label: '© 2013 Minexew Games')
+        Item
+        Item: 'quit' (label: 'Quit')
+    Item (label: 'File')
+        Item: 'new' (label: 'New')
+        Item: 'open' (label: 'Open…')
+        Item: 'openRecent' (label: 'Open recent')
+        Item: 'save' (label: 'Save')
+        Item: 'saveAs' (label: 'Save As…')
+        Item: 'export' (label: 'Export…')
+    Item (label: 'View')
+        Item: 'v1' (label: '1 viewport')
+        Item: 'v2,2' (label: '2x2 viewports')
+    Item (label: 'Debug')
+        {Item: 'reloadScripts' (label: 'Reload Scripts')}
+        Item: 'dumpRes' (label: 'Print ResourceManager statistics')

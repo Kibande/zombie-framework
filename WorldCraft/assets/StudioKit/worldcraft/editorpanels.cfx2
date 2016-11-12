@@ -1,0 +1,29 @@
+Window (expands: 0, align: 'LEFT, BOTTOM')
+	Button: 'displayEntBrowser' (label: 'Add Entity')
+
+Window: 'entlist' (flags: 'HEADER, RESIZABLE', title: 'Add Entity', visible: 'false',
+        pos: '200, 200')
+	Table
+		Table (numColumns: 2)
+			StaticText (label: 'Select an entity:')
+			ComboBox: 'entlist_combo'
+				{ TODO: Scan those dynamically }
+				StaticText (label: 'hint/spawn_sandbox')
+		Table (align: 'HCENTER')
+			Button: 'addent' (label: 'Add Entity')
+
+Window: 'materialPanel' (flags: 'HEADER', title: 'Material', expands: 0, align: 'HCENTER, BOTTOM')
+    Table (growableColumns: '0')
+        'worldcraftpro/MaterialButtonBig': 'materialPanel.bigButton'
+
+Window: 'connPanel' (expands: 0, align: 'RIGHT, BOTTOM')
+	Table (growableColumns: 0)
+		StaticText: 'connection.status' (label: 'Offline.')
+		Table (numColumns: 3)
+			Button: 'connection.host' (label: 'Host', font: 'wc2_ui_bold')
+			Button: 'connection.join' (label: 'Connect', font: 'wc2_ui_bold')
+			Button: 'connection.end' (label: 'Disconnect')
+
+ComboBox: 'modeSelect' (align: 'RIGHT, TOP', expands: 0)
+	MenuItem (label: 'Editor Mode')
+	MenuItem (label: 'Sandbox Mode')
