@@ -7,6 +7,10 @@
 
 // FIXME: Ensure alignment of pixmaps
 
+#ifdef ZOMBIE_WINNT
+#include <malloc.h>
+#endif
+
 namespace RenderingKit
 {
     using namespace zfw;

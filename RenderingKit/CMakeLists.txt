@@ -53,6 +53,18 @@ if (MSVC)
     endif()
 endif()
 
+if (WIN32 AND NOT MSVC)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/include)
+        set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/lib/libSDL2.dll.a)
+        set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/bin/SDL2.dll PARENT_SCOPE)
+    else()
+        set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/include)
+        set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/lib/libSDL2.dll.a)
+        set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/bin/SDL2.dll PARENT_SCOPE)
+    endif()
+endif()
+
 find_package(SDL2 REQUIRED)
 
 target_include_directories(${library} SYSTEM PRIVATE "${SDL2_INCLUDE_DIR}")

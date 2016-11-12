@@ -16,8 +16,6 @@
 
 #include <StudioKit/startupscreen.hpp>
 
-#include <reflection/default_error_handler.cpp>
-
 #if defined(_DEBUG) && defined(_MSC_VER)
 #include <crtdbg.h>
 #endif

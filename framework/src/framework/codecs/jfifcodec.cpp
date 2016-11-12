@@ -6,7 +6,7 @@
 
 #include <setjmp.h>
 
-#define XMD_H
+#define HAVE_BOOLEAN
 #include <jpeglib.h>
 
 namespace zfw

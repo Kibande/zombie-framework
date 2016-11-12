@@ -26,6 +26,8 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/zshared/*.c
     ${PROJECT_SOURCE_DIR}/src/zshared/*.cpp
 
+    ${PROJECT_SOURCE_DIR}/dependencies/reflector/include/reflection/default_error_handler.cpp
+
     ${PROJECT_SOURCE_DIR}/src/framework/*.hpp
     ${PROJECT_SOURCE_DIR}/include/framework/*.hpp
     ${PROJECT_SOURCE_DIR}/include/framework/utility/*.hpp
