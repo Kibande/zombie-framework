@@ -69,8 +69,14 @@ if (WIN32 AND NOT MSVC)
 endif()
 
 if (SDL2_DLL)
+	if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+		set(DLL_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+	else()
+		set(DLL_DIR ${CMAKE_BINARY_DIR}/$<CONFIG>)
+	endif()
+
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" ${CMAKE_BINARY_DIR}/$<CONFIG>)
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" ${DLL_DIR})
 endif()
 
 find_package(SDL2 REQUIRED)
