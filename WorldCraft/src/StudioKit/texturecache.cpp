@@ -200,7 +200,7 @@ namespace StudioKit
         this->sys = sys;
         this->rm = rm;
 
-        auto eb = GetErrorBuffer();
+        eb = GetErrorBuffer();
         auto fs = sys->GetFileSystem();
 
         // FIXME: Normalize file name
@@ -297,8 +297,10 @@ namespace StudioKit
 
         unique_ptr<Pixmap_t> pm(new Pixmap_t);
 
-        if (!Pixmap::LoadFromFile(sys, pm.get(), entry.fileName))
+        if (!Pixmap::LoadFromFile(sys, pm.get(), entry.fileName)) {
+            sys->PrintError(eb, kLogWarning);
             return 0;
+        }
 
         QueueEntry queueEntry;
         queueEntry.fileEntry = entry;
