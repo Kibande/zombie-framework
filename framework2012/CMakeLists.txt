@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(framework2012)
 
-set(WITH_JPEG ON CACHE BOOL "Enable JPEG support (requires libjpeg)")
-set(WITH_LODEPNG ON CACHE BOOL "Enable PNG support via LodePNG")
 set(WITH_ZTYPE ON CACHE BOOL "Enable ztype (depends on freetype2)")
 
 set(CMAKE_CXX_STANDARD 14)
@@ -55,11 +53,9 @@ if (WITH_ZTYPE)
 endif()
 
 # jpeg
-if (WITH_JPEG)
-    add_dependencies(${library} jpeg)
-    target_compile_definitions(${library} PUBLIC -DZOMBIE_WITH_JPEG=1)
-    target_link_libraries(${library} jpeg)
-endif()
+add_dependencies(${library} jpeg)
+target_compile_definitions(${library} PUBLIC -DZOMBIE_WITH_JPEG=1)
+target_link_libraries(${library} jpeg)
 
 # libcfx2
 add_dependencies(${library} cfx2)
@@ -70,9 +66,7 @@ add_dependencies(${library} littl)
 target_link_libraries(${library} littl)
 
 # lodepng
-if (WITH_LODEPNG)
-    target_compile_definitions(${library} PRIVATE -DZOMBIE_WITH_LODEPNG=1)
-endif()
+target_compile_definitions(${library} PRIVATE -DZOMBIE_WITH_LODEPNG=1)
 
 if (UNIX)
     target_link_libraries(${library} dl)
@@ -86,9 +80,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     dependencies/superscanf
 )
 
-if (WITH_LODEPNG)
-    target_include_directories(${PROJECT_NAME} PRIVATE dependencies/lodepng)
-endif()
+target_include_directories(${PROJECT_NAME} PRIVATE dependencies/lodepng)
 
 # OpenGL
 if (WIN32)
