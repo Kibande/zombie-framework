@@ -31,6 +31,9 @@ target_compile_definitions(${library} PRIVATE -DGLEW_STATIC=1)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     include
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
     dependencies/glew-2.0.0/include
 )
 
