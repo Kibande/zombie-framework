@@ -1,0 +1,12 @@
+; window size / fullscreen resolution
+r_setdisplayres 1280x800
+
+; multisample anti-aliasing
+r_setmultisample 0
+
+; resizable window
+r_setresizable 1
+r_setnoborder 1
+
+; set to 1 to enable vertical sync
+;r_setswapcontrol 1

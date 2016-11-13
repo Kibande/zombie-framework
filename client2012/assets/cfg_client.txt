@@ -1,0 +1,6 @@
+g_playername Herpina
+;r_setfullscreen 1
+
+bind_left 0:0:0061:001E:0
+bind_right 0:0:0064:0020:0
+bind_jump 0:0:0077:0011:0

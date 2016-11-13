@@ -1,0 +1,4 @@
+# Default UI fonts
+media/font/DejaVuSans.ttf;          11; ;   0x20;   0x5FF;      ui_11
+media/font/DejaVuSans-Bold.ttf;     10; ;   0x20;   0x5FF;      ui_10b
+media/font/DejaVuSans-Bold.ttf;     14; ;   0x20;   0x5FF;      ui_14b

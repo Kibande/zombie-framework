@@ -1,0 +1,5 @@
+media/fonts/DejaVuSans.ttf;     11; ;   0x20;   0x5FF;  fontcache/client_11pt
+media/fonts/DejaVuSans-Bold.ttf;14; ;   0x20;   0x5FF;  fontcache/client_14ptb
+#media/font/DejaVuSans-Bold.ttf; 10; ;   0x20;   0x5FF;  fontcache/worldcraft_ui_small_bold
+#media/font/DejaVuSans.ttf;      11; ;   0x20;   0x5FF;  fontcache/worldcraft_ui_smaller
+#media/font/DejaVuSans-Bold.ttf; 11; ;   0x20;   0x5FF;  fontcache/worldcraft_ui_smaller_bold

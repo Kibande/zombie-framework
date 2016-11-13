@@ -22,3 +22,22 @@
 [submodule "framework/dependencies/libjpeg"]
 	path = framework/dependencies/libjpeg
 	url = https://github.com/LuaDist/libjpeg.git
+
+[submodule "framework2012/dependencies/littl"]
+	path = framework2012/dependencies/littl
+	url = https://github.com/minexew/littl.git
+[submodule "framework2012/dependencies/libcfx2"]
+	path = framework2012/dependencies/libcfx2
+	url = https://github.com/minexew/libcfx2.git
+[submodule "framework2012/dependencies/lodepng"]
+	path = framework2012/dependencies/lodepng
+	url = https://github.com/lvandeve/lodepng
+[submodule "framework2012/dependencies/glm"]
+	path = framework2012/dependencies/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "framework2012/dependencies/freetype2"]
+	path = framework2012/dependencies/freetype2
+	url = git://git.sv.nongnu.org/freetype/freetype2.git
+[submodule "framework2012/dependencies/libjpeg"]
+	path = framework2012/dependencies/libjpeg
+	url = https://github.com/LuaDist/libjpeg.git

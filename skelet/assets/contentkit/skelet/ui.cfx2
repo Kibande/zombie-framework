@@ -1,0 +1,36 @@
+Window: 'timeline' (title: 'Timeline', flags: 'HEADER, RESIZABLE', pos: '192, 700', size: '1024, 64')
+    'org.minexewgames.skelet.Timeline': 'timeline' (minSize: '128, 24')
+
+Window (title: 'Preview Controls', flags: 'HEADER', pos: '32, 700', size: '128, 64')
+
+Window (title: 'Node Properties', flags: 'HEADER, RESIZABLE', pos: '32, 80', size: '256, 400')
+    TableSizer (numColumns: 3, growableColumns: '2', spacing: '16, 4')
+        Spacer
+        StaticText (label: 'Name', align: 'LEFT', expands: 0)
+        StaticText (label: 'To-do')
+        StaticText (label: '< * >')
+        StaticText (label: 'Angle', align: 'LEFT', expands: 0)
+        StaticText (label: 'To-do')
+        StaticText (label: '< * >')
+        StaticText (label: 'Length', align: 'LEFT', expands: 0)
+        StaticText (label: 'To-do')
+
+Window (title: 'Mesh Tree', flags: 'HEADER, RESIZABLE', pos: '992, 80', size: '256, 400')
+    TableSizer (growableRows: '0', growableColumns: '0')
+        TreeBox: 'meshTree.tree' (font: 'ui_11')
+        TableSizer (numColumns: 2, growableColumns: '0, 1')
+            Button: 'meshTree.add' (label: 'Add')
+            Button (label: 'Delete')
+
+Window: 'splash' (title: 'Welcome', align: 'HCENTER, VCENTER', expands: 0)
+    TableSizer (numColumns: 2, align: 'HCENTER, VCENTER', spacing: '30, 20')
+        StaticImage (path: 'contentkit/skelet/skelet.png', minSize: '128, 128')
+        TableSizer (align: 'HCENTER, VCENTER')
+            StaticText (label: 'Skelet', font: 'ui_14b')
+            StaticText (label: 'anne Mesh Editor')
+            Spacer (size: '0, 20')
+            StaticText (label: '(c) 2012 Minexew Games', font: 'ui_10b')
+            StaticText (label: 'All rights reserved.', font: 'ui_10b')
+
+Panel: 'statusBar' (align: 'LEFT, BOTTOM', colour: '0.175, 0.175, 0.175, 0.8', maxSize: '0, 20', padding: '0, 0')
+    StaticText: 'status' (label: 'Ready.')

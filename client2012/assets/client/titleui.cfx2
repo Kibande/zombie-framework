@@ -1,0 +1,17 @@
+Panel (align: 'LEFT, VCENTER', expands: 0)
+    TableSizer: 'serverlist'
+
+Panel: 'statusbar' (align: 'HCENTER, BOTTOM', maxSize: '0, 24', padding: '6, 0')
+    StaticText (align: 'LEFT, VCENTER', expands: 0, label: 'Controls: W, A, D',  font: 'client_11pt')
+    StaticText (align: 'HCENTER, VCENTER', expands: 0, label: '"2012"', font: 'client_14ptb')
+    StaticText (align: 'RIGHT, VCENTER', expands: 0, label: '(c) 2012 Broken Pixel Studios', font: 'client_11pt')
+
+StaticText: 'statusinfo' (align: 'LEFT, TOP', expands: 0, font: 'client_11pt')
+
+Panel: 'debugtools' (align: 'RIGHT, TOP', expands: 0)
+    TableSizer
+        Button: 'net_connectto:127.0.0.1:61012' (label: 'Connect to localhost', font: 'client_14ptb')
+        Button: 'dbg_toggletopview' (label: 'Toggle Top View', font: 'client_11pt')
+        Button: 'dev_toggledrawbounds' (label: 'Toggle Bounding Boxes', font: 'client_11pt')
+        Button: 'dev_loadgame' (label: 'Load Game', font: 'client_11pt')
+        Button: 'dev_savegame' (label: 'Save Game', font: 'client_11pt')

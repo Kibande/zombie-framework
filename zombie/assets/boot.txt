@@ -1,0 +1,3 @@
+
+; Default resolution
+r_setdisplayres 1280x720
