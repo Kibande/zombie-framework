@@ -50,6 +50,10 @@
 #define ZOMBIE_BUILDTYPENAME "RELEASE"
 #endif
 
+#ifndef ZOMBIE_SDK_VERSION
+#define ZOMBIE_SDK_VERSION 1000
+#endif
+
 // Some helper macros to make life easier
 #ifdef _MSC_VER
 #define zombie_novtable __declspec(novtable)

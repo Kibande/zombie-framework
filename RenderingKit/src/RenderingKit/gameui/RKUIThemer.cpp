@@ -1500,8 +1500,10 @@ namespace RenderingKit
     {
         if (fontIndex >= 0 && (uintptr_t) fontIndex < fonts.getLength())
             return fonts[fontIndex].font.get();
-        else
-            return fonts[0].font.get();
+		else {
+			zombie_assert(!fonts.isEmpty());
+			return fonts[0].font.get();
+		}
     }
 
     intptr_t RKUIThemer::GetFontId(const char* font)

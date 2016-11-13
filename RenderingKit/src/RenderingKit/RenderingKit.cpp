@@ -33,7 +33,6 @@ namespace RenderingKit
 
         this->sys = sys;
         this->eb = eb;
-        this->host.reset(host);
 
         wm.reset(CreateSDLWindowManager(eb, this));
 

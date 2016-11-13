@@ -253,7 +253,6 @@ namespace RenderingKit
     {
         zfw::ISystem* sys;
         zfw::ErrorBuffer_t* eb;
-        unique_ptr<IRenderingKitHost> host;
 
         unique_ptr<zfw::ShaderPreprocessor> shaderPreprocessor;
 
@@ -270,7 +269,6 @@ namespace RenderingKit
             virtual IWindowManager*     GetWindowManager() override { return wm.get(); }
 
             //zfw::Env* GetEnv() { return sys->GetEnv(); }
-            IRenderingKitHost* GetHost() { return host.get(); }
             zfw::ShaderPreprocessor* GetShaderPreprocessor();
             zfw::ISystem* GetSys() { return sys; }
 

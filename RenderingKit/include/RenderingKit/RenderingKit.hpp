@@ -221,6 +221,8 @@ namespace RenderingKit
             virtual bool SetSize(Int2 size) = 0;
     };
 
+	// Deprecated and unused, removed in SDK 2016.01
+#if ZOMBIE_SDK_VERSION < 201601
     class IRenderingKitHost
     {
         public:
@@ -229,6 +231,9 @@ namespace RenderingKit
             // TODO: WTF get rid of this
             virtual bool LoadBitmap( const char* path, zfw::Pixmap_t* pm ) = 0;
     };
+#else
+	class IRenderingKitHost;
+#endif
 
     // Resources
 
@@ -560,6 +565,7 @@ namespace RenderingKit
         public:
             virtual ~IRenderingKit() {}
 
+			// `host` is deprecated and ignored
             virtual bool Init(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, IRenderingKitHost* host) = 0;
 
             virtual IRenderingManager*  GetRenderingManager() = 0;

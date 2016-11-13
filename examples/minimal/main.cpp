@@ -5,8 +5,6 @@
 #include <framework/app.hpp>
 #include <framework/framework.hpp>
 
-#include <reflection/default_error_handler.cpp>
-
 namespace example
 {
     zfw::ErrorBuffer_t* g_eb;
@@ -47,8 +45,9 @@ namespace example
     {
         if (!SysInit(argc, argv) || !GameInit())
             g_sys->DisplayError(g_eb, true);
-
-        g_sys->Printf(zfw::kLogAlways, "Hello, world!");
+        else {
+            g_sys->Printf(zfw::kLogAlways, "Hello, world!");
+        }
 
         GameShutdown();
         SysShutdown();

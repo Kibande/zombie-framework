@@ -472,7 +472,7 @@ namespace RenderingKit
 
             Pixmap_t pm;
 
-            if (!rk->GetHost()->LoadBitmap(path, &pm))
+			if (!Pixmap::LoadFromFile(rk->GetSys(), &pm, path))
                 return nullptr;
 
             auto texture = p_CreateTexture(eb, rk, this, path);
