@@ -22,6 +22,7 @@ file(GLOB sources
 add_subdirectory(../framework ${CMAKE_BINARY_DIR}/build-framework)
 
 add_executable(${PROJECT_NAME} ${sources})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "nanotile")
 target_compile_definitions(${PROJECT_NAME} PRIVATE -DGLEW_STATIC=1)
 target_compile_definitions(${PROJECT_NAME} PRIVATE -DZOMBIE_STUDIO=1)
 
@@ -34,12 +35,19 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # Lua
-add_subdirectory(dependencies/lua ${CMAKE_BUILD_DIR}/build-lua)
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/dependencies/lua/src
-    ${CMAKE_BUILD_DIR}/build-lua
-)
-target_link_libraries(${PROJECT_NAME} liblua_static)
+find_package(Lua)
+
+if (LUA_FOUND)
+    target_include_directories(${PROJECT_NAME} PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} ${LUA_LIBRARIES})
+else()
+    add_subdirectory(dependencies/lua ${CMAKE_BUILD_DIR}/build-lua)
+    target_include_directories(${PROJECT_NAME} PRIVATE
+            ${CMAKE_SOURCE_DIR}/dependencies/lua/src
+            ${CMAKE_BUILD_DIR}/build-lua
+            )
+    target_link_libraries(${PROJECT_NAME} liblua_static)
+endif()
 
 # OpenGL
 if (WIN32)
