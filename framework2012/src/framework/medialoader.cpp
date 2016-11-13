@@ -1,9 +1,7 @@
 
 #include "framework.hpp"
 
-#ifndef __linux__
 #include <setjmp.h>
-#endif
 
 #ifdef ZOMBIE_WINNT
 // On Windows, system headers define boolean
