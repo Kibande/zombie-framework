@@ -1,5 +1,5 @@
 
-#include "studiobleb.hpp"
+#include <framework/bleb/studiobleb.hpp>
 
 #include <bleb/repository.hpp>
 #include <bleb/byteio_stdio.hpp>

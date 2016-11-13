@@ -30,9 +30,9 @@
 
 // Copyright:           Original code by Xeatheran Minexew, 2013
 
-#include "mediafile2.hpp"
+#include <zshared/mediafile2.hpp>
 
-#include "crc16_ccitt.hpp"
+#include <zshared/crc16_ccitt.hpp>
 
 #include <littl/Array.hpp>
 #include <littl/File.hpp>

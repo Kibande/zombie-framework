@@ -1,0 +1,18 @@
+
+TableLayout (columns: 1, growableRows: '0, 1', align: 'HCENTER, VCENTER')
+    Spacer
+    TableLayout (columns: 1, expands: 0, align: 'HCENTER, VCENTER')
+        Button: 'new_game' (label: 'NEW ADVENTURE')
+        Button: 'set_controls' (label: 'SET CONTROLS')
+        Button: 'quit' (label: 'QUIT')
+
+Panel (expands: 0, padding: '20, 20', align: 'LEFT, BOTTOM')
+    StaticText: 'game_version'
+
+Panel (expands: 0, padding: '20, 20', align: 'HCENTER, BOTTOM')
+    StaticText (label: '(c) 2013 Minexew Games')
+
+Panel: 'dev_panel' (expands: 0, padding: '10, 10', colour: '0, 0, 0, 0.2', align: 'RIGHT, TOP')
+    TableLayout (columns: 1)
+        StaticText: 'dev_mapname'
+        Button: 'dev_newmap'    (label: 'Create new map')

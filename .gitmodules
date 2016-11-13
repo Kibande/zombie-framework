@@ -41,3 +41,6 @@
 [submodule "framework2012/dependencies/libjpeg"]
 	path = framework2012/dependencies/libjpeg
 	url = https://github.com/LuaDist/libjpeg.git
+[submodule "ntile/dependencies/lua"]
+	path = ntile/dependencies/lua
+	url = https://github.com/LuaDist/lua.git

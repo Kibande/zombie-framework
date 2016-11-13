@@ -1,0 +1,23 @@
+Panel (expands: 0)
+    TableLayout (columns: 1)
+        CheckBox: 'editing_toggle' (label: 'Editing Mode')
+        CheckBox: 'fasttime_toggle' (label: 'Fast Daytime')
+
+Panel: 'editing_panel' (expands: 0, padding: '10, 10', colour: '0, 0, 0, 0.2', align: 'RIGHT, TOP')
+    TableLayout (columns: 1)
+        Button: 'editing_savemap'   (label: 'Save World')
+        Panel (padding: '5, 5', colour: '0.2, 0, 0, 0.2')
+            TableLayout (expands: 0, align: 'HCENTER, VCENTER')
+                StaticText (label: 'Selected block:')
+                StaticText: 'editing_selected_block' (label: '---')
+                StaticText (label: 'Block Type:')
+                ComboBox: 'editing_block_type'
+        Panel (padding: '5, 5', colour: '0, 0.2, 0, 0.2')
+            TableLayout (expands: 0, align: 'HCENTER, VCENTER')
+                StaticText (label: 'Selected entity:')
+                StaticText: 'editing_selected_entity' (label: '---')
+                Table: 'editing_entity_properties' (numColumns: 2, growableColumns: '0, 1', align: 'HCENTER, VCENTER')
+                StaticText (label: 'Insert new:')
+                ComboBox: 'editing_entity_class'
+
+StaticImage: 'editing_toolbar' (expands: 0, align: 'HCENTER, BOTTOM', path: 'ntile/ui/toolbar.fw.png')

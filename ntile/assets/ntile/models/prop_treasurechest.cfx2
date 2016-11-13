@@ -1,0 +1,3 @@
+Mesh: 'prop_treasurechest'
+    Cuboid: top (size: '16, 16, 4', pos: '-8, -8, 12', colour: '#808080')
+    Cuboid: bottom (size: '16, 16, 12', pos: '-8, -8, 0', colour: '#CCCCCC', collision)

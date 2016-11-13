@@ -1,0 +1,10 @@
+
+bind_left 3:0:0061:001E:0
+bind_right 3:0:0064:0020:0
+bind_up 3:0:0077:0011:0
+bind_down 3:0:0073:001F:0
+
+bind_attack 2:0:0000:0000
+bind_block 2:0:0001:0000
+
+map_author Anonymous

@@ -1,0 +1,2 @@
+Mesh: 'door'
+    Cuboid: door (size: '16, 2, 32', pos: '-8, 0, 0', colour: '#442204')

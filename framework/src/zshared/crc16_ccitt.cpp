@@ -1,5 +1,5 @@
 
-#include "crc16_ccitt.hpp"
+#include <zshared/crc16_ccitt.hpp>
 
 namespace zshared
 {

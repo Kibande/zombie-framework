@@ -1,0 +1,112 @@
+Skeleton
+    Joint: torso (pos: '0, 0, 25')
+        Joint: shoulder_left (pos: '0, -5, 25')
+            Joint: elbow_left (pos: '0, -9, 25')
+                Joint: hand_left (pos: '0, -14, 25')
+                    Joint: sword_tip (pos: '14, -14, 25')
+        Joint: shoulder_right (pos: '0, 5, 25')
+            Joint: elbow_right (pos: '0, 9, 25')
+                Joint: hand_right (pos: '0, 14, 25')
+                    Joint: shield (pos: '0, 14, 26')
+        Joint: hips (pos: '0, 0, 16')
+            Joint: knee_left (pos: '0, -2, 8')
+                Joint: foot_left (pos: '0, -2, 0')
+            Joint: knee_right (pos: '0, 2, 8')
+                Joint: foot_right (pos: '0, 2, 0')
+
+Mesh: 'player'
+    Cuboid: torso (size: '4, 8, 10', pos: '-2, -4, 16', colour: '#112255', bone: 'torso', collision)
+    Cuboid: head (size: '6, 6, 6', pos: '-3, -3, 26', colour: '#CCAA22', bone: 'torso', collision)
+    Cuboid: arm_left (size: '2, 5, 2', pos: '-1, -9, 24', colour: '#2244AA', bone: 'elbow_left')
+    Cuboid: hand_left (size: '2, 5, 2', pos: '-1, -14, 24', colour: '#3355BB', bone: 'hand_left')
+    Cuboid: sword (size: '14, 1, 0.5', pos: '0, -15, 24.75', colour: '#999999', bone: 'sword_tip')
+    Cuboid: arm_right (size: '2, 5, 2', pos: '-1, 4, 24', colour: '#2244AA', bone: 'elbow_right')
+    Cuboid: hand_right (size: '2, 5, 2', pos: '-1, 9, 24', colour: '#3355BB', bone: 'hand_right')
+    Cuboid: shield (size: '12, 8, 1', pos: '-7.5, 10, 26', colour: '#333333', bone: 'shield')
+    Cuboid: leg_left_upper (size: '3, 3, 8', pos: '-1.5, -3.5, 8', colour: '#332205', bone: 'knee_left')
+    Cuboid: leg_left_lower (size: '3, 3, 8', pos: '-1.5, -3.5, 0', colour: '#332205', bone: 'foot_left')
+    Cuboid: leg_right_upper (size: '3, 3, 8', pos: '-1.5, 0.5, 8', colour: '#332205', bone: 'knee_right')
+    Cuboid: leg_right_lower (size: '3, 3, 8', pos: '-1.5, 0.5, 0', colour: '#332205', bone: 'foot_right')
+
+Animation: standing
+    elbow_left
+        Keyframe: 0     (rotation: '90, 0, 0')
+
+    elbow_right
+        Keyframe: 0     (rotation: '-90, 0, 0')
+
+    sword_tip
+        Keyframe: 0     (rotation: '0, 30, 15')
+
+Animation: step (duration: 16)
+    elbow_left
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 8     (rotation: '0, -10, 0')
+        Keyframe: 16    (rotation: '0, 0, 0')
+    elbow_right
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 8     (rotation: '0, -10, 0')
+        Keyframe: 16    (rotation: '0, 0, 0')
+    knee_left
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 4     (rotation: '0, 0, -15')
+        Keyframe: 8     (rotation: '0, 0, -30')
+        Keyframe: 12    (rotation: '0, 0, -15')
+        Keyframe: 16    (rotation: '0, 0, 0')
+    foot_left
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 4     (rotation: '0, 0, 7.5')
+        Keyframe: 8     (rotation: '0, 0, 15')
+        Keyframe: 12    (rotation: '0, 0, 7.5')
+        Keyframe: 16    (rotation: '0, 0, 0')
+    knee_right
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 4     (rotation: '0, 0, 7.5')
+        Keyframe: 8     (rotation: '0, 0, 15')
+        Keyframe: 12    (rotation: '0, 0, 7.5')
+        Keyframe: 16    (rotation: '0, 0, 0')
+    foot_right
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 8     (rotation: '0, 0, -7.5')
+        Keyframe: 16    (rotation: '0, 0, 0')
+
+Animation: step2 (duration: 16)
+    elbow_left
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 8     (rotation: '0, 10, 0')
+        Keyframe: 16    (rotation: '0, 0, 0')
+    elbow_right
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 8     (rotation: '0, 10, 0')
+        Keyframe: 16    (rotation: '0, 0, 0')
+
+    knee_left (copyFrom: 'step/knee_right')
+    foot_left (copyFrom: 'step/foot_right')
+    knee_right (copyFrom: 'step/knee_left')
+    foot_right (copyFrom: 'step/foot_left')
+
+Animation: slash (duration: 16)
+    elbow_left
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 8     (rotation: '0, 15, 10')
+        Keyframe: 12    (rotation: '0, 5, 0')
+        Keyframe: 16    (rotation: '0, 0, 0')
+    hand_left
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 8     (rotation: '0, 45, 30')
+        Keyframe: 8     (rotation: '0, 10, 10')
+        Keyframe: 16    (rotation: '0, 0, 0')
+
+Animation: raise_shield (duration: 16)
+    elbow_left
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 16    (rotation: '0, -15, 0')
+    hand_left
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 16    (rotation: '0, -15, -15')
+    elbow_right
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 16    (rotation: '-15, -45, 0')
+    hand_right
+        Keyframe: 0     (rotation: '0, 0, 0')
+        Keyframe: 16    (rotation: '-60, -45, 0')
