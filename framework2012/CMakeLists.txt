@@ -6,10 +6,8 @@ set(WITH_ZTYPE ON CACHE BOOL "Enable ztype (depends on freetype2)")
 set(CMAKE_CXX_STANDARD 14)
 set(library ${PROJECT_NAME})
 
-add_subdirectory(dependencies/freetype2)
 add_subdirectory(dependencies/libcfx2)
 add_subdirectory(dependencies/littl)
-add_subdirectory(dependencies/libjpeg)
 
 # Also add headers so that they're included in generated projects
 file(GLOB sources
@@ -48,14 +46,36 @@ target_compile_definitions(${library} PRIVATE -DGLEW_STATIC=1)
 
 # freetype2
 if (WITH_ZTYPE)
-    add_dependencies(${library} freetype)
-    target_link_libraries(${library} freetype)
+    find_package(Freetype)
+
+    if (Freetype_FOUND)
+        target_include_directories(${library} PRIVATE ${FREETYPE_INCLUDE_DIRS})
+        target_link_libraries(${library} ${FREETYPE_LIBRARIES})
+    else()
+        add_subdirectory(dependencies/freetype2)
+        add_dependencies(${library} freetype)
+
+        target_include_directories(${library} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/freetype2/include)
+        target_link_libraries(${library} freetype)
+    endif()
 endif()
 
 # jpeg
-add_dependencies(${library} jpeg)
+find_package(JPEG)
+
+if (JPEG_FOUND)
+    target_include_directories(${library} PRIVATE ${JPEG_INCLUDE_DIR})
+    target_link_libraries(${library} ${JPEG_LIBRARIES})
+else()
+    add_subdirectory(dependencies/libjpeg ${CMAKE_CURRENT_BINARY_DIR}/build-libjpeg)
+    add_dependencies(${library} jpeg)
+
+    target_include_directories(${library} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libjpeg/include)
+    target_include_directories(${library} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/build-libjpeg)
+    target_link_libraries(${library} jpeg)
+endif()
+
 target_compile_definitions(${library} PUBLIC -DZOMBIE_WITH_JPEG=1)
-target_link_libraries(${library} jpeg)
 
 # libcfx2
 add_dependencies(${library} cfx2)
