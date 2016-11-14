@@ -46,6 +46,7 @@ namespace zombie
         //R::SetAmbient( glm::vec3(0.5f, 0.5f, 0.5f) );
         R::SetAmbient( glm::vec3(COLOUR_WHITE) );
         
+		R::SelectShadingProgram( nullptr );
         R::SetTexture( nullptr );
 
         // ground

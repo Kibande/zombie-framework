@@ -55,6 +55,9 @@ namespace zombie
         if ( state == FINISHED )
             return;
 
+		R::SelectShadingProgram( nullptr );
+		R::SetTexture( nullptr );
+
         R::SetBlendColour(glm::vec4(0.0f, 0.0f, 0.0f, alpha * 0.85f));
         R::SetRenderFlags( R_UVS | R_COLOURS );
         R::DrawRectangle(pos, pos + maxSize, 0.0f);

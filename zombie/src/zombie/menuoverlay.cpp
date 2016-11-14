@@ -111,6 +111,9 @@ namespace zombie
         
         glm::vec2 size = glm::min( glm::vec2( width, ( (!query.isEmpty() ? 1.5f : 0.0f) + items.getLength() ) * spacing + 2 * innerpad ), maxSize );
 
+		R::SelectShadingProgram( nullptr );
+		R::SetTexture( nullptr );
+
         R::SetBlendColour(glm::vec4(0.0f, 0.0f, 0.0f, alpha * 0.85f));
         R::SetRenderFlags( R_UVS | R_COLOURS );
         R::DrawRectangle(pos, pos + size, 0.0f);

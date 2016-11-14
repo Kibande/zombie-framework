@@ -199,8 +199,9 @@ namespace zr
     
     void Renderer::BeginFrame()
     {
-        if (glGetError() != 0)
-            zfw::Sys::RaiseException(zfw::EX_BACKEND_ERR, "Renderer::BeginFrame", zfw::Sys::tmpsprintf(50, "OpenGL error $%04X"));
+		/*GLenum error = glGetError();
+        if (error != 0)
+            zfw::Sys::RaiseException(zfw::EX_BACKEND_ERR, "Renderer::BeginFrame", zfw::Sys::tmpsprintf(50, "OpenGL error $%04X", error));*/
 
         frameStats.bytesStreamed = 0;
         frameStats.batchesDrawn = 0;

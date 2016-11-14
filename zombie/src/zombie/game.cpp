@@ -316,7 +316,7 @@ namespace zombie
 #endif
 
         if (abs(aimX) + abs(aimY) > AIM_CUTOFF)
-            angle = atan2(float(-aimY), float(aimX)) / f_pi * 180.0f;
+            angle = atan2(float(-aimY), float(aimX));
 
         /*if ( inputs & 15 )
         {
