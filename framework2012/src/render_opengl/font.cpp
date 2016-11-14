@@ -474,11 +474,7 @@ namespace zfw
 
             // *** STEP 4: Convert the greyscale FT_Bitmap to an RGBA zfw::DIBitmap ***
 
-            glyph_out.bmp.format = TEX_RGBA8;
-            glyph_out.bmp.size.x = localPixmap.width;
-            glyph_out.bmp.size.y = localPixmap.rows;
-
-            Bitmap::ResizeToFit( &glyph_out.bmp, true );
+			Bitmap::Alloc( &glyph_out.bmp, localPixmap.width, localPixmap.rows, TEX_RGBA8 );
 
 	        for ( int y = 0; y < glyph_out.bmp.size.y; y++ )
 	        {
