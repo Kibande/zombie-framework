@@ -103,7 +103,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 if (NOT EMSCRIPTEN)
-    target_include_directories(${PROJECT_NAME} PUBLIC dependencies/glew-2.0.0/include)
+    target_include_directories(${PROJECT_NAME} PRIVATE dependencies/glew-2.0.0/include)
 endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE dependencies/lodepng)

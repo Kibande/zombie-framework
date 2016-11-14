@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 project(Container)
 set(CMAKE_CXX_STANDARD 14)
 set(DIST_DIR ${CMAKE_BINARY_DIR})
+set(ZOMBIE_API_VERSION 201601)
 
 file(GLOB_RECURSE sources
     ${PROJECT_SOURCE_DIR}/src/Container/*.cpp

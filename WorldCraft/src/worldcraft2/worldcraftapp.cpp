@@ -68,17 +68,6 @@ namespace worldcraftpro
         }
     }*/
 
-    class RKHost : public IRenderingKitHost
-    {
-        public:
-            virtual bool LoadBitmap(const char* path, zfw::Pixmap_t* pm) override
-            {
-                return Pixmap::LoadFromFile(g_sys, pm, path);
-            }
-    };
-
-    static RKHost* rkHost;
-
     static bool SysInit(int argc, char** argv)
     {
         g_sys = CreateSystem();
@@ -133,9 +122,7 @@ namespace worldcraftpro
         ErrorCheck(rk);
         g.rk.reset(rk);
 
-        rkHost = new RKHost();
-
-        if (!g.rk->Init(g_sys, g.eb, rkHost))
+        if (!g.rk->Init(g_sys, g.eb, nullptr))
             return false;
             
         return true;

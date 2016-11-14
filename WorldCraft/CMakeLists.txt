@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 project(worldcraft2)
 
 set(CMAKE_CXX_STANDARD 14)
+set(ZOMBIE_API_VERSION 201601)
 
 file(GLOB_RECURSE sources
     ${PROJECT_SOURCE_DIR}/src/*.cpp
