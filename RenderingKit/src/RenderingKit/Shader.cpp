@@ -69,6 +69,10 @@ namespace RenderingKit
     {
         rm->CheckErrors(li_functionName);
 
+#ifdef RENDERING_KIT_USING_OPENGL_ES
+		zombie_assert(outputNames == nullptr);
+#endif
+
         auto shaderPreprocessor = rk->GetShaderPreprocessor();
 
         String vertexPath = (String) path + ".vert";
@@ -113,11 +117,13 @@ namespace RenderingKit
         glBindAttribLocation(handle, kBuiltinUV,        "in_UV");
         rm->CheckErrors("glBindAttribLocation");
 
+#ifndef RENDERING_KIT_USING_OPENGL_ES
         if (outputNames != nullptr)
         {
             for (size_t i = 0; outputNames[i]; i++)
                 glBindFragDataLocation(handle, i, outputNames[i]);
         }
+#endif
 
         glLinkProgram( handle );
 

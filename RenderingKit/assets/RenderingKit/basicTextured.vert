@@ -1,10 +1,10 @@
-#version 140
+#version 100
 
-in  vec3 in_Position;
-in  vec4 in_Color;
-in  vec2 in_UV;
-out vec4 ex_Color;
-out vec2 ex_UV;
+attribute vec3 in_Position;
+attribute vec4 in_Color;
+attribute vec2 in_UV;
+varying vec4 ex_Color;
+varying vec2 ex_UV;
 
 uniform mat4 u_ModelViewProjectionMatrix;
 

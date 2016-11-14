@@ -91,6 +91,7 @@ namespace RenderingKit
 
     bool GLTexture::GetContentsIntoPixmap(IPixmap* pixmap)
     {
+#ifndef RENDERING_KIT_USING_OPENGL_ES
         if (!pixmap->SetSize(size) || !pixmap->SetFormat(PixmapFormat_t::RGBA8))
             return false;
 
@@ -104,6 +105,10 @@ namespace RenderingKit
 
         p_FlipInPlace(pixmap);
         return true;
+#else
+		return ErrorBuffer::SetError(eb, EX_INVALID_OPERATION, "desc", "ITexture::GetContentsIntoPixmap is not supported in OpenGL ES mode.", nullptr),
+				false;
+#endif
     }
 
     GLuint GLTexture::p_CreateEmptyTexture(int flags, const RKTextureWrap_t wrap[2], bool isDepthTexture)
@@ -216,21 +221,29 @@ namespace RenderingKit
 
     void GLTexture::SetContentsUndefined(Int2 size, int flags, RKTextureFormat_t format)
     {
+#ifdef RENDERING_KIT_USING_OPENGL_ES
+		zombie_assert(format == RKTextureFormat_t::kTextureRGBA8);
+
+		const auto fmt = GL_RGBA;
+#else
+		const auto fmt = internalFormats[format];
+#endif
+
         switch (format)
         {
             case kTextureRGBA8:
                 handle = p_CreateEmptyTexture(flags, wrap, false);
-                glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[format], size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+                glTexImage2D(GL_TEXTURE_2D, 0, fmt, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
                 break;
 
             case kTextureRGBAFloat:
                 handle = p_CreateEmptyTexture(flags, wrap, false);
-                glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[format], size.x, size.y, 0, GL_RGBA, GL_FLOAT, nullptr);
+                glTexImage2D(GL_TEXTURE_2D, 0, fmt, size.x, size.y, 0, GL_RGBA, GL_FLOAT, nullptr);
                 break;
 
             case kTextureDepth:
                 handle = p_CreateEmptyTexture(flags, wrap, true);
-                glTexImage2D( GL_TEXTURE_2D, 0, internalFormats[format], size.x, size.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr );
+                glTexImage2D( GL_TEXTURE_2D, 0, fmt, size.x, size.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr );
                 break;
         }
 

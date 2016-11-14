@@ -11,7 +11,7 @@ namespace Container {
 
 		virtual bool RenderingInit() override;
 
-		virtual RenderingKit::IRenderingKit* GetRenderingKit() { return rk.get(); }
+		virtual RenderingKit::IRenderingKit* GetRenderingKit() override { return rk.get(); }
 
 	protected:
 		zfw::ISystem* sys;

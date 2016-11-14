@@ -325,6 +325,8 @@ namespace RenderingKit
             virtual int OnFontQuad(const Float3& pos, const Float2& size, const Float2 uv[2], Byte4 colour) = 0;
     };
 
+	// Removed in API 2016.01
+#if ZOMBIE_API_VERSION < 201601
     class IFPMaterial
     {
         public:
@@ -338,6 +340,7 @@ namespace RenderingKit
             virtual void SetNumTextures(unsigned int numTextures) = 0;
             virtual void SetTexture(unsigned int index, shared_ptr<ITexture>&& texture) = 0;
     };
+#endif
 
     class IMaterial: public zfw::IResource
     {
@@ -464,7 +467,7 @@ namespace RenderingKit
             virtual shared_ptr<ICamera>        CreateCamera(const char* name) = 0;
             virtual shared_ptr<IDeferredShadingManager>    CreateDeferredShadingManager() = 0;
             virtual shared_ptr<IFontFace>      CreateFontFace(const char* name) = 0;
-            virtual shared_ptr<IFPMaterial>    CreateFPMaterial(const char* name, int flags) = 0;
+
             virtual shared_ptr<IGeomBuffer>    CreateGeomBuffer(const char* name) = 0;
             virtual shared_ptr<zfw::IGraphics> CreateGraphicsFromTexture(shared_ptr<ITexture> texture) = 0;
             virtual shared_ptr<zfw::IGraphics> CreateGraphicsFromTexture2(shared_ptr<ITexture> texture, const Float2 uv[2]) = 0;
@@ -476,6 +479,10 @@ namespace RenderingKit
 
             virtual shared_ptr<IVertexFormat>  CompileVertexFormat(IShader* program, uint32_t vertexSize,
                     const VertexAttrib_t* attributes, bool groupedByAttrib) = 0;
+
+#if ZOMBIE_API_VERSION < 201601
+			virtual shared_ptr<IFPMaterial>    CreateFPMaterial(const char* name, int flags) = 0;
+#endif
 
             // Frame
             virtual void BeginFrame() = 0;

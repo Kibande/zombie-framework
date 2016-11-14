@@ -1,13 +1,13 @@
-#version 140
+#version 100
 
-in  vec2    in_Position;
-in  vec2    in_UV;
-in  float   in_TexSel;
-in  vec4    in_Color;
+attribute vec2  in_Position;
+attribute vec2  in_UV;
+attribute float in_TexSel;
+attribute vec4  in_Color;
 
-out vec4    ex_Color;
-out vec2    ex_UV;
-out float   ex_TexSel;
+varying vec4    ex_Color;
+varying vec2    ex_UV;
+varying float   ex_TexSel;
 
 uniform mat4 u_ModelViewProjectionMatrix;
 

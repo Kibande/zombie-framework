@@ -77,7 +77,7 @@ if (WITH_BLEB)
 endif()
 
 # freetype2
-if (WITH_ZTYPE)
+if (WITH_ZTYPE AND NOT EMSCRIPTEN)
     find_package(Freetype)
 
     if (Freetype_FOUND)

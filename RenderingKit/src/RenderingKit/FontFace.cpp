@@ -245,26 +245,13 @@ namespace RenderingKit
         else
             texture = atlas->GLGetTexture();
 
-        if (!usingCoreProfile)
-        {
-            vertexFormat = rm->CompileVertexFormat(nullptr, FONT_VERTEX_SIZE, fontVertexAttribs, false);
+        auto shader = rm->GetSharedResourceManager()->GetResource<IGLShaderProgram>("path=RenderingKit/basicTextured", zfw::RESOURCE_REQUIRED, 0);
+        zombie_ErrorCheck(shader);
 
-            auto fpMaterial = p_CreateFPMaterial(eb, rk, rm, sprintf_255("%s/material", name.c_str()), 0);
-            fpMaterial->SetNumTextures(1);
-            fpMaterial->SetTexture(0, texture);
+        vertexFormat = rm->CompileVertexFormat(shader.get(), FONT_VERTEX_SIZE, fontVertexAttribs, false);
 
-            material = std::static_pointer_cast<IGLMaterial>(fpMaterial->GetMaterial());
-        }
-        else
-        {
-            auto shader = rm->GetSharedResourceManager()->GetResource<IGLShaderProgram>("path=RenderingKit/basicTextured", zfw::RESOURCE_REQUIRED, 0);
-            zombie_ErrorCheck(shader);
-
-            vertexFormat = rm->CompileVertexFormat(shader.get(), FONT_VERTEX_SIZE, fontVertexAttribs, false);
-
-            material = p_CreateMaterial(eb, rk, rm, sprintf_255("%s/material", name.c_str()), shader);
-            material->SetTexture("tex", texture);
-        }
+        material = p_CreateMaterial(eb, rk, rm, sprintf_255("%s/material", name.c_str()), shader);
+        material->SetTexture("tex", texture);
 
         //ztype::FaceDesc desc = {filename, nullptr, size, 0, 0, 0};
 

@@ -174,6 +174,10 @@ namespace RenderingKit
         {
             const auto& attrib = attribs[i];
 
+#ifdef RENDERING_KIT_USING_OPENGL_ES
+			zombie_assert(attrib.type != GL_INT);
+#endif
+
             glEnableVertexAttribArray(attrib.location);
             glVertexAttribPointer(attrib.location, attrib.components, attrib.type,
                     (attrib.flags & RK_ATTRIB_NOT_NORMALIZED) ? GL_FALSE : GL_TRUE,

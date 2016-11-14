@@ -39,6 +39,10 @@
 #include <csignal>
 #endif
 
+#ifdef ZOMBIE_EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 #ifdef _MSC_VER
 #pragma comment(linker, \
     "\"/manifestdependency:type='Win32' "\
@@ -172,11 +176,11 @@ namespace zfw
 
             // Core Handlers
             virtual IEntityHandler* GetEntityHandler(bool createIfNull) override;
-            virtual IFileSystem*    GetFileSystem() { return fsUnion->GetFileSystem(); }
+            virtual IFileSystem*    GetFileSystem() override { return fsUnion->GetFileSystem(); }
             virtual IMediaCodecHandler* GetMediaCodecHandler(bool createIfNull) override;
             virtual IModuleHandler* GetModuleHandler(bool createIfNull) override;
             virtual IFSUnion*       GetFSUnion() override { return fsUnion.get(); }
-            virtual IVideoHandler*  GetVideoHandler() { return videoHandler.get(); }
+            virtual IVideoHandler*  GetVideoHandler() override { return videoHandler.get(); }
             virtual void            SetVideoHandler(unique_ptr<IVideoHandler>&& handler) { videoHandler = move(handler); }
             //virtual IEntityHandler* InitEntityHandler() override;
             //virtual IModuleHandler* InitModuleHandler() override;
@@ -247,9 +251,12 @@ namespace zfw
 
         private:
             void p_ClearLog();
+			bool p_Frame();
             void p_SetTickRate(int tickrate);
             double p_Update();
             void ExecLine1(const String& line);
+
+			static void p_EmscriptenFrame();
 
             bool interactive;
 
@@ -894,6 +901,102 @@ namespace zfw
         log.clear();
     }
 
+	void System::p_EmscriptenFrame()
+	{
+		s_sys->p_Frame();
+	}
+
+	bool System::p_Frame()
+	{
+		IVideoHandler* videoHandler = GetVideoHandler();
+
+		if (frameCounter == profileFrame)
+			profiler->BeginProfiling();
+
+		if (changeScene)
+		{
+			if (scene != nullptr)
+			{
+				scene->Shutdown();
+				scene.reset();
+			}
+
+			scene = move(newScene);
+			changeScene = false;
+
+			if (scene != nullptr && !scene->Init())
+			{
+				DisplayError(s_eb, true);
+				return false;
+			}
+		}
+
+		if (scene == nullptr)
+		{
+			ErrorBuffer::SetError(s_eb, EX_INVALID_OPERATION,
+				"desc", "No scene was specified by the application.",
+				nullptr);
+			DisplayError(s_eb, true);
+			return false;
+		}
+
+		if (frameCounter == profileFrame)
+			profiler->EnterSection(profVideoHandler);
+
+		videoHandler->BeginFrame();
+		videoHandler->ReceiveEvents();
+		videoHandler->BeginDrawFrame();
+
+		if (frameCounter == profileFrame)
+		{
+			profiler->LeaveSection();
+			profiler->EnterSection(profOnFrame);
+		}
+
+		scene->OnFrame(p_Update());
+
+		if (frameCounter == profileFrame)
+		{
+			profiler->LeaveSection();
+			profiler->EnterSection(profOnTicks);
+		}
+
+		if (tickAccum > 0)
+			scene->OnTicks(tickAccum);
+
+		if (frameCounter == profileFrame)
+		{
+			profiler->LeaveSection();
+			profiler->EnterSection(profDrawScene);
+		}
+
+		scene->DrawScene();
+
+		if (frameCounter == profileFrame)
+		{
+			profiler->LeaveSection();
+			profiler->EnterSection(profVideoHandler2);
+		}
+
+		videoHandler->EndFrame(tickAccum);
+		tickAccum = 0;
+
+		if (frameCounter == profileFrame)
+		{
+			profiler->LeaveSection();
+			profiler->EndProfiling();
+
+			Printf(kLogInfo, "Profiling frame %d:", frameCounter);
+			profiler->PrintProfile();
+		}
+
+		// Prevent overflows into negative
+		if (++frameCounter < 0)
+			frameCounter = 0;
+
+		return true;
+	}
+
     void System::p_SetTickRate(int tickrate)
     {
         tickRate = tickrate;
@@ -1026,96 +1129,17 @@ namespace zfw
 
     void System::RunMainLoop()
     {
+#ifndef ZOMBIE_EMSCRIPTEN
         breakLoop = false;
 
         while (!breakLoop)
         {
-            IVideoHandler* videoHandler = GetVideoHandler();
-
-            if (frameCounter == profileFrame)
-                profiler->BeginProfiling();
-
-            if (changeScene)
-            {
-                if (scene != nullptr)
-                {
-                    scene->Shutdown();
-                    scene.reset();
-                }
-
-                scene = move(newScene);
-                changeScene = false;
-
-                if (scene != nullptr && !scene->Init())
-                {
-                    DisplayError(s_eb, true);
-                    break;
-                }
-            }
-
-            if (scene == nullptr)
-            {
-                ErrorBuffer::SetError(s_eb, EX_INVALID_OPERATION,
-                    "desc", "No scene was specified by the application.",
-                    nullptr);
-                DisplayError(s_eb, true);
-                return;
-            }
-
-            if (frameCounter == profileFrame)
-                profiler->EnterSection(profVideoHandler);
-
-            videoHandler->BeginFrame();
-            videoHandler->ReceiveEvents();
-            videoHandler->BeginDrawFrame();
-
-            if (frameCounter == profileFrame)
-            {
-                profiler->LeaveSection();
-                profiler->EnterSection(profOnFrame);
-            }
-
-            scene->OnFrame(p_Update());
-
-            if (frameCounter == profileFrame)
-            {
-                profiler->LeaveSection();
-                profiler->EnterSection(profOnTicks);
-            }
-
-            if (tickAccum > 0)
-                scene->OnTicks(tickAccum);
-
-            if (frameCounter == profileFrame)
-            {
-                profiler->LeaveSection();
-                profiler->EnterSection(profDrawScene);
-            }
-
-            scene->DrawScene();
-
-            if (frameCounter == profileFrame)
-            {
-                profiler->LeaveSection();
-                profiler->EnterSection(profVideoHandler2);
-            }
-
-            videoHandler->EndFrame(tickAccum);
-            tickAccum = 0;
-
-            if (frameCounter == profileFrame)
-            {
-                profiler->LeaveSection();
-                profiler->EndProfiling();
-
-                Printf(kLogInfo, "Profiling frame %d:", frameCounter);
-                profiler->PrintProfile();
-            }
-
-            // Prevent overflows into negative
-            if (++frameCounter < 0)
-                frameCounter = 0;
+			if (!p_Frame())
+				break;
         }
+#else
+		emscripten_set_main_loop(p_EmscriptenFrame, 0, 1);
+#endif
     }
 
     /*void Sys::ApplicationError( int errorCode, ... )

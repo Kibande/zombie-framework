@@ -62,7 +62,7 @@ namespace RenderingKit
                     zfw::IResourceManager* res, const char* normparamSets, int flags) override;
 
             virtual bool InitWithTexture(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm,
-                    shared_ptr<ITexture> texture, const Float2 uv[2]);
+                    shared_ptr<ITexture> texture, const Float2 uv[2]) override;
 
             virtual const char* GetName() override { return name.c_str(); }
 

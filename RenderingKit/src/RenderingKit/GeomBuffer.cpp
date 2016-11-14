@@ -242,11 +242,15 @@ namespace RenderingKit
 
     void GLGeomBuffer::p_DoUnmapVB(size_t i)
     {
+#ifndef RENDERING_KIT_USING_OPENGL_ES
         // FIXME: Might actually be an index buffer?
         GLStateTracker::BindArrayBuffer(vbufs[i].obj);
         glUnmapBuffer(GL_ARRAY_BUFFER);
 
         vbufs[i].mapped = nullptr;
+#else
+		zombie_assert(false);
+#endif
     }
 
     bool GLGeomBuffer::p_ProvideVertexBufferObject(size_t spaceNeeded, size_t& vbi)

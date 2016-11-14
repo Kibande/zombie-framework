@@ -23,7 +23,10 @@
 #pragma warning( pop )
 
 // To prevent redefinition errors
+#ifndef GL_SGIX_fragment_lighting
 #define GL_SGIX_fragment_lighting
+#endif
+
 #include <SDL2/SDL_opengl.h>
 
 // FIXME: Implement OpenGL sanity checking
@@ -53,6 +56,7 @@ namespace RenderingKit
     enum ClientState { CL_GL_COLOR_ARRAY, CL_GL_NORMAL_ARRAY, CL_GL_TEXTURE_COORD_ARRAY, CL_GL_VERTEX_ARRAY, CL_MAX };
     enum { MAX_TEX = 8 };
 
+	// TODO: verify that this can be safely obliterated
     enum { usingCoreProfile = 1 };
 
     enum RKTextureFormat_t
@@ -155,11 +159,13 @@ namespace RenderingKit
             virtual void GLSetUpMatrices(const Int2& viewport, glm::mat4x4*& projection_out, glm::mat4x4*& modelView_out) = 0;
     };
 
+#ifndef RENDERING_KIT_USING_OPENGL_ES
     class IGLDeferredShadingManager : public IDeferredShadingManager
     {
         public:
             virtual bool Init(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm) = 0;
     };
+#endif
 
     class IGLFontFace : public IFontFace
     {
@@ -284,7 +290,6 @@ namespace RenderingKit
             IRenderingManagerBackend* rm, const char* name, int flags);
     shared_ptr<IGLGeomBuffer>       p_CreateGeomBuffer(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
             IRenderingManagerBackend* rm, const char* name);
-    shared_ptr<IGLDeferredShadingManager> p_CreateGLDeferredShadingManager();
     shared_ptr<IGLGraphics>         p_CreateGLGraphics();
     shared_ptr<IGLRenderBuffer>     p_CreateGLRenderBuffer();
     shared_ptr<IGLMaterial>         p_CreateMaterial(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
@@ -298,6 +303,10 @@ namespace RenderingKit
             IRenderingManagerBackend* rm, const char* name);
     IGLVertexCache*                 p_CreateVertexCache(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
             IRenderingManagerBackend* rm, size_t size);
+
+#ifndef RENDERING_KIT_USING_OPENGL_ES
+	shared_ptr<IGLDeferredShadingManager> p_CreateGLDeferredShadingManager();
+#endif
 
     void p_DrawChunk(IRenderingManagerBackend* rm, IGeomChunk* gc_in, IGLMaterial* material, GLenum mode);
 

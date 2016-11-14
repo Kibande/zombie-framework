@@ -1,6 +1,12 @@
 
 #include "RenderingKitImpl.hpp"
 
+#include <vector>
+
+#ifndef RENDERING_KIT_USING_OPENGL_ES
+#define USE_MAPPED_BUFFER
+#endif
+
 namespace RenderingKit
 {
     using namespace zfw;
@@ -12,7 +18,9 @@ namespace RenderingKit
             size_t bytesUsed, size;
 
             GLuint vbo;
-            void* mapped;
+
+			void* mapped;
+			std::vector<uint8_t> storage;
 
             bool Recreate(size_t size);
 
@@ -61,17 +69,23 @@ namespace RenderingKit
 
         ZFW_ASSERT(bytesUsed + sizeInBytes <= size)
 
+#ifdef USE_MAPPED_BUFFER
         if (mapped == nullptr)
         {
             //Recreate(size);
             GLStateTracker::BindArrayBuffer(vbo);
-            mapped = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+			mapped = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
             ZFW_ASSERT(mapped != nullptr)
         }
 
         void* ptr = reinterpret_cast<uint8_t*>(mapped) + bytesUsed;
         bytesUsed += sizeInBytes;
         return ptr;
+#else
+		void* ptr = &storage[bytesUsed];
+		bytesUsed += sizeInBytes;
+		return ptr;
+#endif
     }
 
     void GLVertexCache::Flush()
@@ -86,9 +100,14 @@ namespace RenderingKit
         if (this->owner != nullptr)
         {
             GLStateTracker::BindArrayBuffer(vbo);
+
+#ifdef USE_MAPPED_BUFFER
             glUnmapBuffer(GL_ARRAY_BUFFER);
 
-            mapped = nullptr;
+			mapped = nullptr;
+#else
+			glBufferData(GL_ARRAY_BUFFER, bytesUsed, &storage[0], GL_DYNAMIC_DRAW);
+#endif
 
             this->owner->OnVertexCacheFlush(this, bytesUsed);
             bytesUsed = 0;
@@ -107,6 +126,10 @@ namespace RenderingKit
     {
         GLStateTracker::BindArrayBuffer(vbo);
         glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+
+#ifndef USE_MAPPED_BUFFER
+		storage.resize(size);
+#endif
 
         this->size = size;
         return true;

@@ -97,21 +97,12 @@ namespace RenderingKit
     {
         this->rm = rm;
 
-        if (false)
-        {
-            vertexFormat = rm->CompileVertexFormat(nullptr, sizeof(VertexType), VertexType::GetVertexAttribs(), false);
+        auto shader = rm->GetSharedResourceManager()->GetResource<IShader>("path=RenderingKit/basic", zfw::RESOURCE_REQUIRED, 0);
+        zombie_ErrorCheck(shader);
 
-            material = rm->CreateFPMaterial("BasicPainter/material", 0)->GetMaterial();
-        }
-        else
-        {
-            auto shader = rm->GetSharedResourceManager()->GetResource<IShader>("path=RenderingKit/basic", zfw::RESOURCE_REQUIRED, 0);
-            zombie_ErrorCheck(shader);
+        vertexFormat = rm->CompileVertexFormat(shader.get(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
 
-            vertexFormat = rm->CompileVertexFormat(shader.get(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
-
-            material = rm->CreateMaterial("BasicPainter/material", shader);
-        }
+        material = rm->CreateMaterial("BasicPainter/material", shader);
 
         return true;
     }

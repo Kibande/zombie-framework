@@ -100,24 +100,13 @@ namespace RenderingKit
     {
         this->rm = rm;
 
-        if (false)
-        {
-            vertexFormat = rm->CompileVertexFormat(nullptr, sizeof(VertexType), VertexType::GetVertexAttribs(), false);
+        auto shader = rm->GetSharedResourceManager()->GetResource<IShader>("path=RenderingKit/basicTextured", zfw::RESOURCE_REQUIRED, 0);
+        zombie_ErrorCheck(shader);
 
-            auto fpMaterial = rm->CreateFPMaterial("TexturedPainter/material", 0);
-            fpMaterial->SetNumTextures(1);
-            material = fpMaterial->GetMaterial();
-        }
-        else
-        {
-            auto shader = rm->GetSharedResourceManager()->GetResource<IShader>("path=RenderingKit/basicTextured", zfw::RESOURCE_REQUIRED, 0);
-            zombie_ErrorCheck(shader);
+        vertexFormat = rm->CompileVertexFormat(shader.get(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
 
-            vertexFormat = rm->CompileVertexFormat(shader.get(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
-
-            material = rm->CreateMaterial("TexturedPainter/material", shader);
-            material->SetTexture("tex", nullptr);
-        }
+        material = rm->CreateMaterial("TexturedPainter/material", shader);
+        material->SetTexture("tex", nullptr);
 
         return true;
     }

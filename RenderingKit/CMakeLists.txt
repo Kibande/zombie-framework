@@ -4,6 +4,12 @@ project(RenderingKit)
 set(CMAKE_CXX_STANDARD 14)
 set(library ${PROJECT_NAME})
 
+set(RENDERING_KIT_USE_OPENGL_ES_SUBSET OFF CACHE BOOL "Use OpenGL ES-compatible subset")
+
+if (RENDERING_KIT_USE_OPENGL_ES_SUBSET OR EMSCRIPTEN)
+	set(USING_OPENGL_ES ON)
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 if (NOT TARGET zombie_framework)
@@ -13,14 +19,25 @@ endif()
 # Also add headers so that they're included in generated projects
 file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/RenderingKit/*.cpp
+	${PROJECT_SOURCE_DIR}/src/RenderingKit/*.hpp
     ${PROJECT_SOURCE_DIR}/src/RenderingKit/gameui/*.cpp
-
-    ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c
 
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/*.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/gameui/*.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/utility/*.hpp
 )
+
+if (ZOMBIE_API_VERSION GREATER_EQUAL 201601)
+	list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/FixedPipelineMaterial.cpp)
+endif()
+
+if (USING_OPENGL_ES)
+	list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/DeferredShadingManager.cpp)
+endif()
+
+if (NOT EMSCRIPTEN)
+    list(APPEND sources ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c)
+endif()
 
 add_library(${library} ${sources})
 add_dependencies(${library} zombie_framework)
@@ -29,13 +46,17 @@ target_link_libraries(${library} zombie_framework)
 target_compile_definitions(${library} PUBLIC -DRENDERING_KIT_STATIC=1)
 target_compile_definitions(${library} PRIVATE -DGLEW_STATIC=1)
 
+if (USING_OPENGL_ES)
+	target_compile_definitions(${library} PUBLIC RENDERING_KIT_USING_OPENGL_ES)
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC
     include
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-    dependencies/glew-2.0.0/include
-)
+if (NOT EMSCRIPTEN)
+    target_include_directories(${PROJECT_NAME} PRIVATE dependencies/glew-2.0.0/include)
+endif()
 
 # OpenGL
 if (WIN32)
@@ -45,44 +66,46 @@ else()
 endif()
 
 # SDL2
-if (MSVC)
-    set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/include)
-    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/lib/x64/SDL2.lib)
-        set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/lib/x64/SDL2.dll)
-    else()
-        set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/lib/x86/SDL2.lib)
-        set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/lib/x86/SDL2.dll)
+if (NOT EMSCRIPTEN)
+    if (MSVC)
+        set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/include)
+        if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+            set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/lib/x64/SDL2.lib)
+            set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/lib/x64/SDL2.dll)
+        else()
+            set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/lib/x86/SDL2.lib)
+            set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/lib/x86/SDL2.dll)
+        endif()
     endif()
-endif()
 
-if (WIN32 AND NOT MSVC)
-    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/include)
-        set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/lib/libSDL2.dll.a)
-        set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/bin/SDL2.dll)
-    else()
-        set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/include)
-        set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/lib/libSDL2.dll.a)
-        set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/bin/SDL2.dll)
+    if (WIN32 AND NOT MSVC)
+        if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+            set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/include)
+            set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/lib/libSDL2.dll.a)
+            set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/x86_64-w64-mingw32/bin/SDL2.dll)
+        else()
+            set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/include)
+            set(SDL2_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/lib/libSDL2.dll.a)
+            set(SDL2_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL2-2.0.5/i686-w64-mingw32/bin/SDL2.dll)
+        endif()
     endif()
+
+    if (SDL2_DLL)
+    	if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    		set(DLL_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    	else()
+    		set(DLL_DIR ${CMAKE_BINARY_DIR}/$<CONFIG>)
+    	endif()
+
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" ${DLL_DIR})
+    endif()
+
+    find_package(SDL2 REQUIRED)
+
+    target_include_directories(${library} SYSTEM PRIVATE "${SDL2_INCLUDE_DIR}")
+    target_link_libraries(${library} "${SDL2_LIBRARY}")
 endif()
-
-if (SDL2_DLL)
-	if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-		set(DLL_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-	else()
-		set(DLL_DIR ${CMAKE_BINARY_DIR}/$<CONFIG>)
-	endif()
-
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" ${DLL_DIR})
-endif()
-
-find_package(SDL2 REQUIRED)
-
-target_include_directories(${library} SYSTEM PRIVATE "${SDL2_INCLUDE_DIR}")
-target_link_libraries(${library} "${SDL2_LIBRARY}")
 
 # Export Assets
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

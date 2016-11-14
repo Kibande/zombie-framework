@@ -26,7 +26,8 @@ namespace RenderingKit
     {
         short pos[2];       // 4
         short uv[2];        // 4
-        int texsel;         // 4
+        short texsel;       // 2
+		short unused;		// 2
         uint8_t rgba[4];    // 4
     };
 
@@ -34,7 +35,7 @@ namespace RenderingKit
     {
         {"in_Position",     0,  RK_ATTRIB_SHORT_2,  RK_ATTRIB_NOT_NORMALIZED},
         {"in_UV",           4,  RK_ATTRIB_SHORT_2},
-        {"in_TexSel",       8,  RK_ATTRIB_INT,      RK_ATTRIB_NOT_NORMALIZED},
+        {"in_TexSel",       8,  RK_ATTRIB_SHORT,	RK_ATTRIB_NOT_NORMALIZED},
         {"in_Color",        12, RK_ATTRIB_UBYTE_4},
         {}
     };

@@ -416,7 +416,7 @@ namespace gameui
             virtual int OnMousePrimary(int h, int x, int y, bool pressed) override;
             virtual void OnWidgetMinSizeChange(Widget* widget) override;
             virtual void SetArea(Int3 pos, Int2 size) override;
-            virtual void SetOnlineUpdate(bool enabled) { Widget::SetOnlineUpdate(enabled); CtnSetOnlineUpdate(enabled); }
+            virtual void SetOnlineUpdate(bool enabled) override { Widget::SetOnlineUpdate(enabled); CtnSetOnlineUpdate(enabled); }
             virtual void SetSize(Int2 size) override;
 
             void InvalidateLayout() { this->layoutValid = false; }

@@ -38,7 +38,6 @@ namespace RenderingKit
             virtual shared_ptr<ICamera>        CreateCamera(const char* name) override;
             virtual shared_ptr<IDeferredShadingManager>    CreateDeferredShadingManager() override;
             virtual shared_ptr<IFontFace>      CreateFontFace(const char* name) override;
-            virtual shared_ptr<IFPMaterial>    CreateFPMaterial(const char* name, int flags) override;
             virtual shared_ptr<IGeomBuffer>    CreateGeomBuffer(const char* name) override;
             virtual zfw::shared_ptr<IGraphics> CreateGraphicsFromTexture(shared_ptr<ITexture> texture) override;
             virtual zfw::shared_ptr<IGraphics> CreateGraphicsFromTexture2(shared_ptr<ITexture> texture, const Float2 uv[2]) override;
@@ -50,6 +49,10 @@ namespace RenderingKit
 
             virtual shared_ptr<IVertexFormat>  CompileVertexFormat(IShader* program, uint32_t vertexSize,
                     const VertexAttrib_t* attributes, bool groupedByAttrib) override;
+
+#if ZOMBIE_API_VERSION < 201601
+			virtual shared_ptr<IFPMaterial>    CreateFPMaterial(const char* name, int flags) override;
+#endif
 
             virtual void DrawPrimitives(IMaterial* material, RKPrimitiveType_t primitiveType, IGeomChunk* gc) override;
 
@@ -242,12 +245,17 @@ namespace RenderingKit
 
     shared_ptr<IDeferredShadingManager> RenderingManager::CreateDeferredShadingManager()
     {
+#ifndef RENDERING_KIT_USING_OPENGL_ES
         auto dsm = p_CreateGLDeferredShadingManager();
         
         if (!dsm->Init(eb, rk, this))
             return nullptr;
 
         return dsm;
+#else
+		return ErrorBuffer::SetError(eb, EX_INVALID_OPERATION, "desc", "Deferred shading is not supported in OpenGL ES mode.", nullptr),
+				nullptr;
+#endif
     }
 
     shared_ptr<IFontFace> RenderingManager::CreateFontFace(const char* name)
@@ -255,6 +263,7 @@ namespace RenderingKit
         return p_CreateFontFace(eb, rk, this, name);
     }
 
+#if ZOMBIE_API_VERSION < 201601
     shared_ptr<IFPMaterial> RenderingManager::CreateFPMaterial(const char* name, int flags)
     {
         if (usingCoreProfile)
@@ -264,6 +273,7 @@ namespace RenderingKit
         else
             return p_CreateFPMaterial(eb, rk, this, name, flags);
     }
+#endif
 
     shared_ptr<IGeomBuffer> RenderingManager::CreateGeomBuffer(const char* name)
     {
@@ -362,6 +372,7 @@ namespace RenderingKit
         }
         else if (resourceClass == typeid(IMaterial))
         {
+#if ZOMBIE_API_VERSION < 201601
             String texture;
 
             const char *key, *value;
@@ -386,6 +397,9 @@ namespace RenderingKit
             }
 
             return material->GetMaterial();
+#else
+			zombie_assert(false);
+#endif
         }
         else if (resourceClass == typeid(IShader) || resourceClass == typeid(IGLShaderProgram))
         {
@@ -800,6 +814,10 @@ namespace RenderingKit
     {
         rk->GetSys()->Printf(kLogInfo, "Rendering Kit: %s | %s | %s", glGetString(GL_VERSION), glGetString(GL_RENDERER), glGetString(GL_VENDOR));
 
+#ifdef RENDERING_KIT_USING_OPENGL_ES
+		rk->GetSys()->Printf(kLogInfo, "Rendering Kit: Using OpenGL ES-compatible subset");
+#endif
+
         /*if (GLEW_ARB_debug_output)
         {
             glDebugMessageCallbackARB(glDebugProc, nullptr);
@@ -868,15 +886,16 @@ namespace RenderingKit
         if (materialOverride != nullptr)
             material = materialOverride;
 
-        int fpMaterialFlags;
+		int fpMaterialFlags = 0;
+
+#if ZOMBIE_API_VERSION < 201601
         IFPMaterial* fpMaterial = dynamic_cast<IFPMaterial*>(material);  // FIXME: needs to be optimized ASAP
 
         if (fpMaterial != nullptr)
             fpMaterialFlags = fpMaterial->GetFlags();
-        else
-            fpMaterialFlags = 0;
 
         // kFPMaterialIgnoreVertexColour
+#endif
 
         material->GLSetup(options, *projectionCurrent, *modelViewCurrent);
         vertexFormat->Setup(vbo, fpMaterialFlags);
