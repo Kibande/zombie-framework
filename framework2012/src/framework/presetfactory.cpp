@@ -223,7 +223,7 @@ namespace zfw
             }
             else
             {
-                static const uint32_t indices[24] = {
+                static const VertexIndex_t indices[24] = {
                     0, 1, 1, 2, 2, 3, 3, 0,     // bottom
                     0, 4, 1, 5, 2, 6, 3, 7,     // middle
                     4, 5, 5, 6, 6, 7, 7, 4      // top

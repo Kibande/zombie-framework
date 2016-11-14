@@ -58,9 +58,12 @@ namespace ztype
     {
         size_t i;
 
+		uint32_t FourCC_u32;
+		memcpy(&FourCC_u32, FourCC, 4);
+
         for (i = 0; i < num_sections; i++)
         {
-            if (sections[i * 2] == *(uint32_t *)FourCC)
+            if (sections[i * 2] == FourCC_u32)
                 break;
         }
 

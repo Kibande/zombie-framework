@@ -25,9 +25,17 @@ namespace zfw
             glGenTextures( 1, &id );
             zr::SetTexture2D(id);
 
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+#ifdef ZOMBIE_EMSCRIPTEN
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+#else
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
             glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
+#endif
 
             GLenum format;
 
@@ -39,7 +47,7 @@ namespace zfw
                 //TODO: default: error
             }
 
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, bmp->size.x, bmp->size.y, 0, format, GL_UNSIGNED_BYTE, bmp->data.getPtrUnsafe() );
+            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, bmp->size.x, bmp->size.y, 0, format, GL_UNSIGNED_BYTE, bmp->data.getPtrUnsafe() );
 
             return new GLTexture( name, fileName, bmp->size, id );
         }

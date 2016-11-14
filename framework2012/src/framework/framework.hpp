@@ -363,6 +363,8 @@ namespace zfw
         enum MeshLayout { MESH_LINEAR, MESH_INDEXED };
         enum MPrimType { MPRIM_LINES, MPRIM_TRIANGLES };
 
+		typedef uint16_t VertexIndex_t;
+
         enum TexFormat
         {
             TEX_RGB8,
@@ -387,7 +389,7 @@ namespace zfw
 
             Array<float> coords, normals, uvs;
 
-            Array<uint32_t> indices;
+            Array<VertexIndex_t> indices;
         };
 
         class Bitmap

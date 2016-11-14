@@ -148,6 +148,7 @@ namespace gameui
     int ComboBox::OnMousePrimary(int h, int x, int y, bool pressed)
     {
         if (h < 0)
+        {
             if (IsInsideMe(x, y))
             {
                 if (pressed)
@@ -172,6 +173,7 @@ namespace gameui
                     return 1;
                 }
             }
+        }
 
         return h;
     }

@@ -277,7 +277,7 @@ namespace zfw
                     }
 
                     case SDL_KEYDOWN:
-                    case SDL_KEYUP:
+                    case SDL_KEYUP: {
                         //printf( "[%i] SDL key down: %i, %i(%c)\n", event.key.which, event.key.keysym.scancode, event.key.keysym.sym, event.key.keysym.sym );
 
                         if (event.key.keysym.sym == SDLK_LALT || event.key.keysym.sym == SDLK_RALT)
@@ -287,12 +287,19 @@ namespace zfw
                         else if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT)
                             shiftDown = (event.key.type == SDL_KEYDOWN);
 
-                        Event::PushVkeyEvent(IN_KEY, event.key.which, event.key.keysym.sym, event.key.keysym.scancode,
+#ifndef ZOMBIE_EMSCRIPTEN
+                        int which = event.key.which;
+#else
+                        int which = 0;
+#endif
+
+                        Event::PushVkeyEvent(IN_KEY, which, event.key.keysym.sym, event.key.keysym.scancode,
                                 (event.key.type == SDL_KEYDOWN) ? (VKEY_PRESSED|VKEY_TRIG) : VKEY_RELEASED, 0);
 
                         if (event.key.type == SDL_KEYDOWN && event.key.keysym.unicode > 0)
                             Event::PushUnicodeInEvent(event.key.keysym.unicode);
                         break;
+                    }
 
                     case SDL_MOUSEBUTTONUP:
                     case SDL_MOUSEBUTTONDOWN:
@@ -401,7 +408,9 @@ namespace zfw
             if ( WindowCaption != nullptr )
                 SDL_WM_SetCaption( WindowCaption, WindowCaption );
 
+#ifndef ZOMBIE_EMSCRIPTEN
             SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, SwapControl );
+#endif
 
             if ( MultiSample > 0 )
             {

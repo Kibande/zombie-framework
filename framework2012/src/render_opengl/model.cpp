@@ -160,7 +160,7 @@ namespace zr {
 
                 mc.vertexOffset = bytesUsed;
                 mc.clusterVertexSize = numVertices * mc.vf.vertexSize;
-                mc.clusterIndexSize = numIndices * sizeof(uint32_t);
+                mc.clusterIndexSize = numIndices * sizeof(media::VertexIndex_t);
 
                 //printf("-- Flushing %i]MeshCluster at offset %06X with %06X vertices, %06X indices\n\tand %06X + %06X = %06X total data.\n",
                 //        meshClusters.getLength(), bytesUsed, numVertices, numIndices, mc.clusterVertexSize, mc.clusterIndexSize, mc.clusterVertexSize + mc.clusterIndexSize);

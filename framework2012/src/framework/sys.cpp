@@ -17,6 +17,10 @@
 #endif
 #endif
 
+#ifdef ZOMBIE_EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 namespace zfw
 {
     using namespace zfw::render;
@@ -298,51 +302,57 @@ namespace zfw
         va_end( args );
     }
 
+    static void DoFrame()
+    {
+        if ( changeScene )
+        {
+            if ( scene != nullptr )
+            {
+                scene->Exit();
+                delete scene;
+            }
+
+            scene = newScene;
+            changeScene = false;
+
+            if ( scene != nullptr )
+                scene->Init();
+        }
+
+        Video::BeginFrame();
+        Video::ReceiveEvents();
+
+        if ( scene != nullptr )
+        {
+            scene->OnFrame( Sys::Update() );
+            scene->DrawScene();
+        }
+        else
+        {
+            zr::R::SetClearColour(0.0f, 0.1f, 0.2f, 0.0f);
+            zr::R::Clear();
+
+            Event_t* event;
+
+            while ( ( event = Event::Pop() ) != nullptr )
+                if ( event->type == EV_VKEY && event->vkey.vk.inclass == IN_OTHER && event->vkey.vk.key == OTHER_CLOSE )
+                {
+                    Sys::BreakGameLoop();
+                    break;
+                }
+        }
+
+        Video::EndFrame();
+    }
+
     void Sys::MainLoop()
     {
+#ifndef ZOMBIE_EMSCRIPTEN
         breakLoop = false;
 
         while ( !breakLoop )
         {
-            if ( changeScene )
-            {
-                if ( scene != nullptr )
-                {
-                    scene->Exit();
-                    delete scene;
-                }
-
-                scene = newScene;
-                changeScene = false;
-
-                if ( scene != nullptr )
-                    scene->Init();
-            }
-
-            Video::BeginFrame();
-            Video::ReceiveEvents();
-
-            if ( scene != nullptr )
-            {
-                scene->OnFrame( Update() );
-                scene->DrawScene();
-            }
-            else
-            {
-                zr::R::SetClearColour(0.0f, 0.1f, 0.2f, 0.0f);
-                zr::R::Clear();
-
-                Event_t* event;
-
-                while ( ( event = Event::Pop() ) != nullptr )
-                    if ( event->type == EV_VKEY && event->vkey.vk.inclass == IN_OTHER && event->vkey.vk.key == OTHER_CLOSE )
-                    {
-                        Sys::BreakGameLoop();
-                        break;
-                    }
-            }
-
-            Video::EndFrame();
+            DoFrame();
         }
 
         if ( scene != nullptr )
@@ -351,6 +361,9 @@ namespace zfw
             delete scene;
             scene = nullptr;
         }
+#else
+        emscripten_set_main_loop(DoFrame, 0, 1);
+#endif
     }
 
     SeekableInputStream* Sys::OpenInput( const char* path )

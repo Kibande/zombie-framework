@@ -295,7 +295,7 @@ namespace zfw
             if ( mesh->layout == MESH_LINEAR )
                 glDrawArrays( GL_TRIANGLES, 0, mesh->numVertices );
             else
-                glDrawElements( GL_TRIANGLES, mesh->numIndices, GL_UNSIGNED_INT, mesh->indices.getPtrUnsafe() );
+                glDrawElements( GL_TRIANGLES, mesh->numIndices, GL_UNSIGNED_SHORT, mesh->indices.getPtrUnsafe() );
 
             numDrawCalls++;
 
@@ -437,7 +437,7 @@ namespace zfw
             {
                 case BLEND_NORMAL:
                     if ( glBlendEquationSeparate )
-                        glBlendEquationSeparate( GL_FUNC_ADD, GL_MAX );
+                        glBlendEquationSeparate( GL_FUNC_ADD, GL_FUNC_ADD);
 
                     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                     break;

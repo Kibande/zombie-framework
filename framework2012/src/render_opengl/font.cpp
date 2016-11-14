@@ -40,6 +40,18 @@ namespace zfw
             return input->read( buffer, count );
         }
 
+		static unsigned long RoundUpPowerOf2(unsigned long v)
+		{
+			v--;
+			v |= v >> 1;
+			v |= v >> 2;
+			v |= v >> 4;
+			v |= v >> 8;
+			v |= v >> 16;
+			v++;
+			return v;
+		}
+
         GLFont::GLFont( const char* name, int ptsize, int flags )
                 : name( name ), ptsize( ptsize ), flags( flags ), face( nullptr )
         {
@@ -215,6 +227,13 @@ namespace zfw
             //printf( " - %s@%i: font texture is %u x %u pixels\n", name, size, totalWidth, totalHeight );
 
             DIBitmap finalLayout;
+
+			const bool requirePowerOf2Textures = true;
+
+			if (requirePowerOf2Textures) {
+				totalWidth = RoundUpPowerOf2(totalWidth);
+				totalHeight = RoundUpPowerOf2(totalHeight);
+			}
 
             Bitmap::Alloc( &finalLayout, totalWidth, totalHeight, TEX_RGBA8 );
 

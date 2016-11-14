@@ -5,7 +5,10 @@
 
 #define f_pi 3.14159265358979323846f
 
-#if defined(_WIN32) || defined (_WIN64)
+#if defined(EMSCRIPTEN)
+#define ZOMBIE_EMSCRIPTEN
+#define ZOMBIE_PLATFORM "emscripten"
+#elif defined(_WIN32) || defined (_WIN64)
 // Win32, Win64
 #define ZOMBIE_WINNT
 #define ZOMBIE_PLATFORM "winnt"

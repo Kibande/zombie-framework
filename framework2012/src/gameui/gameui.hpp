@@ -463,7 +463,6 @@ namespace gameui
             void Layout();
             void LayoutNode(Int2& pos, TreeBoxNode* node);
             //void MoveNode(Int2& vec, TreeBoxNode* node);
-            void OnFrame(double delta);
             void OnMousePress(glm::ivec2 mouse, TreeBoxNode *node);
 
         private:
@@ -480,8 +479,8 @@ namespace gameui
             //virtual Widget* Find(const char* widgetName) override { return WidgetContainer::Find(widgetName); }
             virtual Int2 GetMinSize() override;
             //virtual void Move(Int2 vec) override;
-            /*virtual void OnFrame(double delta) override { WidgetContainer::OnFrame(delta); }
-            */virtual void Relayout() override;
+            virtual void OnFrame(double delta) override;
+            virtual void Relayout() override;
             virtual void ReloadMedia() override;
             virtual void SetArea(Int2 pos, Int2 size) override;
             //virtual void SetSpacing(Int2 spacing) {this->spacing = spacing;}*/

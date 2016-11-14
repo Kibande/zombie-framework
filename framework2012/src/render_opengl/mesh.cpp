@@ -56,7 +56,7 @@ namespace zr {
     Mesh* Mesh::CreateFromMemory(int flags, PrimitiveMode mode, const VertexFormat *format, const void *vertices, size_t numVertices, const void *indices, size_t numIndices)
     {
         const size_t vertexDataSize = format->vertexSize * numVertices;
-        const size_t indexDataSize = /*GetIndexSize(numIndices)*/ 4 * numIndices;
+        const size_t indexDataSize = /*GetIndexSize(numIndices)*/ sizeof(media::VertexIndex_t) * numIndices;
         
         li::Reference<VertexBuffer> vbuf = new VertexBuffer;
         vbuf->InitWithSize(flags, vertexDataSize + indexDataSize);
@@ -103,7 +103,7 @@ namespace zr {
         }
 
         const size_t vertexDataSize = format.vertexSize * blueprint->numVertices;
-        const size_t indexDataSize = sizeof(uint32_t) * blueprint->numIndices;
+        const size_t indexDataSize = sizeof(media::VertexIndex_t) * blueprint->numIndices;
 
         li::Reference<VertexBuffer> vbuf = new VertexBuffer;
         vbuf->InitWithSize(VBUF_REMOTE, vertexDataSize + indexDataSize);
@@ -221,6 +221,9 @@ namespace zr {
 
     MeshDataBlob* Mesh::PreloadBlobFromDataBlock(InputStream* stream)
     {
+		// FIXME: Doesn't support 16-bit indices
+		ZFW_ASSERT(false)
+
         MeshDataHeader mhdr;
 
         if (stream->readItems(&mhdr, 1) != 1)
@@ -319,7 +322,7 @@ namespace zr {
         {
             SetElementBuffer(vbuf->vbo);
 
-            glDrawElements(primmode, numIndices, GL_UNSIGNED_INT, (void *) indicesOffset);
+            glDrawElements(primmode, numIndices, GL_UNSIGNED_SHORT, (void *) indicesOffset);
         }
         else
         {

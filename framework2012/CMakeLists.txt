@@ -21,7 +21,6 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/render_opengl/*.cpp
     ${PROJECT_SOURCE_DIR}/src/zshared/*.cpp
 
-    ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c
     ${PROJECT_SOURCE_DIR}/dependencies/lodepng/lodepng.cpp
     ${PROJECT_SOURCE_DIR}/dependencies/superscanf/superscanf.c
 
@@ -35,6 +34,10 @@ file(GLOB sources
 
 list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/render_opengl/video_slave.cpp)
 
+if (NOT EMSCRIPTEN)
+    list(APPEND sources ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c)
+endif()
+
 if (WITH_ZTYPE)
     file(GLOB add_sources src/ztype/*.c src/ztype/*.cpp)
     list(APPEND sources ${add_sources})
@@ -45,7 +48,7 @@ add_library(${library} ${sources})
 target_compile_definitions(${library} PRIVATE -DGLEW_STATIC=1)
 
 # freetype2
-if (WITH_ZTYPE)
+if (WITH_ZTYPE AND NOT EMSCRIPTEN)
     find_package(Freetype)
 
     if (Freetype_FOUND)
@@ -95,10 +98,13 @@ endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     src
-    dependencies/glew-2.0.0/include
     dependencies/glm
     dependencies/superscanf
 )
+
+if (NOT EMSCRIPTEN)
+    target_include_directories(${PROJECT_NAME} PUBLIC dependencies/glew-2.0.0/include)
+endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE dependencies/lodepng)
 
@@ -110,16 +116,18 @@ else()
 endif()
 
 # SDL
-if (MSVC)
-    set(SDL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/include)
-    set(SDL_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x86/SDL.lib)
-    set(SDL_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x86/SDL.dll PARENT_SCOPE)
+if (NOT EMSCRIPTEN)
+    if (MSVC)
+        set(SDL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/include)
+        set(SDL_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x86/SDL.lib)
+        set(SDL_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x86/SDL.dll PARENT_SCOPE)
+    endif()
+
+    find_package(SDL REQUIRED)
+
+    target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${SDL_INCLUDE_DIR}")
+    target_link_libraries(${PROJECT_NAME} "${SDL_LIBRARY}")
 endif()
-
-find_package(SDL REQUIRED)
-
-target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${SDL_INCLUDE_DIR}")
-target_link_libraries(${PROJECT_NAME} "${SDL_LIBRARY}")
 
 # Export Assets
 set(FRAMEWORK_ASSETS_DIR ${PROJECT_SOURCE_DIR}/assets PARENT_SCOPE)

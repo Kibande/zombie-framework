@@ -135,6 +135,10 @@ namespace zfw
 
         GLProgram* GLProgram::Load( const char* path )
         {
+#ifdef ZOMBIE_EMSCRIPTEN
+			return nullptr;
+#endif
+
             if ( gl_allowshaders->basictypes.i <= 0 )
             {
                 Sys::RaiseException( EX_FEATURE_DISABLED, "GLProgram::Load", "the shader program functionality is disabled" );
