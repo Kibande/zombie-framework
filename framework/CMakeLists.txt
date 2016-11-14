@@ -65,6 +65,10 @@ endif()
 
 add_library(${library} ${sources})
 
+if (ZOMBIE_API_VERSION)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC -DZOMBIE_API_VERSION=${ZOMBIE_API_VERSION})
+endif()
+
 # Bleb
 if (WITH_BLEB)
     add_dependencies(${library} bleb)

@@ -17,7 +17,6 @@ add_library(${PROJECT_NAME} ${sources})
 
 add_dependencies(${PROJECT_NAME} zombie_framework)
 target_link_libraries(${PROJECT_NAME} zombie_framework)
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DZOMBIE_SDK_VERSION=201601)
 
 add_dependencies(${PROJECT_NAME} RenderingKit)
 target_link_libraries(${PROJECT_NAME} RenderingKit)

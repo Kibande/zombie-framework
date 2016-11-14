@@ -221,8 +221,8 @@ namespace RenderingKit
             virtual bool SetSize(Int2 size) = 0;
     };
 
-	// Deprecated and unused, removed in SDK 2016.01
-#if ZOMBIE_SDK_VERSION < 201601
+	// Deprecated and unused, removed in API 2016.01
+#if ZOMBIE_API_VERSION < 201601
     class IRenderingKitHost
     {
         public:

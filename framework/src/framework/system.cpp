@@ -338,6 +338,10 @@ namespace zfw
         Printf(kLogAlways, "Copyright (c) 2012, 2013, 2014, 2016 Minexew Games; some rights reserved");
         Printf(kLogAlways, "Compiled using " li_compiled_using);
 
+#if ZOMBIE_API_VERSION >= 201601
+		Printf(kLogAlways, "API version %04d.%02d", ZOMBIE_API_VERSION / 100, ZOMBIE_API_VERSION % 100);
+#endif
+
         // Pre-Init
         varSystem.reset(p_CreateVarSystem(this));
         varSystem->SetVariable("sys_tickrate", "60", 0);

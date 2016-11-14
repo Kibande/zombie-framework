@@ -1,6 +1,8 @@
 #pragma once
 
-#define base_sdk_version 201400
+#ifndef ZOMBIE_API_VERSION
+#define ZOMBIE_API_VERSION 1000
+#endif
 
 #include <littl/Base.hpp>
 #include <littl/Stream.hpp>
@@ -48,10 +50,6 @@
 #define ZOMBIE_BUILDTYPENAME "DEBUG"
 #else
 #define ZOMBIE_BUILDTYPENAME "RELEASE"
-#endif
-
-#ifndef ZOMBIE_SDK_VERSION
-#define ZOMBIE_SDK_VERSION 1000
 #endif
 
 // Some helper macros to make life easier
