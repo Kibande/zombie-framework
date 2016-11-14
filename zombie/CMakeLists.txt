@@ -3,6 +3,10 @@ project(zombie)
 
 set(CMAKE_CXX_STANDARD 14)
 
+if (EMSCRIPTEN)
+	set(CMAKE_CXX_FLAGS "-std=c++14 -s USE_FREETYPE=1 -s LEGACY_GL_EMULATION=1 -s DISABLE_EXCEPTION_CATCHING=0")
+endif()
+
 file(GLOB_RECURSE sources
     ${PROJECT_SOURCE_DIR}/src/*.cpp
 
