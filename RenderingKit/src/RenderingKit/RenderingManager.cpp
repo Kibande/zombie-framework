@@ -119,7 +119,7 @@ namespace RenderingKit
 
             void p_SetRenderBuffer(IGLRenderBuffer* rb);
 
-
+            std::string appName;
             zfw::ErrorBuffer_t* eb;
             RenderingKit* rk;
 
@@ -148,6 +148,7 @@ namespace RenderingKit
 
     RenderingManager::RenderingManager(ErrorBuffer_t* eb, RenderingKit* rk)
     {
+        this->appName = rk->GetSys()->GetVarSystem()->GetVariableOrEmptyString("appName");
         this->eb = eb;
         this->rk = rk;
 
@@ -187,7 +188,7 @@ namespace RenderingKit
                 float fps = 1000.0f / (frameTimeMs);
 
                 char buffer[200];
-                snprintf(buffer, sizeof(buffer), "%g fps @ %g ms/frame", glm::round(fps), frameTimeMs);
+                snprintf(buffer, sizeof(buffer), "%s / %.1f FPS / %.2f ms", appName.c_str(), glm::round(fps), frameTimeMs);
 
                 rk->GetWindowManagerBackend()->SetWindowCaption(buffer);
 
