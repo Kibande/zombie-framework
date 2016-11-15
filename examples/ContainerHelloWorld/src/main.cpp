@@ -6,41 +6,43 @@
 #include <framework/system.hpp>
 
 namespace example {
-	using Container::ContainerApp;
-	using Container::ContainerScene;
-	using namespace zfw;
+    using Container::ContainerApp;
+    using Container::ContainerScene;
+    using namespace zfw;
 
-	class ExampleScene : public ContainerScene {
-	public:
-		ExampleScene(ContainerApp* app) : ContainerScene(app) {}
+    class ExampleScene : public ContainerScene {
+    public:
+        ExampleScene(ContainerApp* app) : ContainerScene(app) {}
 
-		virtual void PreBindDependencies() override {
-			this->SetClearColor(Float4(0.1f, 0.2f, 0.3f, 1.0f));
-			this->InitUI();
+        virtual bool PreBindDependencies() override {
+            this->SetClearColor(Float4(0.1f, 0.2f, 0.3f, 1.0f));
+            this->InitUI();
 
-			auto ui = this->GetUILayer()->GetUIContainer();
+            auto ui = this->GetUILayer()->GetUIContainer();
 
-			auto font = uiThemer->PreregisterFont(nullptr, "path=ContainerAssets/font/DejaVuSans.ttf,size=120");
+            auto font = uiThemer->PreregisterFont(nullptr, "path=ContainerAssets/font/DejaVuSans.ttf,size=120");
 
-			auto layout = new gameui::TableLayout(1);
-			layout->SetColumnGrowable(0, true);
-			layout->SetRowGrowable(0, true);
-			layout->Add(new gameui::StaticText(uiThemer.get(), "Hello World!", font));
-			ui->Add(layout);
-		}
-	};
+            auto layout = new gameui::TableLayout(1);
+            layout->SetColumnGrowable(0, true);
+            layout->SetRowGrowable(0, true);
+            layout->Add(new gameui::StaticText(uiThemer.get(), "Hello World!", font));
+            ui->Add(layout);
 
-	class MyContainerApp : public ContainerApp {
-	public:
-		MyContainerApp() : ContainerApp("ContainerHelloWorld") {
-		}
+            return true;
+        }
+    };
 
-		std::shared_ptr<zfw::IScene> CreateInitialScene() {
-			return std::make_shared<ExampleScene>(this);
-		}
-	};
+    class MyContainerApp : public ContainerApp {
+    public:
+        MyContainerApp() : ContainerApp("ContainerHelloWorld") {
+        }
+
+        std::shared_ptr<zfw::IScene> CreateInitialScene() {
+            return std::make_shared<ExampleScene>(this);
+        }
+    };
 }
 
 int main(int argc, char** argv) {
-	return Container::runContainerApp<example::MyContainerApp>(argc, argv);
+    return Container::runContainerApp<example::MyContainerApp>(argc, argv);
 }
