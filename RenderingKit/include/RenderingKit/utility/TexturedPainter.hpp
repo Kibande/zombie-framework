@@ -82,6 +82,7 @@ namespace RenderingKit
             typedef typename TexturedPainter<PosType, UVType,  ColourType>::VertexType VertexType;
 
             void DrawFilledCuboid(ITexture* texture, const PosType& pos, const PosType& size, const ColourType& colour);
+            void DrawFilledPlane(ITexture* texture, const PosType& pos, const PosType& size, const ColourType& colour);
             void DrawFilledTriangleUV(ITexture* texture, const PosType abc[3], const UVType uv[3], const ColourType colours[3]);
     };
 
@@ -251,6 +252,27 @@ namespace RenderingKit
         vert(pos.x + size.x,    pos.y + size.y, pos.z,         u1, v0, colour);
         vert(pos.x,             pos.y,          pos.z,         u0, v1, colour);
         vert(pos.x + size.x,    pos.y,          pos.z,         u1, v1, colour);
+    }
+
+    template <typename PosType, typename UVType, typename ColourType>
+    void TexturedPainter3D<PosType, UVType, ColourType>::DrawFilledPlane(ITexture* texture, const PosType& pos, const PosType& size, const ColourType& colour)
+    {
+        static const auto u0 = TypeReflection<decltype(std::declval<UVType>().x)>::zero;
+        static const auto v0 = TypeReflection<decltype(std::declval<UVType>().y)>::zero;
+        static const auto u1 = TypeReflection<decltype(std::declval<UVType>().x)>::one;
+        static const auto v1 = TypeReflection<decltype(std::declval<UVType>().y)>::one;
+
+        VertexType* p_vertices = this->rm->template VertexCacheAllocAs<VertexType>(this->vertexFormat.get(),
+                                                                                   this->material.get(), this->SetTexture(texture), RK_TRIANGLES, 2 * 6);
+
+        // top
+        vert(pos.x,             pos.y,          pos.z, u0, v0, colour);
+        vert(pos.x,             pos.y + size.y, pos.z, u0, v1, colour);
+        vert(pos.x + size.x,    pos.y,          pos.z, u1, v0, colour);
+
+        vert(pos.x + size.x,    pos.y,          pos.z, u1, v0, colour);
+        vert(pos.x,             pos.y + size.y, pos.z, u0, v1, colour);
+        vert(pos.x + size.x,    pos.y + size.y, pos.z, u1, v1, colour);
     }
 
     template <typename PosType, typename UVType, typename ColourType>

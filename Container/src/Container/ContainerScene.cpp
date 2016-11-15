@@ -1,6 +1,7 @@
 #include <Container/ContainerApp.hpp>
 #include <Container/ContainerScene.hpp>
 
+#include <framework/entityworld.hpp>
 #include <framework/event.hpp>
 #include <framework/messagequeue.hpp>
 
@@ -27,6 +28,15 @@ namespace Container {
 				screenSpaceLayer->DrawContents();
 				return;
 			}
+
+            auto a3dLayer = dynamic_cast<SceneLayer3D*>(layer);
+
+            if (a3dLayer) {
+                rm->SetCamera(a3dLayer->GetCamera());
+                rm->SetRenderState(RenderingKit::RK_DEPTH_TEST, 1);
+                a3dLayer->DrawContents();
+                return;
+            }
 		}
 
 	private:
@@ -63,7 +73,8 @@ namespace Container {
 	}
 
 	bool ContainerScene::Init() {
-		PreBindDependencies();
+		if (!PreBindDependencies())
+			return false;
 
 		if (!AcquireResources())
 			return false;
@@ -75,19 +86,43 @@ namespace Container {
 		auto rk = app->GetRenderingHandler()->GetRenderingKit();
 		auto rm = rk->GetRenderingManager();
 
+        // Resource Manager
 		uiResMgr.reset(app->GetSystem()->CreateResourceManager("uiThemer Resource Manager"));
 		rm->RegisterResourceProviders(uiResMgr.get());
 
-		uiThemer.reset(RenderingKit::CreateRKUIThemer());
+        // UI Themer
+        auto uiThemer = RenderingKit::CreateRKUIThemer();
 		uiThemer->Init(app->GetSystem(), rk, uiResMgr.get());
 		uiThemer->PreregisterFont(nullptr, "path=ContainerAssets/font/DejaVuSans.ttf,size=12");
+        this->uiThemer.reset(uiThemer);
 
+        // Scene Layer
 		auto layer = std::make_unique<SceneLayerGameUI>(app->GetSystem());
 		sceneLayerUI = layer.get();
 		sceneStack.PushLayer(std::move(layer));
 
 		sceneLayerUI->GetUIContainer()->SetArea(zfw::Int3(0, 0, 0), rm->GetViewportSize());
 	}
+
+    void ContainerScene::InitWorld() {
+        auto rk = app->GetRenderingHandler()->GetRenderingKit();
+        auto rm = rk->GetRenderingManager();
+        auto sys = app->GetSystem();
+
+        // Resource Manager
+        worldResMgr.reset(app->GetSystem()->CreateResourceManager("3D World Resource Manager"));
+        rm->RegisterResourceProviders(worldResMgr.get());
+
+        // Entity World
+        world = std::make_unique<zfw::EntityWorld>(sys);
+
+        // Scene Layer
+        auto layer = std::make_unique<SceneLayer3D>();
+        sceneLayerWorld = layer.get();
+        sceneStack.PushLayer(std::move(layer));
+
+        sceneLayerWorld->Add(std::make_unique<SceneNodeEntityWorld>(world.get()));
+    }
 
 	void ContainerScene::OnFrame(double delta) {
 		zfw::MessageHeader* msg;

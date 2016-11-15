@@ -44,8 +44,24 @@ namespace Container {
 		virtual void Walk(SceneNodeVisitor* visitor) {}
 	};
 
+    class SceneNodeEntityWorld : public SceneNode {
+    public:
+        SceneNodeEntityWorld(zfw::EntityWorld* world) : world(world) {}
+
+        void Draw(zfw::UUID_t* modeOrNull);
+
+    private:
+        zfw::EntityWorld* world;
+    };
+
 	class SceneNodeGroup : public SceneNode {
 	public:
+        void Add(std::unique_ptr<SceneNode>&& node) { contents.push_back(std::move(node)); }
+
+        virtual void Walk(SceneNodeVisitor* visitor) override;
+
+    private:
+        std::vector<std::unique_ptr<SceneNode>> contents;
 	};
 
 	class SceneLayer {
@@ -72,6 +88,12 @@ namespace Container {
 	};
 
 	class SceneLayer3D : public SceneLayer {
+	public:
+        void Add(std::unique_ptr<SceneNode>&& node) { root.Add(std::move(node)); }
+		void DrawContents();
+        RenderingKit::ICamera* GetCamera() { return camera.get(); }
+        void SetCamera(std::shared_ptr<RenderingKit::ICamera>&& camera) { this->camera = std::move(camera); }
+
 	private:
 		std::shared_ptr<RenderingKit::ICamera> camera;
 		SceneNodeGroup root;

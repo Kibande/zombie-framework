@@ -268,6 +268,10 @@ namespace RenderingKit
             virtual void SetView(const Float3& eye, const Float3& center, const Float3& up) = 0;
             virtual void SetView2(const Float3& center, const float eyeDistance, float yaw, float pitch) = 0;
 
+            virtual void SetViewWithCenterDistanceYawPitch(const Float3& center, const float eyeDistance, float yaw, float pitch) {
+                SetView2(center, eyeDistance, yaw, pitch);
+            }
+
             Float3 GetDirection() { return glm::normalize(GetCenter() - GetEye()); }
     };
 
