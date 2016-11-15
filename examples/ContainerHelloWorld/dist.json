@@ -1,0 +1,6 @@
+{
+	"project_name": "ContainerHelloWorld",
+	"project_url": "https://github.com/minexew/zombie-framework/blob/master/examples/ContainerHelloWorld/src/main.cpp",
+
+	"common_assets_path": "../../web"
+}
