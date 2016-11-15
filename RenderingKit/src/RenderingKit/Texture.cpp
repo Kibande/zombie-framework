@@ -266,11 +266,17 @@ namespace RenderingKit
 
         const uint8_t* flipped = p_Flip(p_data, size.x, linesRemaining, Bpp, linesReady);
 
+#ifdef RENDERING_KIT_USING_OPENGL_ES
+		const auto fmt = format;
+#else
+		const auto fmt = GL_RGBA8;
+#endif
+
         if (linesRemaining == 0)
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, format, GL_UNSIGNED_BYTE, flipped );
+            glTexImage2D( GL_TEXTURE_2D, 0, fmt, size.x, size.y, 0, format, GL_UNSIGNED_BYTE, flipped );
         else
         {
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, format, GL_UNSIGNED_BYTE, NULL );
+            glTexImage2D( GL_TEXTURE_2D, 0, fmt, size.x, size.y, 0, format, GL_UNSIGNED_BYTE, NULL );
             glTexSubImage2D( GL_TEXTURE_2D, 0, 0, linesRemaining, size.x, linesReady,format, GL_UNSIGNED_BYTE, flipped );
         }
 

@@ -87,14 +87,8 @@ if (NOT EMSCRIPTEN)
     endif()
 
     if (SDL2_DLL)
-    	if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    		set(DLL_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-    	else()
-    		set(DLL_DIR ${CMAKE_BINARY_DIR}/$<CONFIG>)
-    	endif()
-
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" ${DLL_DIR})
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
     endif()
 
     find_package(SDL2 REQUIRED)
@@ -105,4 +99,4 @@ endif()
 
 # Export Assets
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR})
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
