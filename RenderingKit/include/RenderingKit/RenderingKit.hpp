@@ -84,8 +84,6 @@ namespace RenderingKit
     {
         RK_LINES,
         RK_TRIANGLES,
-        RK_QUADS_DEPRECATED,
-        //RK_MAX_PRIMITIVE_TYPE
     };
 
     enum RKRenderStateEnum_t

@@ -53,11 +53,7 @@ namespace RenderingKit
     class RenderingKit;
 
     enum State { ST_GL_BLEND, ST_GL_DEPTH_TEST, ST_MAX };
-    enum ClientState { CL_GL_COLOR_ARRAY, CL_GL_NORMAL_ARRAY, CL_GL_TEXTURE_COORD_ARRAY, CL_GL_VERTEX_ARRAY, CL_MAX };
     enum { MAX_TEX = 8 };
-
-	// TODO: verify that this can be safely obliterated
-    enum { usingCoreProfile = 1 };
 
     enum RKTextureFormat_t
     {
@@ -87,8 +83,6 @@ namespace RenderingKit
             static void ClearStats();
             static void InvalidateTexture(GLuint handle);
             static void SetActiveTexture(int unit);
-            static void SetClientState(ClientState state, bool enabled);
-            static void SetEnabledTextureUnits(unsigned int first, unsigned int count);
             static void SetState(State state, bool enabled);
             static void UseProgram(GLuint handle);
     };
@@ -145,7 +139,7 @@ namespace RenderingKit
     class IGLVertexCache
     {
         public:
-            virtual void Release() = 0;
+			virtual ~IGLVertexCache() {}
 
             virtual void* Alloc(IVertexCacheOwner* owner, size_t sizeInBytes) = 0;
             virtual void Flush() = 0;

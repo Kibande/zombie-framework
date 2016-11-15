@@ -38,13 +38,6 @@ namespace RenderingKit
 
     void GLVertexFormat::Cleanup()
     {
-        if (!usingCoreProfile)
-        {
-            for (unsigned int i = 0; i < numAttribs; i++)
-            {
-                glDisableVertexAttribArray(attribs[i].location);
-            }
-        }
     }
 
     void GLVertexFormat::Compile(IShader* program, uint32_t vertexSize, const VertexAttrib_t* attributes, bool groupedByAttrib)
@@ -59,64 +52,23 @@ namespace RenderingKit
 
         numAttribs = 0;
 
-        if (usingCoreProfile)
+        ZFW_ASSERT(program != nullptr)
+
+        for ( ; attributes->name != nullptr; attributes++)
         {
-            ZFW_ASSERT(program != nullptr)
+            GLVertexAttrib_t attrib;
 
-            for ( ; attributes->name != nullptr; attributes++)
-            {
-                GLVertexAttrib_t attrib;
+            attrib.location = static_cast<IGLShaderProgram*>(program)->GLGetAttribLocation(attributes->name);
+            //printf("%s] %s -> %i\n", program->GetName(), attributes->name, (int) attrib.location);
 
-                attrib.location = static_cast<IGLShaderProgram*>(program)->GLGetAttribLocation(attributes->name);
-                //printf("%s] %s -> %i\n", program->GetName(), attributes->name, (int) attrib.location);
+            if (attrib.location == -1)
+                continue;
 
-                if (attrib.location == -1)
-                    continue;
+            attrib.offset = attributes->offset;
+            GetOpenGLDataType(attributes->datatype, attrib.type, attrib.components, attrib.sizeInBytes);
+            attrib.flags = attributes->flags;
 
-                attrib.offset = attributes->offset;
-                GetOpenGLDataType(attributes->datatype, attrib.type, attrib.components, attrib.sizeInBytes);
-                attrib.flags = attributes->flags;
-
-                attribs[numAttribs++] = attrib;
-            }
-        }
-        else
-        {
-            for ( ; attributes->name != nullptr; attributes++)
-            {
-                GLVertexAttrib_t attrib;
-
-                if (strcmp(attributes->name, "in_Position") == 0)
-                    attrib.location = kBuiltinPosition;
-                else if (strcmp(attributes->name, "in_Normal") == 0)
-                    attrib.location = kBuiltinNormal;
-                else if (strcmp(attributes->name, "in_UV") == 0)
-                    attrib.location = kBuiltinUV;
-                else if (strcmp(attributes->name, "in_Color") == 0)
-                    attrib.location = kBuiltinColor;
-                else if (program != nullptr)
-                    attrib.location = static_cast<IGLShaderProgram*>(program)->GLGetAttribLocation(attributes->name);
-                else
-                    attrib.location = -1;
-
-                if (attrib.location == -1)
-                    continue;
-
-                attrib.offset = attributes->offset;
-                GetOpenGLDataType(attributes->datatype, attrib.type, attrib.components, attrib.sizeInBytes);
-                attrib.flags = attributes->flags;
-
-                if (attrib.location == kBuiltinPosition)
-                    pos = attrib;
-                else if (attrib.location == kBuiltinNormal)
-                    normal = attrib;
-                else if (attrib.location == kBuiltinUV)
-                    uv0 = attrib;
-                else if (attrib.location == kBuiltinColor)
-                    colour = attrib;
-                else
-                    attribs[numAttribs++] = attrib;
-            }
+            attribs[numAttribs++] = attrib;
         }
     }
 
@@ -191,42 +143,18 @@ namespace RenderingKit
     {
         ZFW_ASSERT(!groupedByAttrib)
 
-        if (!usingCoreProfile)
+        if (vboBinding.vao == 0)
         {
-            const bool haveColour = (colour.location != -1) && !(fpMaterialFlags & kFPMaterialIgnoreVertexColour);
-
-            GLStateTracker::SetClientState(CL_GL_VERTEX_ARRAY, pos.location != -1);
-            GLStateTracker::SetClientState(CL_GL_NORMAL_ARRAY, normal.location != -1);
-            GLStateTracker::SetClientState(CL_GL_TEXTURE_COORD_ARRAY, uv0.location != -1);
-            GLStateTracker::SetClientState(CL_GL_COLOR_ARRAY, haveColour);
-
-            if (pos.location != -1)
-                glVertexPointer(pos.components, pos.type, vertexSize, reinterpret_cast<void*>(pos.offset));
-
-            if (normal.location != -1)
-                glNormalPointer(normal.type, vertexSize, reinterpret_cast<void*>(normal.offset));
-
-            if (uv0.location != -1)
-                glTexCoordPointer(uv0.components, uv0.type, vertexSize, reinterpret_cast<void*>(uv0.offset));
-
-            if (haveColour)
-                glColorPointer(colour.components, colour.type, vertexSize, reinterpret_cast<void*>(colour.offset));
+            ZFW_ASSERT(InitializeVao(&vboBinding.vao));
+            vboBinding.vbo = vbo;
         }
         else
         {
-            if (vboBinding.vao == 0)
-            {
-                ZFW_ASSERT(InitializeVao(&vboBinding.vao));
-                vboBinding.vbo = vbo;
-            }
-            else
-            {
-                // Yes, we know this is broken.
-                ZFW_ASSERT(vboBinding.vbo == vbo);
-            }
-
-            glBindVertexArray(vboBinding.vao);
+            // Yes, we know this is broken.
+            ZFW_ASSERT(vboBinding.vbo == vbo);
         }
+
+        glBindVertexArray(vboBinding.vao);
 
         ZFW_ASSERT(glGetError() == GL_NO_ERROR);
     }

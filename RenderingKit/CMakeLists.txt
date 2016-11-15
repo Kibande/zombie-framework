@@ -7,7 +7,7 @@ set(library ${PROJECT_NAME})
 set(RENDERING_KIT_USE_OPENGL_ES_SUBSET OFF CACHE BOOL "Use OpenGL ES-compatible subset")
 
 if (RENDERING_KIT_USE_OPENGL_ES_SUBSET OR EMSCRIPTEN)
-	set(USING_OPENGL_ES ON)
+    set(USING_OPENGL_ES ON)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -19,17 +19,13 @@ endif()
 # Also add headers so that they're included in generated projects
 file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/RenderingKit/*.cpp
-	${PROJECT_SOURCE_DIR}/src/RenderingKit/*.hpp
+    ${PROJECT_SOURCE_DIR}/src/RenderingKit/*.hpp
     ${PROJECT_SOURCE_DIR}/src/RenderingKit/gameui/*.cpp
 
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/*.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/gameui/*.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/utility/*.hpp
 )
-
-if (ZOMBIE_API_VERSION GREATER_EQUAL 201601)
-	list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/FixedPipelineMaterial.cpp)
-endif()
 
 if (USING_OPENGL_ES)
 	list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/DeferredShadingManager.cpp)
@@ -47,7 +43,7 @@ target_compile_definitions(${library} PUBLIC -DRENDERING_KIT_STATIC=1)
 target_compile_definitions(${library} PRIVATE -DGLEW_STATIC=1)
 
 if (USING_OPENGL_ES)
-	target_compile_definitions(${library} PUBLIC RENDERING_KIT_USING_OPENGL_ES)
+    target_compile_definitions(${library} PUBLIC RENDERING_KIT_USING_OPENGL_ES)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC

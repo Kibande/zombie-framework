@@ -27,8 +27,6 @@ namespace RenderingKit
         public:
             GLVertexCache(size_t initSize);
 
-            virtual void Release() override { delete this; }
-
             virtual void* Alloc(IVertexCacheOwner* owner, size_t sizeInBytes) override;
             virtual void Flush() override;
 

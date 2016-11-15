@@ -263,19 +263,7 @@ namespace RenderingKit
         return p_CreateFontFace(eb, rk, this, name);
     }
 
-#if ZOMBIE_API_VERSION < 201601
-    shared_ptr<IFPMaterial> RenderingManager::CreateFPMaterial(const char* name, int flags)
-    {
-        if (usingCoreProfile)
-            return ErrorBuffer::SetError2(eb, EX_FEATURE_DISABLED, 2,
-                    "desc", "Fixed-pipeline materials are not available in Core Profile mode."
-                    ), nullptr;
-        else
-            return p_CreateFPMaterial(eb, rk, this, name, flags);
-    }
-#endif
-
-    shared_ptr<IGeomBuffer> RenderingManager::CreateGeomBuffer(const char* name)
+	shared_ptr<IGeomBuffer> RenderingManager::CreateGeomBuffer(const char* name)
     {
         return p_CreateGeomBuffer(eb, rk, this, name);
     }
@@ -587,9 +575,6 @@ namespace RenderingKit
 
     void RenderingManager::DrawPrimitives(IMaterial* material, RKPrimitiveType_t primitiveType, IGeomChunk* gc)
     {
-        if (usingCoreProfile)
-            zombie_assert(primitiveType != RK_QUADS_DEPRECATED);
-
         vertexCache.cache->Flush();
 
         p_DrawChunk(this, gc, static_cast<IGLMaterial*>(material), primitiveTypeToGLMode[primitiveType]);
@@ -851,15 +836,6 @@ namespace RenderingKit
 
         framebufferSize = windowSize;
         SetViewportPosAndSize(Int2(), framebufferSize);
-        CheckErrors(li_functionName);
-        if (!usingCoreProfile)
-        {
-            glMatrixMode(GL_TEXTURE);
-            glTranslatef(0.0f, 1.0f, 0.0f);
-            glScalef(1.0f, -1.0f, 1.0f);
-            glMatrixMode(GL_MODELVIEW);
-        }
-
         CheckErrors(li_functionName);
         return true;
     }

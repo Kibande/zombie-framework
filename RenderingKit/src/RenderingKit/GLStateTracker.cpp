@@ -4,29 +4,23 @@
 namespace RenderingKit
 {
     static const GLenum StateMapping[ST_MAX] = { GL_BLEND, GL_DEPTH_TEST };
-    static const GLenum ClientStateMapping[CL_MAX] = { GL_COLOR_ARRAY, GL_NORMAL_ARRAY, GL_TEXTURE_COORD_ARRAY, GL_VERTEX_ARRAY };
 
-    int numMaterialSetups, numTextureBinds, numVboBinds, numDrawCalls, numVFSetups;
+    int numTextureBinds, numVboBinds, numDrawCalls;
 
-    static unsigned int activeTexture, firstEnabledTex, numEnabledTex;
+    static unsigned int activeTexture;
     static GLuint currentProgram, currentTex[MAX_TEX], currentIBO, currentVBO;
     static GLVertexFormat* currentVF;
-    static IGLMaterial* currentMat;
-    static bool clEnabled[CL_MAX], stEnabled[ST_MAX];
+    static bool stEnabled[ST_MAX];
 
     void GLStateTracker::Init()
     {
         activeTexture = 0;
-        firstEnabledTex = 0;
-        numEnabledTex = 0;
 
         currentIBO = 0;
         currentProgram = 0;
         memset(currentTex, 0, sizeof(currentTex));
         currentVBO = 0;
         currentVF = nullptr;
-        currentMat = nullptr;
-        memset(clEnabled, 0, sizeof(clEnabled));
         memset(stEnabled, 0, sizeof(stEnabled));
     }
 
@@ -67,7 +61,6 @@ namespace RenderingKit
 
     void GLStateTracker::ClearStats()
     {
-        numMaterialSetups = 0;
         numTextureBinds = 0;
         numVboBinds = 0;
         numDrawCalls = 0;
@@ -87,46 +80,6 @@ namespace RenderingKit
 
         glActiveTexture(GL_TEXTURE0 + unit);
         activeTexture = unit;
-    }
-
-    void GLStateTracker::SetClientState(ClientState state, bool enabled)
-    {
-        if (clEnabled[state] == enabled)
-            return;
-
-        if (enabled)
-            glEnableClientState(ClientStateMapping[state]);
-        else
-            glDisableClientState(ClientStateMapping[state]);
-
-        clEnabled[state] = enabled;
-    }
-
-    void GLStateTracker::SetEnabledTextureUnits(unsigned int first, unsigned int count)
-    {
-        if (first == firstEnabledTex && count == numEnabledTex)
-            return;
-
-        for (unsigned int i = firstEnabledTex; i < firstEnabledTex + numEnabledTex && i < first; i++)
-        {
-            SetActiveTexture(i);
-            glDisable(GL_TEXTURE_2D);
-        }
-
-        for (unsigned int i = first; i < first + count; i++)
-        {
-            SetActiveTexture(i);
-            glEnable(GL_TEXTURE_2D);
-        }
-
-        for (unsigned int i = first + count; i < firstEnabledTex + numEnabledTex; i++)
-        {
-            SetActiveTexture(i);
-            glDisable(GL_TEXTURE_2D);
-        }
-
-        firstEnabledTex = first;
-        numEnabledTex = count;
     }
 
     void GLStateTracker::SetState(State state, bool enabled)
