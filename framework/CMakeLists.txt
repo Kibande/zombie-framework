@@ -30,6 +30,7 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/include/framework/*.hpp
     ${PROJECT_SOURCE_DIR}/include/framework/utility/*.hpp
     ${PROJECT_SOURCE_DIR}/include/gameui/*.hpp
+    ${PROJECT_SOURCE_DIR}/include/zshared/*.hpp
     ${PROJECT_SOURCE_DIR}/include/ztype/*.hpp
 )
 

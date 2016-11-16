@@ -166,6 +166,8 @@ namespace zfw
 
             virtual void            AssertionFail(const char* expr, const char* functionName, const char* file,
                 int line, bool isDebugAssertion) override;
+            virtual void            AssertionFailResourceState(const char* resourceName, int actualState, int expectedState,
+                                                               const char* functionName, const char* file, int line) override;
             virtual void            ErrorAbort() override;
             virtual ErrorBuffer_t*  GetErrorBuffer() override { return s_eb; }
 
@@ -407,6 +409,22 @@ namespace zfw
                 "function", functionName,
                 "file",     file,
                 "line",     sprintf_15("%i", line)
+        );
+
+        g_essentials->ErrorAbort();
+    }
+
+    void System::AssertionFailResourceState(const char* resourceName, int actualState, int expectedState,
+                                            const char* functionName, const char* file, int line) {
+        const char* resourceStateNames[] = { "CREATED", "BOUND", "PRELOADED", "REALIZED", "RELEASED" };
+
+        ErrorBuffer::SetError2(g_essentials->GetErrorBuffer(),
+                               zfw::EX_ASSERTION_FAILED, 4,
+                               "desc",     sprintf_4095("Failed assertion: Invalid resource state for `%s` - expected `%s`, is `%s`",
+                                                        resourceName, resourceStateNames[expectedState], resourceStateNames[actualState]),
+                               "function", functionName,
+                               "file",     file,
+                               "line",     sprintf_15("%i", line)
         );
 
         g_essentials->ErrorAbort();

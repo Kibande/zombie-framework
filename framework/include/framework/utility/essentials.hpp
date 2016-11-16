@@ -12,6 +12,11 @@
         zfw::g_essentials->AssertionFail(#expr_, li_functionName, __FILE__, __LINE__, false);\
 } while (false)
 
+#define zombie_assert_resource_state(expected_, name_) do {\
+    if (this->state != (expected_))\
+        zfw::g_essentials->AssertionFailResourceState(name_, (int) this->state, (int) expected_, li_functionName, __FILE__, __LINE__);\
+} while (false)
+
 #ifdef _DEBUG
 #define ZFW_DBGASSERT(expr_) if (!(expr_))\
 {\
@@ -35,6 +40,10 @@ namespace zfw
         public:
             virtual void            AssertionFail(const char* expr, const char* functionName, const char* file,
                     int line, bool isDebugAssertion) = 0;
+
+            virtual void            AssertionFailResourceState(const char* resourceName, int actualState, int expectedState,
+                                                               const char* functionName, const char* file, int line) = 0;
+
             virtual void            ErrorAbort() = 0;
             virtual ErrorBuffer_t*  GetErrorBuffer() = 0;
 

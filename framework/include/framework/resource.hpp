@@ -43,28 +43,71 @@ namespace zfw
                     return true;
 
                 if (targetState == BOUND) {
-                    if (!res->BindDependencies(resMgr))
-                        return false;
+                    if (res->state == REALIZED) {
+                        res->Unrealize();
+                        res->state = PRELOADED;
+                    }
 
-                    res->Unload();
-                    res->Unrealize();
+                    if (res->state == PRELOADED) {
+                        res->Unload();
+                        res->state = BOUND;
+                    }
+
+                    if (res->state != BOUND) {
+                        if (!res->BindDependencies(resMgr))
+                            return false;
+
+                        res->state = BOUND;
+                    }
                 }
                 else if (targetState == PRELOADED) {
-                    if (!res->BindDependencies(resMgr) || !res->Preload(resMgr))
-                        return false;
+                    if (res->state == REALIZED) {
+                        res->Unrealize();
+                        res->state = PRELOADED;
+                    }
 
-                    res->Unrealize();
+                    if (res->state == CREATED) {
+                        if (!res->BindDependencies(resMgr))
+                            return false;
+
+                        res->state = BOUND;
+                    }
+
+                    if (res->state == BOUND) {
+                        if (!res->Preload(resMgr))
+                            return false;
+
+                        res->state = PRELOADED;
+                    }
                 }
                 else if (targetState == REALIZED) {
-                    if (!res->BindDependencies(resMgr) || !res->Preload(resMgr) || !res->Realize(resMgr))
-                        return false;
+                    if (res->state == CREATED) {
+                        if (!res->BindDependencies(resMgr))
+                            return false;
+
+                        res->state = BOUND;
+                    }
+
+                    if (res->state == BOUND) {
+                        if (!res->Preload(resMgr))
+                            return false;
+
+                        res->state = PRELOADED;
+                    }
+
+                    if (res->state == PRELOADED) {
+                        if (!res->Realize(resMgr))
+                            return false;
+
+                        res->state = REALIZED;
+                    }
                 }
                 else if (targetState == RELEASED) {
                     res->Unload();
                     res->Unrealize();
+                    res->state = RELEASED;
                 }
 
-                res->state = targetState;
                 return true;
             }
     };
