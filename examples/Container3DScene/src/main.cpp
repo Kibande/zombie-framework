@@ -16,12 +16,12 @@ namespace example {
 
     // TODO: Get rid of these
     static RenderingKit::TexturedPainter3D<> s_tp;
-    static IResourceManager* s_worldRes;
+    static IResourceManager2* s_worldRes;
 
     class Floor : public PointEntityBase {
     public:
         virtual bool Init() override {
-            ErrorCheck(tex = s_worldRes->GetResourceByPath<RenderingKit::ITexture>("media/texture/floor.jpg", RESOURCE_REQUIRED, 0));
+            s_worldRes->ResourceByPath<RenderingKit::ITexture>(&tex, "media/texture/floor.jpg");
 
             return true;
         }
@@ -29,23 +29,23 @@ namespace example {
         virtual void Draw(const UUID_t* modeOrNull) override {
             if (modeOrNull == nullptr) {
                 const Float3 size(10.0f, 10.0f, 0.0f);
-                s_tp.DrawFilledPlane(tex.get(), pos - size * 0.5f, size, RGBA_WHITE);
+                s_tp.DrawFilledPlane(tex, pos - size * 0.5f, size, RGBA_WHITE);
             }
         }
 
     private:
-        shared_ptr<RenderingKit::ITexture> tex;
+        RenderingKit::ITexture* tex;
     };
 
     class ExampleScene : public ContainerScene {
     public:
-        ExampleScene(ContainerApp* app) : ContainerScene(app) {}
+        ExampleScene(ContainerApp* app) : ContainerScene(app, kUseWorld) {}
 
         virtual bool PreBindDependencies() override {
             this->SetClearColor(Float4(0.1f, 0.2f, 0.3f, 1.0f));
 
-            InitWorld();
-            s_worldRes = worldResMgr.get();
+            // TODO: nicer way to pass this in
+            s_worldRes = this->worldResMgr.get();
 
             auto rm = app->GetRenderingHandler()->GetRenderingKit()->GetRenderingManager();
             ErrorCheck(s_tp.Init(rm));

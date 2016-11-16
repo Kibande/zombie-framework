@@ -17,7 +17,7 @@ namespace Container {
 	}
 
 	std::shared_ptr<zfw::IScene> ContainerApp::CreateInitialScene() {
-		return std::make_shared<ContainerScene>(this);
+		return std::make_shared<ContainerScene>(this, 0);
 	}
 
 	std::unique_ptr<IRenderingHandler> ContainerApp::CreateRenderingHandler() {

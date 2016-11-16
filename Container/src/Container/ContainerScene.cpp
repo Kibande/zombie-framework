@@ -44,16 +44,16 @@ namespace Container {
 	};
 
 	bool ContainerScene::AcquireResources() {
-		/*PreSceneLoad();
-
-		PostSceneLoad();*/
-
 		if (sceneLayerUI) {
 			if (!uiThemer->AcquireResources())
 				return false;
 
 			auto ui = sceneLayerUI->GetUIContainer();
 			ui->AcquireResources();
+		}
+
+		if (worldResMgr) {
+			ErrorCheck(worldResMgr->MakeAllResourcesState(zfw::IResource2::REALIZED, true));
 		}
 
 		return true;
@@ -73,16 +73,33 @@ namespace Container {
 	}
 
 	bool ContainerScene::Init() {
+		if (options & kUseUI)
+			InitGameUI();
+
+		if (options & kUseWorld)
+			InitWorld();
+
+		// BindDependencies step
 		if (!PreBindDependencies())
 			return false;
 
+        if (worldResMgr) {
+            ErrorCheck(worldResMgr->MakeAllResourcesState(zfw::IResource2::BOUND, true));
+        }
+
+		// Preload step
+        if (worldResMgr) {
+            ErrorCheck(worldResMgr->MakeAllResourcesState(zfw::IResource2::PRELOADED, true));
+        }
+
+		// Realize step
 		if (!AcquireResources())
 			return false;
 
 		return true;
 	}
 
-	void ContainerScene::InitUI() {
+	void ContainerScene::InitGameUI() {
 		auto rk = app->GetRenderingHandler()->GetRenderingKit();
 		auto rm = rk->GetRenderingManager();
 
@@ -110,7 +127,7 @@ namespace Container {
         auto sys = app->GetSystem();
 
         // Resource Manager
-        worldResMgr.reset(app->GetSystem()->CreateResourceManager("3D World Resource Manager"));
+        worldResMgr.reset(app->GetSystem()->CreateResourceManager2());
         rm->RegisterResourceProviders(worldResMgr.get());
 
         // Entity World

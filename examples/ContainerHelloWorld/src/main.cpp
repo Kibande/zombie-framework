@@ -12,11 +12,10 @@ namespace example {
 
     class ExampleScene : public ContainerScene {
     public:
-        ExampleScene(ContainerApp* app) : ContainerScene(app) {}
+        ExampleScene(ContainerApp* app) : ContainerScene(app, kUseUI) {}
 
         virtual bool PreBindDependencies() override {
             this->SetClearColor(Float4(0.1f, 0.2f, 0.3f, 1.0f));
-            this->InitUI();
 
             auto ui = this->GetUILayer()->GetUIContainer();
 

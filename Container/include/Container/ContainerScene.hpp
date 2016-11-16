@@ -4,6 +4,7 @@
 #include <Container/SceneLayerGameUI.hpp>
 
 #include <framework/resourcemanager.hpp>
+#include <framework/resourcemanager2.hpp>
 #include <framework/scene.hpp>
 
 #define CONTAINER_WITH_RENDERING_KIT
@@ -20,26 +21,21 @@
 	<dependency injection takes place>
 
 	Init()
-		BindDependencies()
-			PreBindDependencies()
+        InitGameUI()
+        InitWorld()
 
-			resMgr->MakeAllResourcesState(BOUND)
-
-			PostBindDependencies()
+        PreBindDependencies()
+        all resources -> BindDependencies()
+        PostBindDependencies()
 
 		Preload()
-			PrePreload()
-
-			resMgr->MakeAllResourcesState(PRELOADED)
-
-			PostPreload()
+        all resources -> Preload()
+        PostPreload()
 
 	AcquireResources()
-		PreSceneLoad()
-
-		resMgr->MakeAllResourcesState(REALIZED)
-
-		PostSceneLoad()
+		PreRealize()
+		all resources -> Realize()
+		PostRealize()
 */
 
 namespace Container {
@@ -47,7 +43,10 @@ namespace Container {
 
 	class ContainerScene : public zfw::IScene {
 	public:
-		ContainerScene(ContainerApp* app) : app(app) {}
+        enum { kUseUI = 1 };
+        enum { kUseWorld = 2 };
+
+		ContainerScene(ContainerApp* app, int options) : app(app), options(options) {}
 
 		virtual bool Init() override;
 		virtual void Shutdown() override;
@@ -71,9 +70,9 @@ namespace Container {
         virtual void SetWorldCamera(std::shared_ptr<RenderingKit::ICamera>&& cam) { sceneLayerWorld->SetCamera(std::move(cam)); }
 #endif
 
-        // Scene Layer: UI
+        // Scene Layer: GameUI
 
-		virtual void InitUI();
+		virtual void InitGameUI();
         virtual SceneLayerGameUI* GetUILayer() { return sceneLayerUI; }
 
         // Resource Management
@@ -88,6 +87,7 @@ namespace Container {
 
 	protected:
 		ContainerApp* app;
+        int options;
 
 		SceneStack sceneStack;
 
@@ -96,7 +96,7 @@ namespace Container {
 #ifdef CONTAINER_WITH_RENDERING_KIT
         // 3D - should be encapsulated
         SceneLayer3D* sceneLayerWorld = nullptr;
-        std::unique_ptr<zfw::IResourceManager> worldResMgr;
+        std::unique_ptr<zfw::IResourceManager2> worldResMgr;
         std::unique_ptr<zfw::EntityWorld> world;
 #endif
 
