@@ -1,11 +1,11 @@
 
 #include <framework/errorbuffer.hpp>
-#include <framework/framework.hpp>
 #include <framework/module.hpp>
 #include <framework/modulehandler.hpp>
 
 #include <littl/HashMap.hpp>
 #include <littl/Library.hpp>
+#include <littl/String.hpp>
 
 namespace zfw
 {

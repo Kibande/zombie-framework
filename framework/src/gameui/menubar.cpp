@@ -2,7 +2,6 @@
 #include <gameui/gameui.hpp>
 
 #include <framework/event.hpp>
-#include <framework/framework.hpp>
 #include <framework/videohandler.hpp>
 
 // FIXME: minimize relayouting

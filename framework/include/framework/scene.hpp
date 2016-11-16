@@ -1,10 +1,6 @@
 #pragma once
 
-#include <framework/framework.hpp>
-
-#ifdef ZOMBIE_USE_RENDERING_KIT
-#include <RenderingKit/RenderingKit.hpp>
-#endif
+#include <framework/datamodel.hpp>
 
 namespace zfw
 {

@@ -2,6 +2,8 @@
 
 #include <framework/entity.hpp>
 
+#include <littl/List.hpp>
+
 namespace zfw
 {
     class EntityWorld
@@ -13,7 +15,6 @@ namespace zfw
             void AddEntityFilter(IEntityFilter* filter);
             void Draw(const UUID_t* modeOrNull);
             IEntity* GetEntityByID(int entID);
-            auto GetEntityList() -> li::List<shared_ptr<IEntity>>& { return entities; }
             size_t GetNumEntities() const { return entities.getLength(); }
             void OnFrame(double delta);
             void OnTick();
@@ -21,8 +22,13 @@ namespace zfw
             void RemoveEntity(IEntity* ent);
             void RemoveEntity(shared_ptr<IEntity> ent) { RemoveEntity(ent.get()); }
             void RemoveEntityFilter(IEntityFilter* filter);
-            bool Serialize(OutputStream* output, int flags);
-            bool Unserialize(InputStream* input, int flags);
+			bool Serialize(OutputStream* output, int flags);
+			bool Unserialize(InputStream* input, int flags);
+
+#if ZOMBIE_API_VERSION < 201601
+            // When this is removed, also remove li::List dependency
+            auto GetEntityList() -> li::List<shared_ptr<IEntity>>& { return entities; }
+#endif
 
         protected:
             ISystem* sys;
@@ -32,7 +38,5 @@ namespace zfw
 
         private:
             EntityWorld(const EntityWorld&) = delete;
-
-        //friend class StageLayerWorld;
     };
 }

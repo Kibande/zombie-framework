@@ -54,13 +54,6 @@
 #define ZOMBIE_BUILDTYPENAME "RELEASE"
 #endif
 
-// Some helper macros to make life easier
-#ifdef _MSC_VER
-#define zombie_novtable __declspec(novtable)
-#else
-#define zombie_novtable
-#endif
-
 // MessageQueue helper
 #define DECL_MESSAGE(struct_,type_) struct struct_ : public zfw::MessageStruct<type_>
 
@@ -75,9 +68,6 @@ namespace li
 
 namespace zfw
 {
-    // Welcome to Zombie Framework - this is where it begins.
-    // Fasten your seatbelts and have fun kudasai.
-
     using li::InputStream;
     using li::OutputStream;
     using li::IOStream;
@@ -91,7 +81,7 @@ namespace zfw
     using reflection::UUID_t;
 
     // -1   is "self" (not valid for over-the-air messages)
-    // 0    is always the host (???)
+    // 0    is the host (if applicable)
     // 1+   are connected clients
     typedef int32_t ClientId;
 

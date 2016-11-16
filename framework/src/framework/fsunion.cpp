@@ -107,7 +107,7 @@ namespace zfw
             if (it->priority < priority)
                 break;
 
-        fileSystems.emplace(it, FileSystem_t{ move(fs), priority, mountPoint });
+        fileSystems.emplace(it, FileSystem_t{ move(fs), priority, mountPoint ? mountPoint : "" });
     }
 
     int FSUnion::CompareTimestamps(const char* leftPath, const char* rightPath, int64_t* diff_out, int flags)

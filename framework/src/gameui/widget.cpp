@@ -1,8 +1,8 @@
 
 #include <gameui/gameui.hpp>
 
-#include <framework/framework.hpp>
 #include <framework/messagequeue.hpp>
+#include <framework/utility/util.hpp>
 
 namespace gameui
 {

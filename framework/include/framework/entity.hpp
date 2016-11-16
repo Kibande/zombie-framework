@@ -1,7 +1,8 @@
 #pragma once
 
-#include <framework/event.hpp>
-#include <framework/framework.hpp>
+#include <framework/datamodel.hpp>
+
+#include <vector>
 
 struct cfx2_Node;
 
@@ -129,7 +130,7 @@ namespace zfw
     class EntityCollectorByInterface: public IEntityFilter
     {
         protected:
-            li::List<Interface*> entities;
+            std::vector<Interface*> entities;
 
         public:
             auto GetList() -> decltype(entities)& { return entities; }

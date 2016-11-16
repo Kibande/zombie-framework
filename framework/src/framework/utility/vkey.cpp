@@ -4,6 +4,8 @@
 #include <framework/videohandler.hpp>
 #include <framework/utility/essentials.hpp>
 
+#include <littl/String.hpp>
+
 // FIXME: FormatVkey/ParseVkey musn't use numbers for devices
 
 namespace zfw

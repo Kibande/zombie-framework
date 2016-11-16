@@ -1,8 +1,6 @@
 
 #include <gameui/gameui.hpp>
 
-#include <framework/framework.hpp>
-
 namespace gameui
 {
     static const Int2 default_padding(2, 2);

@@ -1,7 +1,7 @@
 
 #include <framework/entityhandler.hpp>
 #include <framework/entityworld.hpp>
-#include <framework/framework.hpp>
+#include <framework/system.hpp>
 
 #include <littl/cfx2.hpp>
 

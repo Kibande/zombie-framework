@@ -1,6 +1,6 @@
 #pragma once
 
-#include <framework/framework.hpp>
+#include <framework/datamodel.hpp>
 
 namespace zfw
 {

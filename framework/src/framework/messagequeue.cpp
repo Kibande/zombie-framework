@@ -1,6 +1,6 @@
 
-#include <framework/framework.hpp>
 #include <framework/messagequeue.hpp>
+#include <framework/utility/essentials.hpp>
 
 #include <littl/Thread.hpp>
 

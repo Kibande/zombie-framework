@@ -1,8 +1,13 @@
 
+#include <framework/system.hpp>
 #include <framework/studio/recentfiles.hpp>
+#include <framework/utility/util.hpp>
 
-#include <framework/framework.hpp>
+#include <littl/List.hpp>
+#include <littl/Stream.hpp>
+#include <littl/String.hpp>
 
+#include <string>
 #include <utility>
 
 namespace zfw

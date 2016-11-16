@@ -1,11 +1,12 @@
 
 #include <framework/errorbuffer.hpp>
-#include <framework/framework.hpp>
 #include <framework/shader_preprocessor.hpp>
+#include <framework/system.hpp>
 
 #include "private.hpp"
 
 #include <littl/FileName.hpp>
+#include <littl/Stream.hpp>
 
 #include <regex>
 

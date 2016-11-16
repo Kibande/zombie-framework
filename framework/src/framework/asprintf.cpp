@@ -1,5 +1,6 @@
 
-#include <framework/framework.hpp>
+#include <framework/base.hpp>
+#include <framework/utility/essentials.hpp>
 
 #include <cstdarg>
 

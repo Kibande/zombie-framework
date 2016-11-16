@@ -1,8 +1,6 @@
 
 #include <gameui/gameui.hpp>
 
-#include <framework/framework.hpp>
-
 namespace gameui
 {
     CheckBox::CheckBox(UIThemer* themer, const char* label, bool checked)

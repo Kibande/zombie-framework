@@ -1,6 +1,9 @@
 
-#include <framework/framework.hpp>
 #include <framework/nativedialogs.hpp>
+
+#include <littl/Allocator.hpp>
+
+#include <windows.h>
 
 // FIXME: Unicode is a must
 

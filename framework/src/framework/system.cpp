@@ -12,6 +12,7 @@
 #include <framework/nativedialogs.hpp>
 #include <framework/profiler.hpp>
 #include <framework/scene.hpp>
+#include <framework/system.hpp>
 #include <framework/timer.hpp>
 #include <framework/varsystem.hpp>
 #include <framework/videohandler.hpp>

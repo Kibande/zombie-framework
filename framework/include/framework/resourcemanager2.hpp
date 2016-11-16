@@ -6,6 +6,8 @@
 #include <framework/utility/errorbuffer.hpp>
 #include <framework/utility/params.hpp>
 
+#include <cstddef>
+
 namespace zfw
 {
     struct ResourceSection_t

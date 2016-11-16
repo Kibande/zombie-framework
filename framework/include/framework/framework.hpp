@@ -1,5 +1,9 @@
 #pragma once
 
+#if ZOMBIE_API_VERSION >= 201601
+#error Do not include <framework/framework.hpp>
+#endif
+
 #include <framework/base.hpp>
 #include <framework/colorconstants.hpp>
 #include <framework/datamodel.hpp>

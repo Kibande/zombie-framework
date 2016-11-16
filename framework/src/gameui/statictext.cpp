@@ -1,8 +1,6 @@
 
 #include <gameui/gameui.hpp>
 
-#include <framework/framework.hpp>
-
 namespace gameui
 {
     StaticText::StaticText(UIThemer* themer, const char* label, size_t font)

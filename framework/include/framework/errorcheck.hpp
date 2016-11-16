@@ -1,7 +1,5 @@
 #pragma once
 
-#include <framework/framework.hpp>
-
 #ifndef ZOMBIE_DEBUG__
 #define zombie_ErrorCheck(expr_) do {\
         if (!(expr_))\
@@ -10,11 +8,6 @@
 #else
 #define zombie_ErrorCheck(expr_) zombie_assert(expr_)
 #endif
-
-#define zombie_ErrorDisplay(eb_, fatal_, expr_) do {\
-        if (!(expr_))\
-            Sys::DisplayError((eb_), (fatal_));\
-    } while(false)
 
 #define zombie_ErrorDisplayPassthru(sys_, eb_, fatal_, expr_) do {\
         if (!(expr_)) {\

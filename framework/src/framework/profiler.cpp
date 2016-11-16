@@ -1,5 +1,4 @@
 
-#include <framework/framework.hpp>
 #include <framework/profiler.hpp>
 
 #include <littl/PerfTiming.hpp>

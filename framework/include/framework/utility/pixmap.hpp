@@ -5,6 +5,9 @@
 #include <framework/system.hpp>
 #include <framework/utility/essentials.hpp>
 
+// FIXME: This shouldn't be here and LoadFromFile shouldn't be inline
+#include <littl/Stream.hpp>
+
 namespace zfw
 {
     class Pixmap

@@ -2,6 +2,10 @@
 #include <framework/base.hpp>
 #include <framework/timer.hpp>
 
+#ifdef li_MSW
+#include <windows.h>
+#endif
+
 #ifdef __li_POSIX
 #include <sys/time.h>
 #endif
