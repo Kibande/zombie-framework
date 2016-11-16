@@ -4,6 +4,8 @@
 #include <framework/utility/essentials.hpp>
 #include <framework/utility/pixmap.hpp>
 
+#include <littl/Stream.hpp>
+
 #include <setjmp.h>
 
 #ifdef ZOMBIE_WINNT

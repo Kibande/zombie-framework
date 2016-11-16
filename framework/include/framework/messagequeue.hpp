@@ -2,6 +2,8 @@
 
 #include <framework/base.hpp>
 
+#include <littl/Stream.hpp>
+
 /*
     A few more or less important notes about MessageQueue:
         - At any given time, NO MORE THAN ONE THREAD should be attempting to call Retrieve.

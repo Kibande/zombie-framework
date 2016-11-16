@@ -4,6 +4,7 @@
 #include <framework/system.hpp>
 
 #include <littl/HashMap.hpp>
+#include <littl/String.hpp>
 
 #include <utility>
 

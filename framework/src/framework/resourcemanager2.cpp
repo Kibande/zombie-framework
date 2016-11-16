@@ -3,6 +3,7 @@
 #include <framework/system.hpp>
 
 #include <littl/List.hpp>
+#include <littl/String.hpp>
 
 #include <unordered_map>
 

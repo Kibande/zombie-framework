@@ -4,7 +4,8 @@
 #include <framework/utility/essentials.hpp>
 #include <framework/utility/pixmap.hpp>
 
-// that's right mate, we're including the cpp here and now
+#include <littl/Stream.hpp>
+
 #define LODEPNG_NO_COMPILE_DISK
 #define LODEPNG_NO_COMPILE_ANCILLARY_CHUNKS
 #define LODEPNG_NO_COMPILE_ERROR_TEXT

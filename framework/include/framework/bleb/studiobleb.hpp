@@ -2,6 +2,8 @@
 
 #include <framework/filesystem.hpp>
 
+#include <littl/String.hpp>
+
 #include <vector>
 
 namespace zfw

@@ -3,6 +3,7 @@
 #include <framework/filesystem.hpp>
 
 #include <utility>
+#include <vector>
 
 // FIXME: SetErrors
 
@@ -17,13 +18,12 @@ namespace zfw
     class DirectoryUnion : public IDirectory
     {
         public:
-            DirectoryUnion(List<IDirectory*>&& directories);
-            ~DirectoryUnion() { iterate2 (i, directories) delete i; }
+            DirectoryUnion(std::vector<unique_ptr<IDirectory>>&& directories);
 
             virtual const char* ReadDir() override;
 
         protected:
-            List<IDirectory*> directories;
+            std::vector<unique_ptr<IDirectory>> directories;
             size_t index;
     };
 
@@ -54,20 +54,19 @@ namespace zfw
             {
                 shared_ptr<IFileSystem> fs;
                 int priority;
-                String mountPoint;
+                std::string mountPoint;
             };
 
             ErrorBuffer_t* eb;
 
-            List<FileSystem_t, size_t, Allocator<FileSystem_t>, ArrayOptions::noBoundsChecking> fileSystems;
-            List<IDirectory*> dirList;
+            std::vector<FileSystem_t> fileSystems;
     };
 
     // ====================================================================== //
     //  class DirectoryUnion
     // ====================================================================== //
 
-    DirectoryUnion::DirectoryUnion(List<IDirectory*>&& directories)
+    DirectoryUnion::DirectoryUnion(std::vector<unique_ptr<IDirectory>>&& directories)
             : directories(std::move(directories))
     {
         index = 0;
@@ -75,7 +74,7 @@ namespace zfw
 
     const char* DirectoryUnion::ReadDir()
     {
-        for (; index < directories.getLength(); index++)
+        for (; index < directories.size(); index++)
         {
             const char* next = directories[index]->ReadDir();
 
@@ -102,16 +101,13 @@ namespace zfw
 
     void FSUnion::AddFileSystem(shared_ptr<IFileSystem>&& fs, int priority, const char* mountPoint)
     {
-        size_t i;
+        auto it = fileSystems.begin();
 
-        for (i = 0; i < fileSystems.getLength(); i++)
-            if (fileSystems[i].priority < priority)
+        for (; it != fileSystems.end(); it++)
+            if (it->priority < priority)
                 break;
 
-        auto& entry = fileSystems.insertEmpty(i);
-        entry.fs = move(fs);
-        entry.priority = priority;
-        entry.mountPoint = mountPoint;
+        fileSystems.emplace(it, FileSystem_t{ move(fs), priority, mountPoint });
     }
 
     int FSUnion::CompareTimestamps(const char* leftPath, const char* rightPath, int64_t* diff_out, int flags)
@@ -149,10 +145,10 @@ namespace zfw
 
         for (auto& fs : fileSystems)
         {
-            if (strncmp(fs.mountPoint, normalizedPath, fs.mountPoint.getNumBytes()) != 0)
+            if (strncmp(fs.mountPoint.c_str(), normalizedPath, fs.mountPoint.length()) != 0)
                 continue;
 
-            const char* naf = fs.fs->GetNativeAbsoluteFilename(normalizedPath + fs.mountPoint.getNumBytes());
+            const char* naf = fs.fs->GetNativeAbsoluteFilename(normalizedPath + fs.mountPoint.length());
 
             if (naf != nullptr)
                 return naf;
@@ -166,21 +162,22 @@ namespace zfw
     IDirectory* FSUnion::OpenDirectory(const char* normalizedPath, int flags)
     {
         bool breakOnError = false;
+        std::vector<unique_ptr<IDirectory>> dirList;
 
         for (auto& fs : fileSystems)
         {
-            if (strncmp(fs.mountPoint, normalizedPath, fs.mountPoint.getNumBytes()) != 0)
+            if (strncmp(fs.mountPoint.c_str(), normalizedPath, fs.mountPoint.length()) != 0)
                 continue;
 
-            IDirectory* dir = fs.fs->OpenDirectory(normalizedPath + fs.mountPoint.getNumBytes(), flags);
+            std::unique_ptr<IDirectory> dir(fs.fs->OpenDirectory(normalizedPath + fs.mountPoint.length(), flags));
 
             if (dir != nullptr)
-                dirList.add(dir);
+                dirList.push_back(std::move(dir));
             else if (breakOnError && eb->errorCode != EX_NOT_FOUND)
                 break;
         }
 
-        if (dirList.isEmpty())
+        if (dirList.empty())
             return nullptr;
 
         return new DirectoryUnion(std::move(dirList));
@@ -195,16 +192,16 @@ namespace zfw
 
         for (auto& fs : fileSystems)
         {
-            if (strncmp(fs.mountPoint, normalizedPath, fs.mountPoint.getNumBytes()) != 0)
+            if (strncmp(fs.mountPoint.c_str(), normalizedPath, fs.mountPoint.length()) != 0)
                 continue;
 
-            if (fs.fs->OpenFileStream(normalizedPath + fs.mountPoint.getNumBytes(), flags, is_out, os_out, io_out))
+            if (fs.fs->OpenFileStream(normalizedPath + fs.mountPoint.length(), flags, is_out, os_out, io_out))
                 return true;
             else if (breakOnError && eb->errorCode != EX_NOT_FOUND)
                 break;
         }
 
-        if (fileSystems.isEmpty() || eb->errorCode == EX_NOT_FOUND)
+        if (fileSystems.empty() || eb->errorCode == EX_NOT_FOUND)
             return ErrorBuffer::SetError3(eb->errorCode, 3,
                     "desc", sprintf_4095("File not found: '%s'", normalizedPath),
                     "normalizedPath", normalizedPath,
@@ -216,12 +213,12 @@ namespace zfw
 
     bool FSUnion::RemoveFileSystem(IFileSystem* fs)
     {
-        for (size_t i = 0; i < fileSystems.getLength(); i++)
+        for (size_t i = 0; i < fileSystems.size(); i++)
         {
             if (fileSystems[i].fs.get() == fs)
             {
                 fileSystems[i].fs.reset();
-                fileSystems.remove(i);
+                fileSystems.erase(fileSystems.begin() + i);
                 return true;
             }
         }

@@ -5,7 +5,6 @@
 #endif
 
 #include <littl/Base.hpp>
-#include <littl/Stream.hpp>
 
 #include <reflection/base.hpp>
 
@@ -67,12 +66,18 @@
 
 static_assert(sizeof(int) == sizeof(int32_t), "this is not a joke.");
 
+namespace li
+{
+    class InputStream;
+    class OutputStream;
+    class IOStream;
+}
+
 namespace zfw
 {
     // Welcome to Zombie Framework - this is where it begins.
     // Fasten your seatbelts and have fun kudasai.
 
-    using li::Stream;
     using li::InputStream;
     using li::OutputStream;
     using li::IOStream;

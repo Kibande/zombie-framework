@@ -3,8 +3,11 @@
 #include <framework/mediacodechandler.hpp>
 #include <framework/utility/essentials.hpp>
 #include <framework/utility/pixmap.hpp>
-namespace ntile {extern zfw::ISystem* g_sys;}
+
 #include <framework/system.hpp>
+
+#include <littl/Stream.hpp>
+
 namespace zfw
 {
     enum { kBmpHeaderSize = 14 };
@@ -73,14 +76,14 @@ namespace zfw
 
 #ifdef ZOMBIE_CTR
         uint8_t* data = (uint8_t*) malloc(lineLength * pm->info.size.y);
-        ntile::g_sys->Printf(kLogInfo, "Converting...");
+        //ntile::g_sys->Printf(kLogInfo, "Converting...");
         for (int y = pm->info.size.y - 1; y >= 0; y--)
         {
             const uint8_t* line = Pixmap::GetPixelDataForReading(pm) + y * lineLength;
 
             memcpy(data + (pm->info.size.y - y - 1) * lineLength, line, lineLength);
         }
-        ntile::g_sys->Printf(kLogInfo, "Writing %u bytes...", lineLength * pm->info.size.y);
+        //ntile::g_sys->Printf(kLogInfo, "Writing %u bytes...", lineLength * pm->info.size.y);
         if (stream->write(data, lineLength * pm->info.size.y) != lineLength * pm->info.size.y)
         {
             free(data);
