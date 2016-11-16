@@ -3,50 +3,50 @@
 #include <Container/ContainerInterfaces.hpp>
 
 namespace Container {
-	class ContainerApp : public IContainerApp {
-	public:
-		virtual void SetArgv(int argc, char** argv);
+    class ContainerApp : public IContainerApp {
+    public:
+        virtual void SetArgv(int argc, char** argv);
 
-		int Execute();
+        int Execute();
 
-		std::shared_ptr<zfw::MessageQueue> GetMessageQueue() { return msgQueue; }
-		IRenderingHandler* GetRenderingHandler() { return renderingHandler.get(); }
-		zfw::ISystem* GetSystem() { return sys; }
+        std::shared_ptr<zfw::MessageQueue> GetMessageQueue() { return msgQueue; }
+        IRenderingHandler* GetRenderingHandler() { return renderingHandler.get(); }
+        zfw::ISystem* GetSystem() { return sys; }
 
-	protected:
-		ContainerApp(const char* appName) : appName(appName) {}
+    protected:
+        ContainerApp(const char* appName) : appName(appName) {}
 
-		bool TopLevelRun();
+        bool TopLevelRun();
 
-		virtual void Deinit() {}
+        virtual void Deinit() {}
 
-		virtual bool SysInit();
-		virtual void SysDeinit();
+        virtual bool SysInit();
+        virtual void SysDeinit();
 
-		/// Called before ISystem::Startup!
-		virtual bool ConfigureFileSystem(zfw::ISystem* sys);
+        /// Called before ISystem::Startup!
+        virtual bool ConfigureFileSystem(zfw::ISystem* sys);
 
-		virtual std::shared_ptr<zfw::IScene> CreateInitialScene();
-		virtual std::unique_ptr<IRenderingHandler> CreateRenderingHandler();
+        virtual std::shared_ptr<zfw::IScene> CreateInitialScene();
+        virtual std::unique_ptr<IRenderingHandler> CreateRenderingHandler();
 
-		virtual bool AppInit() { return true; }
-		virtual void AppDeinit() {}
+        virtual bool AppInit() { return true; }
+        virtual void AppDeinit() {}
 
-		const char* appName;
-		int argc;
-		char** argv;
+        const char* appName;
+        int argc;
+        char** argv;
 
-		zfw::ISystem* sys;
-		zfw::ErrorBuffer_t* eb;
-		std::shared_ptr<zfw::MessageQueue> msgQueue;
+        zfw::ISystem* sys;
+        zfw::ErrorBuffer_t* eb;
+        std::shared_ptr<zfw::MessageQueue> msgQueue;
 
-		std::unique_ptr<IRenderingHandler> renderingHandler;
-	};
+        std::unique_ptr<IRenderingHandler> renderingHandler;
+    };
 
-	template <class MyContainerApp>
-	int runContainerApp(int argc, char** argv) {
-		MyContainerApp app;
-		app.SetArgv(argc, argv);
-		return app.Execute();
-	}
+    template <class MyContainerApp>
+    int runContainerApp(int argc, char** argv) {
+        MyContainerApp app;
+        app.SetArgv(argc, argv);
+        return app.Execute();
+    }
 }

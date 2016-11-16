@@ -9,100 +9,100 @@
 #include <framework/varsystem.hpp>
 
 namespace Container {
-	bool ContainerApp::ConfigureFileSystem(zfw::ISystem* sys) {
-		zfw::IFSUnion* fsUnion = sys->GetFSUnion();
-		fsUnion->AddFileSystem(sys->CreateStdFileSystem(".", zfw::kFSAccessStat | zfw::kFSAccessRead), 100);
+    bool ContainerApp::ConfigureFileSystem(zfw::ISystem* sys) {
+        zfw::IFSUnion* fsUnion = sys->GetFSUnion();
+        fsUnion->AddFileSystem(sys->CreateStdFileSystem(".", zfw::kFSAccessStat | zfw::kFSAccessRead), 100);
 
-		return true;
-	}
+        return true;
+    }
 
-	std::shared_ptr<zfw::IScene> ContainerApp::CreateInitialScene() {
-		return std::make_shared<ContainerScene>(this, 0);
-	}
+    std::shared_ptr<zfw::IScene> ContainerApp::CreateInitialScene() {
+        return std::make_shared<ContainerScene>(this, 0);
+    }
 
-	std::unique_ptr<IRenderingHandler> ContainerApp::CreateRenderingHandler() {
-		return std::make_unique<RenderingHandler>(sys, msgQueue);
-	}
+    std::unique_ptr<IRenderingHandler> ContainerApp::CreateRenderingHandler() {
+        return std::make_unique<RenderingHandler>(sys, msgQueue);
+    }
 
-	int ContainerApp::Execute() {
-		if (!TopLevelRun()) {
-			if (sys && eb)
-				sys->DisplayError(eb, true);
-		}
+    int ContainerApp::Execute() {
+        if (!TopLevelRun()) {
+            if (sys && eb)
+                sys->DisplayError(eb, true);
+        }
 
-		AppDeinit();
+        AppDeinit();
 
-		renderingHandler.reset();
+        renderingHandler.reset();
 
-		SysDeinit();
+        SysDeinit();
 
-		return 0;
-	}
+        return 0;
+    }
 
-	bool ContainerApp::TopLevelRun() {
-		if (!SysInit())
-			return false;
+    bool ContainerApp::TopLevelRun() {
+        if (!SysInit())
+            return false;
 
-		constexpr bool renderingEnabled = true;
+        constexpr bool renderingEnabled = true;
 
-		if (renderingEnabled) {
-			renderingHandler = CreateRenderingHandler();
-			
-			if (!renderingHandler || !renderingHandler->RenderingInit())
-				return false;
-		}
+        if (renderingEnabled) {
+            renderingHandler = CreateRenderingHandler();
+            
+            if (!renderingHandler || !renderingHandler->RenderingInit())
+                return false;
+        }
 
-		if (!AppInit())
-			return false;
+        if (!AppInit())
+            return false;
 
-		sys->ChangeScene(CreateInitialScene());
-		sys->RunMainLoop();
-		sys->ReleaseScene();
+        sys->ChangeScene(CreateInitialScene());
+        sys->RunMainLoop();
+        sys->ReleaseScene();
 
-		return true;
-	}
+        return true;
+    }
 
-	void ContainerApp::SetArgv(int argc, char** argv) {
-		this->argc = argc;
-		this->argv = argv;
-	}
+    void ContainerApp::SetArgv(int argc, char** argv) {
+        this->argc = argc;
+        this->argv = argv;
+    }
 
-	/*void ContainerApp::SetSystem(ISystem) {
-		this->argc = argc;
-		this->argv = argv;
-	}*/
+    /*void ContainerApp::SetSystem(ISystem) {
+        this->argc = argc;
+        this->argv = argv;
+    }*/
 
-	bool ContainerApp::SysInit() {
-		zfw::ErrorBuffer_t* eb;
-		zfw::ErrorBuffer::Create(eb);
+    bool ContainerApp::SysInit() {
+        zfw::ErrorBuffer_t* eb;
+        zfw::ErrorBuffer::Create(eb);
 
-		auto sys = zfw::CreateSystem();
+        auto sys = zfw::CreateSystem();
 
-		if (!sys->Init(eb, 0))
-			return false;
+        if (!sys->Init(eb, 0))
+            return false;
 
-		auto var = sys->GetVarSystem();
-		var->SetVariable("appName", appName, 0);
+        auto var = sys->GetVarSystem();
+        var->SetVariable("appName", appName, 0);
 
-		if (!ConfigureFileSystem(sys))
-			return false;
+        if (!ConfigureFileSystem(sys))
+            return false;
 
-		if (!sys->Startup())
-			return false;
+        if (!sys->Startup())
+            return false;
 
-		//this->SetSystem(sys, eb);
-		this->sys = sys;
-		this->eb = eb;
+        //this->SetSystem(sys, eb);
+        this->sys = sys;
+        this->eb = eb;
 
-		msgQueue = std::shared_ptr<zfw::MessageQueue>(zfw::MessageQueue::Create());
+        msgQueue = std::shared_ptr<zfw::MessageQueue>(zfw::MessageQueue::Create());
 
-		return true;
-	}
+        return true;
+    }
 
-	void ContainerApp::SysDeinit() {
-		if (sys)
-			sys->Shutdown();
+    void ContainerApp::SysDeinit() {
+        if (sys)
+            sys->Shutdown();
 
-		zfw::ErrorBuffer::Release(eb);
-	}
+        zfw::ErrorBuffer::Release(eb);
+    }
 }

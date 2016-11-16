@@ -14,13 +14,13 @@
 #include <RenderingKit/gameui/RKUIThemer.hpp>
 
 /*
-	ContainerScene lifecycle:
+    ContainerScene lifecycle:
 
-	ContainerScene()
+    ContainerScene()
 
-	<dependency injection takes place>
+    <dependency injection takes place>
 
-	Init()
+    Init()
         InitGameUI()
         InitWorld()
 
@@ -28,36 +28,36 @@
         all resources -> BindDependencies()
         PostBindDependencies()
 
-		Preload()
+        Preload()
         all resources -> Preload()
         PostPreload()
 
-	AcquireResources()
-		PreRealize()
-		all resources -> Realize()
-		PostRealize()
+    AcquireResources()
+        PreRealize()
+        all resources -> Realize()
+        PostRealize()
 */
 
 namespace Container {
-	class ContainerApp;
+    class ContainerApp;
 
-	class ContainerScene : public zfw::IScene {
-	public:
+    class ContainerScene : public zfw::IScene {
+    public:
         enum { kUseUI = 1 };
         enum { kUseWorld = 2 };
 
-		ContainerScene(ContainerApp* app, int options) : app(app), options(options) {}
+        ContainerScene(ContainerApp* app, int options) : app(app), options(options) {}
 
-		virtual bool Init() override;
-		virtual void Shutdown() override;
+        virtual bool Init() override;
+        virtual void Shutdown() override;
 
-		virtual bool AcquireResources() override;
-		virtual void DropResources() override;
+        virtual bool AcquireResources() override;
+        virtual void DropResources() override;
 
-		virtual void DrawScene() override;
-		virtual void OnFrame(double delta) override;
+        virtual void DrawScene() override;
+        virtual void OnFrame(double delta) override;
 
-		// Public API for overriding Scene
+        // Public API for overriding Scene
 
         // Scene Layer: Clear
 
@@ -72,26 +72,26 @@ namespace Container {
 
         // Scene Layer: GameUI
 
-		virtual void InitGameUI();
+        virtual void InitGameUI();
         virtual SceneLayerGameUI* GetUILayer() { return sceneLayerUI; }
 
         // Resource Management
 
-		virtual bool PreBindDependencies() { return true; }
+        virtual bool PreBindDependencies() { return true; }
 
         // Frame-to-frame operations
 
-		virtual bool HandleEvent(zfw::MessageHeader* msg) { return false; }
+        virtual bool HandleEvent(zfw::MessageHeader* msg) { return false; }
 
-	private:
+    private:
 
-	protected:
-		ContainerApp* app;
+    protected:
+        ContainerApp* app;
         int options;
 
-		SceneStack sceneStack;
+        SceneStack sceneStack;
 
-		SceneLayerClear* sceneLayerClear = nullptr;
+        SceneLayerClear* sceneLayerClear = nullptr;
 
 #ifdef CONTAINER_WITH_RENDERING_KIT
         // 3D - should be encapsulated
@@ -100,9 +100,9 @@ namespace Container {
         std::unique_ptr<zfw::EntityWorld> world;
 #endif
 
-		// UI - should be encapsulated
+        // UI - should be encapsulated
         SceneLayerGameUI* sceneLayerUI = nullptr;
-		std::unique_ptr<zfw::IResourceManager> uiResMgr;
-		std::unique_ptr<gameui::UIThemer> uiThemer;
-	};
+        std::unique_ptr<zfw::IResourceManager> uiResMgr;
+        std::unique_ptr<gameui::UIThemer> uiThemer;
+    };
 }
