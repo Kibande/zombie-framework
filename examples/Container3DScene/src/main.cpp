@@ -1,6 +1,7 @@
 #include <Container/ContainerApp.hpp>
 #include <Container/ContainerScene.hpp>
 
+#include <framework/colorconstants.hpp>
 #include <framework/event.hpp>
 #include <framework/messagequeue.hpp>
 #include <framework/pointentity.hpp>
@@ -42,7 +43,7 @@ namespace example {
         ExampleScene(ContainerApp* app) : ContainerScene(app, kUseWorld) {}
 
         virtual bool PreBindDependencies() override {
-            this->SetClearColor(Float4(0.1f, 0.2f, 0.3f, 1.0f));
+            this->SetClearColor(Float4(0.9f, 0.9f, 0.9f, 1.0f));
 
             // TODO: nicer way to pass this in
             s_worldRes = this->worldResMgr.get();

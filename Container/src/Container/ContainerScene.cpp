@@ -4,6 +4,9 @@
 #include <framework/entityworld.hpp>
 #include <framework/event.hpp>
 #include <framework/messagequeue.hpp>
+#include <framework/system.hpp>
+
+#include <framework/errorcheck.hpp>
 
 namespace Container {
     // TODO: move this

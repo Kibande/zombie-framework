@@ -15,7 +15,7 @@ namespace example {
         ExampleScene(ContainerApp* app) : ContainerScene(app, kUseUI) {}
 
         virtual bool PreBindDependencies() override {
-            this->SetClearColor(Float4(0.1f, 0.2f, 0.3f, 1.0f));
+            this->SetClearColor(Float4(0.2f, 0.2f, 0.3f, 1.0f));
 
             auto ui = this->GetUILayer()->GetUIContainer();
 

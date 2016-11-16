@@ -1,7 +1,9 @@
 #include <Container/RenderingHandler.hpp>
 
+#include <framework/errorcheck.hpp>
 #include <framework/pixmap.hpp>
 #include <framework/system.hpp>
+#include <framework/utility/essentials.hpp>
 
 #include <RenderingKit/utility/RKVideoHandler.hpp>
 
