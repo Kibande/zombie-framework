@@ -3,10 +3,12 @@
 
 #include <RenderingKit/utility/TexturedPainter.hpp>
 
+#include <framework/colorconstants.hpp>
 #include <framework/resourcemanager.hpp>
-
 #include <framework/utility/errorbuffer.hpp>
 #include <framework/utility/params.hpp>
+
+#include <littl/String.hpp>
 
 #include <utility>
 

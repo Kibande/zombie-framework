@@ -3,8 +3,9 @@
 
 #include <framework/errorbuffer.hpp>
 #include <framework/event.hpp>
-#include <framework/framework.hpp>
 #include <framework/messagequeue.hpp>
+#include <framework/system.hpp>
+#include <framework/varsystem.hpp>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>

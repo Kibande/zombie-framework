@@ -5,6 +5,7 @@
 #include <framework/resourcemanager.hpp>
 #include <framework/resourcemanager2.hpp>
 #include <framework/timer.hpp>
+#include <framework/varsystem.hpp>
 
 #include <gameui/uithemer.hpp>
 

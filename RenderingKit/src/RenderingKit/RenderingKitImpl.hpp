@@ -11,7 +11,8 @@
 
 #include <RenderingKit/RenderingKit.hpp>
 
-#include <GL/glew.h>
+#include <framework/errorbuffer.hpp>
+#include <framework/graphics.hpp>
 
 #include <littl/Base.hpp>
 #include <littl/List.hpp>
@@ -22,6 +23,8 @@
 #include <glm/glm.hpp>
 #pragma warning( pop )
 
+#include <GL/glew.h>
+
 // To prevent redefinition errors
 #ifndef GL_SGIX_fragment_lighting
 #define GL_SGIX_fragment_lighting
@@ -30,12 +33,6 @@
 #include <SDL2/SDL_opengl.h>
 
 // FIXME: Implement OpenGL sanity checking
-
-#include <framework/errorbuffer.hpp>
-#include <framework/framework.hpp>
-#include <framework/graphics.hpp>
-
-#include <littl/Thread.hpp>
 
 namespace RenderingKit
 {

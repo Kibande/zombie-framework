@@ -3,6 +3,10 @@
 
 #include <RenderingKit/utility/BasicPainter.hpp>
 
+#include <framework/colorconstants.hpp>
+
+#include <littl/String.hpp>
+
 namespace RenderingKit
 {
     using namespace zfw;

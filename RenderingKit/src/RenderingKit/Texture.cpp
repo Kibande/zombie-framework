@@ -7,6 +7,8 @@
 #include <framework/resource.hpp>
 #include <framework/utility/pixmap.hpp>
 
+#include <littl/String.hpp>
+
 // FIXME: Ensure alignment of pixmaps
 
 #ifdef ZOMBIE_WINNT

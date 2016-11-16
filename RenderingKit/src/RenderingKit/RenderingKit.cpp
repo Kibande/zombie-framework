@@ -1,8 +1,8 @@
 
 #include "RenderingKitImpl.hpp"
 
-#include <framework/framework.hpp>
 #include <framework/shader_preprocessor.hpp>
+#include <framework/system.hpp>
 
 namespace RenderingKit
 {

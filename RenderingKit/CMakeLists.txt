@@ -88,7 +88,7 @@ if (NOT EMSCRIPTEN)
 
     if (SDL2_DLL)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
     endif()
 
     find_package(SDL2 REQUIRED)
@@ -99,4 +99,4 @@ endif()
 
 # Export Assets
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)

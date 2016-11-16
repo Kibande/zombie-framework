@@ -1,6 +1,8 @@
 
 #include "RenderingKitImpl.hpp"
 
+#include <littl/String.hpp>
+
 namespace RenderingKit
 {
     enum RKProjectionType_t

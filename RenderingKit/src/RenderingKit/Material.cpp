@@ -4,6 +4,8 @@
 #include <framework/errorbuffer.hpp>
 #include <framework/resource.hpp>
 
+#include <littl/String.hpp>
+
 namespace RenderingKit
 {
     using namespace zfw;

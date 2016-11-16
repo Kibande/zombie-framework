@@ -1,6 +1,8 @@
 
 #include "RenderingKitImpl.hpp"
 
+#include <littl/String.hpp>
+
 // Uncomment to enable debug messages in this unit
 #define DEBUG_GEOMBUFFER
 

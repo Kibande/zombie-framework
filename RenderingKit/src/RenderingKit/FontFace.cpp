@@ -2,10 +2,17 @@
 #include "RenderingKitImpl.hpp"
 #include <RenderingKit/RenderingKitUtility.hpp>
 
+#include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/resourcemanager.hpp>
 
 #include <ztype/ztype.hpp>
+
+#include <littl/Stream.hpp>
+#include <littl/String.hpp>
+#include <littl/Unicode.hpp>
+
+#undef DrawText
 
 namespace RenderingKit
 {
