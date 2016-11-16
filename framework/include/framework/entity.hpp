@@ -51,8 +51,11 @@ namespace zfw
             virtual int             Unserialize(EntityWorld* world, InputStream* input, int flags) { return -1; }
             virtual bool            Init() { return true; }
 
+#if ZOMBIE_API_VERSION < 201601
+			// 2016.01 removes manual resource management for entities. Resources shall be managed by IResourceManager2 and created in Init()
             virtual void            AcquireResources() {}
             virtual void            DropResources() {}
+#endif
 
             virtual int             FullSerialize(EntityWorld* world, OutputStream* output, int flags) { return -1; }
             virtual int             Serialize(EntityWorld* world, OutputStream* output, int flags) { return -1; }

@@ -86,6 +86,12 @@ namespace Container {
         if (!PreBindDependencies())
             return false;
 
+		if (world) {
+			zfw::ResourceManagerScope scope(worldResMgr.get());
+
+			ErrorCheck(world->InitAllEntities());
+		}
+
         if (worldResMgr) {
             ErrorCheck(worldResMgr->MakeAllResourcesState(zfw::IResource2::BOUND, true));
         }

@@ -15,14 +15,13 @@ namespace example {
     using Container::ContainerScene;
     using namespace zfw;
 
-    // TODO: Get rid of these
+    // TODO: An instance should be provided by RenderingManager
     static RenderingKit::TexturedPainter3D<> s_tp;
-    static IResourceManager2* s_worldRes;
 
     class Floor : public PointEntityBase {
     public:
         virtual bool Init() override {
-            s_worldRes->ResourceByPath<RenderingKit::ITexture>(&tex, "media/texture/floor.jpg");
+            tex.ByPath("media/texture/floor.jpg");
 
             return true;
         }
@@ -30,12 +29,12 @@ namespace example {
         virtual void Draw(const UUID_t* modeOrNull) override {
             if (modeOrNull == nullptr) {
                 const Float3 size(10.0f, 10.0f, 0.0f);
-                s_tp.DrawFilledPlane(tex, pos - size * 0.5f, size, RGBA_WHITE);
+                s_tp.DrawFilledPlane(*tex, pos - size * 0.5f, size, RGBA_WHITE);
             }
         }
 
     private:
-        RenderingKit::ITexture* tex;
+        Resource<RenderingKit::ITexture> tex;
     };
 
     class ExampleScene : public ContainerScene {
@@ -45,15 +44,10 @@ namespace example {
         virtual bool PreBindDependencies() override {
             this->SetClearColor(Float4(0.9f, 0.9f, 0.9f, 1.0f));
 
-            // TODO: nicer way to pass this in
-            s_worldRes = this->worldResMgr.get();
-
             auto rm = app->GetRenderingHandler()->GetRenderingKit()->GetRenderingManager();
             ErrorCheck(s_tp.Init(rm));
 
-            // TODO: auto-initialize entity
             auto floor = std::make_shared<Floor>();
-            ErrorCheck(floor->Init());
             this->world->AddEntity(floor);
 
             auto cam = rm->CreateCamera("Example Camera");

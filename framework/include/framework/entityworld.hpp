@@ -16,6 +16,7 @@ namespace zfw
             void Draw(const UUID_t* modeOrNull);
             IEntity* GetEntityByID(int entID);
             size_t GetNumEntities() const { return entities.getLength(); }
+			bool InitAllEntities();
             void OnFrame(double delta);
             void OnTick();
             void RemoveAllEntities(bool destroy);

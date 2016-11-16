@@ -39,6 +39,16 @@ namespace zfw
 
         return nullptr;
     }
+
+	bool EntityWorld::InitAllEntities()
+	{
+		for (auto ent : entities) {
+			if (!ent->Init())
+				return false;
+		}
+
+		return true;
+	}
     
     void EntityWorld::OnFrame(double delta)
     {

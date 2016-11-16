@@ -11,6 +11,8 @@ namespace zfw
 {
     using namespace li;
 
+	static thread_local IResourceManager2* tls_scopedResourceManager = nullptr;
+
     // ====================================================================== //
     //  class declaration(s)
     // ====================================================================== //
@@ -277,4 +279,21 @@ namespace zfw
                 it++;
         }
     }
+
+	// ====================================================================== //
+	//  class ResourceManagerScope
+	// ====================================================================== //
+
+	IResourceManager2* ResourceManagerScope::GetScopedResourceManager(bool required) {
+		if (required) {
+			// TODO: can we do nicer than this?
+			zombie_assert(tls_scopedResourceManager != nullptr);
+		}
+
+		return tls_scopedResourceManager;
+	}
+
+	void ResourceManagerScope::SetScopedResourceManager(IResourceManager2* resMgr) {
+		tls_scopedResourceManager = resMgr;
+	}
 }
