@@ -20,6 +20,8 @@
 
 #include <littl/Array.hpp>
 
+#undef DrawText
+
 namespace n3d
 {
     using namespace li;

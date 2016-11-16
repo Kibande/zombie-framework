@@ -5,6 +5,8 @@
 
 #include <reflection/api.hpp>
 
+#include <framework/system.hpp>
+
 namespace ntile
 {
 namespace

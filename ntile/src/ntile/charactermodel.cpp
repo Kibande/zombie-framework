@@ -2,8 +2,10 @@
 #include "entities/entities.hpp"
 #include "ntile.hpp"
 
+#include <framework/colorconstants.hpp>
 #include <framework/errorbuffer.hpp>
 #include <framework/interpolator.hpp>
+#include <framework/system.hpp>
 
 #include <glm/gtc/quaternion.hpp>
 

@@ -6,6 +6,7 @@
 #include <framework/entityhandler.hpp>
 #include <framework/entityworld.hpp>
 #include <framework/resourcemanager2.hpp>
+#include <framework/system.hpp>
 
 #ifdef ZOMBIE_STUDIO
 #include <framework/bleb/studiobleb.hpp>

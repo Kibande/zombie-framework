@@ -7,6 +7,8 @@ extern "C"
 #include <lua.h>
 }
 
+#include <littl/String.hpp>
+
 namespace ntile
 {
     class LuaScript

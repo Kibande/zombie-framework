@@ -2,6 +2,7 @@
 #include "ntile.hpp"
 
 #include <framework/filesystem.hpp>
+#include <framework/utility/errorbuffer.hpp>
 #include <framework/utility/pixmap.hpp>
 
 #include <bleb/repository.hpp>

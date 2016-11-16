@@ -21,6 +21,8 @@
 #define APP_VENDOR      "Minexew Games"
 #define APP_VERSION     "alpha (build 201)"
 
+#undef DrawText
+
 namespace ntile
 {
     namespace entities

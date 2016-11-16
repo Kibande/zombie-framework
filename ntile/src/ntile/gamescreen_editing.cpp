@@ -1,6 +1,9 @@
 
 #include "gamescreen.hpp"
 
+#include <framework/colorconstants.hpp>
+#include <framework/varsystem.hpp>
+
 namespace ntile
 {
     enum { g_allowEditingMode = 1 };

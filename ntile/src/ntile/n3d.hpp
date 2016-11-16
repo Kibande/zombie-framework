@@ -5,8 +5,6 @@
 #include <framework/datamodel.hpp>
 #include <framework/resource.hpp>
 
-#undef DrawText
-
 // TODO: zfw::PrimitiveType will be removed. Replace it with our own enum.
 
 namespace n3d

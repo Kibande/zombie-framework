@@ -4,6 +4,9 @@
 #include "lua_rpc_handler.hpp"
 #include "ntile.hpp"
 
+#include <framework/system.hpp>
+#include <framework/utility/errorbuffer.hpp>
+
 namespace ntile
 {
     LuaScript::LuaScript(String&& path) : path(path), L(nullptr)

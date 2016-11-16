@@ -5,6 +5,8 @@
 #include <framework/datamodel.hpp>
 #include <framework/event.hpp>
 
+#include <littl/String.hpp>
+
 namespace n3d
 {
     class IFont;

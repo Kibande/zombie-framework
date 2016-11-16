@@ -1,6 +1,7 @@
 
 #include "ntile.hpp"
 
+#include <framework/colorconstants.hpp>
 #include <framework/graphics.hpp>
 #include <framework/resourcemanager2.hpp>
 

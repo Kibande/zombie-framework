@@ -1,11 +1,13 @@
 
 #include "gamescreen.hpp"
 
+#include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/filesystem.hpp>
 #include <framework/graphics.hpp>
 #include <framework/profiler.hpp>
 #include <framework/resourcemanager.hpp>
+#include <framework/varsystem.hpp>
 
 // screenshot
 #include <framework/videohandler.hpp>
