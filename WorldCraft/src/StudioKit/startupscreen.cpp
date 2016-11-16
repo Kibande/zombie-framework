@@ -3,13 +3,17 @@
 
 #include <RenderingKit/utility/BasicPainter.hpp>
 
+#include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/resourcemanager.hpp>
+#include <framework/system.hpp>
 
 #include <littl/Directory.hpp>
 #include <littl/Thread.hpp>
 
 #define STARTUP_PREFIX "StudioKit/startup/"
+
+#undef DrawText
 
 namespace StudioKit
 {

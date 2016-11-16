@@ -4,7 +4,6 @@
 #include "session.hpp"
 
 #include <framework/event.hpp>
-#include <framework/framework.hpp>
 #include <framework/graphics.hpp>
 #include <framework/resourcemanager.hpp>
 #include <framework/scene.hpp>

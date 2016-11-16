@@ -1,7 +1,6 @@
 #pragma once
 
 #include <framework/entity.hpp>
-#include <framework/framework.hpp>
 
 #include <RenderingKit/RenderingKit.hpp>
 #include <RenderingKit/utility/BasicPainter.hpp>

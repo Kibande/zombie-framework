@@ -4,6 +4,7 @@
 #include <RenderingKit/RenderingKitUtility.hpp>
 #include <RenderingKit/utility/TexturedPainter.hpp>
 
+#include <framework/colorconstants.hpp>
 #include <framework/errorbuffer.hpp>
 #include <framework/filesystem.hpp>
 #include <framework/utility/pixmap.hpp>

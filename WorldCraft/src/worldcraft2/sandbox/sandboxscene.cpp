@@ -6,6 +6,7 @@
 #include <littl+bleb/StreamByteIO.hpp>
 #include <bleb/repository.hpp>
 
+#include <framework/colorconstants.hpp>
 #include <framework/entityhandler.hpp>
 #include <framework/entityworld.hpp>
 #include <framework/errorcheck.hpp>
@@ -13,7 +14,9 @@
 #include <framework/filesystem.hpp>
 #include <framework/messagequeue.hpp>
 #include <framework/resourcemanager.hpp>
+#include <framework/system.hpp>
 #include <framework/pointentity.hpp>
+#include <framework/varsystem.hpp>
 
 #include <RenderingKit/utility/CameraMouseControl.hpp>
 #include <RenderingKit/utility/TexturedPainter.hpp>

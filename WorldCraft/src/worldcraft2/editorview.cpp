@@ -4,10 +4,15 @@
 #include <RenderingKit/utility/BasicPainter.hpp>
 #include <RenderingKit/utility/TexturedPainter.hpp>
 
+#include <framework/colorconstants.hpp>
+#include <framework/event.hpp>
 #include <framework/resourcemanager.hpp>
+#include <framework/system.hpp>
 #include <framework/utility/algebrahelpers.hpp>
 
 #include <littl/File.hpp>
+
+#undef DrawText
 
 namespace worldcraftpro
 {

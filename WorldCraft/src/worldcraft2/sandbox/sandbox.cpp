@@ -3,10 +3,11 @@
 #include "mapselectionscene.hpp"
 
 #include <framework/entityworld.hpp>
+#include <framework/errorcheck.hpp>
 #include <framework/filesystem.hpp>
-#include <framework/framework.hpp>
 #include <framework/messagequeue.hpp>
 #include <framework/resourcemanager.hpp>
+#include <framework/varsystem.hpp>
 #include <framework/utility/pixmap.hpp>
 
 #include <RenderingKit/utility/RKVideoHandler.hpp>

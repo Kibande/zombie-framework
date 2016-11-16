@@ -1,7 +1,10 @@
 
 #include "blenderimporter.hpp"
 
-#include <framework/framework.hpp>
+#include <framework/errorcheck.hpp>
+#include <framework/system.hpp>
+#include <framework/utility/errorbuffer.hpp>
+#include <framework/utility/essentials.hpp>
 
 #include <littl/cfx2.hpp>
 #include <littl/File.hpp>

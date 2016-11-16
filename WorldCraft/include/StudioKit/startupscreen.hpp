@@ -1,6 +1,5 @@
 #pragma once
 
-#include <framework/framework.hpp>
 #include <framework/modulehandler.hpp>
 #include <framework/scene.hpp>
 

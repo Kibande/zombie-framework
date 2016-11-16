@@ -6,9 +6,10 @@
 
 #include <framework/app.hpp>
 #include <framework/filesystem.hpp>
-#include <framework/framework.hpp>
 #include <framework/messagequeue.hpp>
 #include <framework/resourcemanager.hpp>
+#include <framework/system.hpp>
+#include <framework/varsystem.hpp>
 
 #include <framework/utility/pixmap.hpp>
 

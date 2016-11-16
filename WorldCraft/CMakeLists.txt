@@ -7,6 +7,8 @@ set(ZOMBIE_API_VERSION 201601)
 file(GLOB_RECURSE sources
     ${PROJECT_SOURCE_DIR}/src/*.cpp
     ${PROJECT_SOURCE_DIR}/src/*.hpp
+
+	${PROJECT_SOURCE_DIR}/include/*.hpp
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dist)

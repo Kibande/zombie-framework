@@ -1,8 +1,9 @@
 
 #include "worldcraftpro.hpp"
 
-#include <framework/framework.hpp>
 #include <framework/filesystem.hpp>
+#include <framework/system.hpp>
+#include <framework/varsystem.hpp>
 
 #include <StudioKit/worldgeom.hpp>
 
