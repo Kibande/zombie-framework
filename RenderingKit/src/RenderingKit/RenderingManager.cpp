@@ -3,6 +3,7 @@
 #include <RenderingKit/RenderingKitUtility.hpp>
 
 #include <framework/resourcemanager.hpp>
+#include <framework/resourcemanager2.hpp>
 #include <framework/timer.hpp>
 
 #include <gameui/uithemer.hpp>
@@ -20,13 +21,15 @@ namespace RenderingKit
     //  class declaration(s)
     // ====================================================================== //
 
-    class RenderingManager : public IRenderingManagerBackend, public IVertexCacheOwner, public zfw::IResourceProvider
+    class RenderingManager : public IRenderingManagerBackend, public IVertexCacheOwner,
+                             public zfw::IResourceProvider, public zfw::IResourceProvider2
     {
         public:
             RenderingManager(zfw::ErrorBuffer_t* eb, RenderingKit* rk);
             ~RenderingManager();
 
             virtual void RegisterResourceProviders(zfw::IResourceManager* res) override;
+            virtual void RegisterResourceProviders(zfw::IResourceManager2* res) override;
             virtual zfw::IResourceManager* GetSharedResourceManager() override;
 
             virtual void BeginFrame() override;
@@ -94,6 +97,10 @@ namespace RenderingKit
             virtual bool            DoParamsAlias(const std::type_index& resourceClass, const char* params1,
                     const char* params2) override { return false; }
             virtual const char*     TryGetResourceClassName(const std::type_index& resourceClass) override;
+
+            // zfw::IResourceProvider2
+            virtual IResource2* CreateResource(IResourceManager2* res, const TypeID& resourceClass,
+                                               const char* recipe, int flags) override;
 
         private:
             // State (objects)
@@ -496,6 +503,47 @@ namespace RenderingKit
         }
     }
 
+    IResource2* RenderingManager::CreateResource(IResourceManager2* res, const std::type_index& resourceClass, const char* recipe, int flags)
+    {
+        if (resourceClass == typeid(ITexture))
+        {
+            std::string path;
+            RKTextureWrap_t wrapx = kTextureWrapClamp, wrapy = kTextureWrapClamp;
+
+            const char *key, *value;
+
+            while (Params::Next(recipe, key, value))
+            {
+                if (strcmp(key, "path") == 0)
+                    path = value;
+                else if (strcmp(key, "wrapx") == 0)
+                {
+                    if (strcmp(value, "repeat") == 0)
+                        wrapx = kTextureWrapRepeat;
+                }
+                else if (strcmp(key, "wrapy") == 0)
+                {
+                    if (strcmp(value, "repeat") == 0)
+                        wrapy = kTextureWrapRepeat;
+                }
+            }
+
+            zombie_assert(!path.empty());
+
+            auto texture = p_CreateTextureUniquePtr(eb, rk, this, path.c_str());
+
+            texture->SetWrapMode(0, wrapx);
+            texture->SetWrapMode(1, wrapy);
+
+            return texture.release();
+        }
+        else
+        {
+            zombie_assert(resourceClass != resourceClass);
+            return nullptr;
+        }
+    }
+
     /*ISceneGraph* RenderingManager::CreateSceneGraph(const char* name)
     {
         return p_CreateSceneGraph(eb, rk, this, name);
@@ -729,6 +777,15 @@ namespace RenderingKit
         };
 
         res->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this, 0);
+    }
+
+    void RenderingManager::RegisterResourceProviders(zfw::IResourceManager2* res)
+    {
+        static const std::type_index resourceClasses[] = {
+            typeid(ITexture),
+        };
+
+        res->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this);
     }
 
     void RenderingManager::SetCamera(ICamera* camera)

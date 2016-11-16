@@ -1,6 +1,8 @@
 
 #include "RenderingKitImpl.hpp"
 
+#include <RenderingKit/RenderingKitUtility.hpp>
+
 #include <framework/errorbuffer.hpp>
 #include <framework/resource.hpp>
 #include <framework/utility/pixmap.hpp>
@@ -23,20 +25,15 @@ namespace RenderingKit
         zfw::ErrorBuffer_t* eb;
         RenderingKit* rk;
         IRenderingManagerBackend* rm;
-        String name;
+        String path;
 
         RKTextureWrap_t wrap[2];
-
-        GLuint handle;
-        Int2 size;
 
         public:
             GLTexture(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name);
             ~GLTexture();
 
-            void DropResources();
-
-            virtual const char* GetName() override { return name.c_str(); }
+            virtual const char* GetName() override { return path.c_str(); }
 
             virtual void SetWrapMode(int axis, RKTextureWrap_t mode) override { wrap[axis] = mode; }
 
@@ -44,15 +41,44 @@ namespace RenderingKit
             virtual Int2 GetSize() override { return size; }
             virtual bool SetContentsFromPixmap(IPixmap* pixmap) override;
 
-            virtual void GLBind(int unit) override { GLStateTracker::BindTexture(unit, handle); }
+            virtual void GLBind(int unit) override;
             virtual GLuint GLGetTex() override { return handle; }
             virtual void SetContentsUndefined(Int2 size, int flags, RKTextureFormat_t format) override;
             virtual void TexSubImage(uint32_t x, uint32_t y, uint32_t w, uint32_t h, PixmapFormat_t pixmapFormat, const uint8_t* data) override;
 
+            // IResource2
+            bool BindDependencies(IResourceManager2* resMgr) { return true; }
+            bool Preload(IResourceManager2* resMgr);
+            void Unload();
+            bool Realize(IResourceManager2* resMgr);
+            void Unrealize();
+
+            virtual void* Cast(const TypeID& resourceClass) final override { return DefaultCast(this, resourceClass); }
+
+            virtual State_t GetState() const final override { return state; }
+
+            virtual bool StateTransitionTo(State_t targetState, IResourceManager2* resMgr) final override
+            {
+                return DefaultStateTransitionTo(this, targetState, resMgr);
+            }
+
+        private:
+            // Private methods
             GLuint p_CreateEmptyTexture(int flags, const RKTextureWrap_t wrap[2], bool isDepthTexture);
-            static const uint8_t* p_Flip(const uint8_t*& p_data, uint32_t width, uint32_t& height, uint32_t bytesPerPixel, uint32_t& count_out);
-            static void p_FlipInPlace(IPixmap* pixmap);
-            bool p_GetGLFormat(PixmapFormat_t pixmapFormat, GLenum& format_out);
+            static const uint8_t* ps_Flip(const uint8_t*& p_data, uint32_t width, uint32_t& height, uint32_t bytesPerPixel, uint32_t& count_out);
+            static void ps_FlipInPlace(IPixmap* pixmap);
+            bool p_ToGLFormat(PixmapFormat_t pixmapFormat, GLenum& format_out);
+
+            State_t state = CREATED;
+
+            // preloaded
+            Pixmap_t pm;
+
+            // realized
+            GLuint handle;
+            Int2 size;
+
+        friend class IResource2;
     };
 
     shared_ptr<IGLTexture> p_CreateTexture(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)
@@ -60,8 +86,13 @@ namespace RenderingKit
         return std::make_shared<GLTexture>(eb, rk, rm, name);
     }
 
+    unique_ptr<IGLTexture> p_CreateTextureUniquePtr(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)
+    {
+        return std::make_unique<GLTexture>(eb, rk, rm, name);
+    }
+
     GLTexture::GLTexture(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)
-            : name(name)
+            : path(name)
     {
         this->eb = eb;
         this->rk = rk;
@@ -75,22 +106,14 @@ namespace RenderingKit
 
     GLTexture::~GLTexture()
     {
-        DropResources();
-    }
-
-    void GLTexture::DropResources()
-    {
-        if (handle != 0)
-        {
-            GLStateTracker::InvalidateTexture(handle);
-
-            glDeleteTextures(1, &handle);
-            handle = 0;
-        }
+        Unrealize();
+        Unload();
     }
 
     bool GLTexture::GetContentsIntoPixmap(IPixmap* pixmap)
     {
+        zombie_assert_resource_state(REALIZED, path.c_str());
+
 #ifndef RENDERING_KIT_USING_OPENGL_ES
         if (!pixmap->SetSize(size) || !pixmap->SetFormat(PixmapFormat_t::RGBA8))
             return false;
@@ -103,12 +126,18 @@ namespace RenderingKit
         GLStateTracker::BindTexture(0, handle);
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
-        p_FlipInPlace(pixmap);
+        ps_FlipInPlace(pixmap);
         return true;
 #else
 		return ErrorBuffer::SetError(eb, EX_INVALID_OPERATION, "desc", "ITexture::GetContentsIntoPixmap is not supported in OpenGL ES mode.", nullptr),
 				false;
 #endif
+    }
+
+    void GLTexture::GLBind(int unit)
+    {
+        zombie_assert_resource_state(REALIZED, path.c_str());
+        GLStateTracker::BindTexture(unit, handle);
     }
 
     GLuint GLTexture::p_CreateEmptyTexture(int flags, const RKTextureWrap_t wrap[2], bool isDepthTexture)
@@ -149,7 +178,7 @@ namespace RenderingKit
         return tex;
     }
 
-    const uint8_t* GLTexture::p_Flip(const uint8_t*& p_data, uint32_t width, uint32_t& height, uint32_t bytesPerPixel, uint32_t& count_out)
+    const uint8_t* GLTexture::ps_Flip(const uint8_t*& p_data, uint32_t width, uint32_t& height, uint32_t bytesPerPixel, uint32_t& count_out)
     {
         enum { bufferSize = 256 * 1024 };
         static uint8_t buffer[bufferSize];
@@ -172,7 +201,7 @@ namespace RenderingKit
         return buffer;
     }
 
-    void GLTexture::p_FlipInPlace(IPixmap* pixmap)
+    void GLTexture::ps_FlipInPlace(IPixmap* pixmap)
     {
         const PixmapFormat_t pixmapFormat = pixmap->GetFormat();
         const Int2 size = pixmap->GetSize();
@@ -190,7 +219,7 @@ namespace RenderingKit
         }
     }
 
-    bool GLTexture::p_GetGLFormat(PixmapFormat_t pixmapFormat, GLenum& format_out)
+    bool GLTexture::p_ToGLFormat(PixmapFormat_t pixmapFormat, GLenum& format_out)
     {
         switch ( pixmapFormat )
         {
@@ -207,8 +236,36 @@ namespace RenderingKit
         return true;
     }
 
+    bool GLTexture::Preload(IResourceManager2* resMgr)
+    {
+        if (state == PRELOADED || state == REALIZED)
+            return true;
+
+        if (!path.isEmpty())
+        {
+            if (!Pixmap::LoadFromFile(rk->GetSys(), &pm, path))
+                return ErrorBuffer::SetError3(EX_ASSET_OPEN_ERR, 2,
+                        "desc", (const char*) sprintf_t<255>("Failed to load texture '%s'.", path.c_str()),
+                        "function", li_functionName
+                ), false;
+        }
+
+        return true;
+    }
+
+    bool GLTexture::Realize(IResourceManager2* resMgr)
+    {
+        //zombie_assert_resource_state(PRELOADED, path.c_str());
+        zombie_assert(!path.isEmpty());
+
+        PixmapWrapper wrapper(&pm, false);
+        return SetContentsFromPixmap(&wrapper);
+    }
+
     void GLTexture::SetContentsUndefined(Int2 size, int flags, RKTextureFormat_t format)
     {
+        Unrealize();
+
 #ifdef RENDERING_KIT_USING_OPENGL_ES
 		zombie_assert(format == RKTextureFormat_t::kTextureRGBA8);
 
@@ -238,16 +295,17 @@ namespace RenderingKit
         rm->CheckErrors(li_functionName);
 
         this->size = size;
+        this->state = REALIZED;
     }
 
     bool GLTexture::SetContentsFromPixmap(IPixmap* pixmap)
     {
-        DropResources();
+        Unrealize();
 
         const PixmapFormat_t pixmapFormat = pixmap->GetFormat();
         GLenum format;
 
-        if (!p_GetGLFormat(pixmapFormat, format))
+        if (!p_ToGLFormat(pixmapFormat, format))
             return false;
 
         const Int2 size = pixmap->GetSize();
@@ -264,7 +322,7 @@ namespace RenderingKit
         uint32_t linesRemaining = size.y;
         uint32_t linesReady;
 
-        const uint8_t* flipped = p_Flip(p_data, size.x, linesRemaining, Bpp, linesReady);
+        const uint8_t* flipped = ps_Flip(p_data, size.x, linesRemaining, Bpp, linesReady);
 
 #ifdef RENDERING_KIT_USING_OPENGL_ES
 		const auto fmt = format;
@@ -282,7 +340,7 @@ namespace RenderingKit
 
         while (linesRemaining > 0)
         {
-            flipped = p_Flip(p_data, size.x, linesRemaining, Bpp, linesReady);
+            flipped = ps_Flip(p_data, size.x, linesRemaining, Bpp, linesReady);
             glTexSubImage2D( GL_TEXTURE_2D, 0, 0, linesRemaining, size.x, linesReady,format, GL_UNSIGNED_BYTE, flipped );
         }
 
@@ -291,15 +349,18 @@ namespace RenderingKit
         rm->CheckErrors(li_functionName);
 
         this->size = size;
+        this->state = REALIZED;
 
         return true;
     }
 
     void GLTexture::TexSubImage(uint32_t x, uint32_t y, uint32_t w, uint32_t h, PixmapFormat_t pixmapFormat, const uint8_t* data)
     {
+        zombie_assert_resource_state(REALIZED, path.c_str());
+
         GLenum format;
 
-        if (!p_GetGLFormat(pixmapFormat, format))
+        if (!p_ToGLFormat(pixmapFormat, format))
             return;
 
         const uint32_t Bpp = Pixmap::GetBytesPerPixel(pixmapFormat);
@@ -312,10 +373,26 @@ namespace RenderingKit
 
         while (linesRemaining > 0)
         {
-            const uint8_t* flipped = p_Flip(p_data, w, linesRemaining, Bpp, linesReady);
+            const uint8_t* flipped = ps_Flip(p_data, w, linesRemaining, Bpp, linesReady);
             glTexSubImage2D( GL_TEXTURE_2D, 0, x, linesRemaining + (size.y - y - h), w, linesReady, format, GL_UNSIGNED_BYTE, flipped );
         }
 
         rm->CheckErrors(li_functionName);
+    }
+
+    void GLTexture::Unload()
+    {
+        Pixmap::DropContents(&pm);
+    }
+
+    void GLTexture::Unrealize()
+    {
+        if (handle != 0)
+        {
+            GLStateTracker::InvalidateTexture(handle);
+
+            glDeleteTextures(1, &handle);
+            handle = 0;
+        }
     }
 }

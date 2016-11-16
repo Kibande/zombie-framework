@@ -399,7 +399,7 @@ namespace RenderingKit
             virtual void SetUniformMat4x4(intptr_t location, const glm::mat4x4& value) = 0;
     };
 
-    class ITexture: public zfw::IResource
+    class ITexture: public zfw::IResource, public zfw::IResource2
     {
         public:
             virtual void SetWrapMode(int axis, RKTextureWrap_t mode) = 0;
@@ -463,6 +463,7 @@ namespace RenderingKit
 
         public:
             virtual void RegisterResourceProviders(zfw::IResourceManager* res) = 0;
+            virtual void RegisterResourceProviders(zfw::IResourceManager2* res) = 0;
             virtual zfw::IResourceManager* GetSharedResourceManager() = 0;
 
             // Creators

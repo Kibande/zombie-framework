@@ -298,6 +298,9 @@ namespace RenderingKit
     IGLVertexCache*                 p_CreateVertexCache(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
             IRenderingManagerBackend* rm, size_t size);
 
+    unique_ptr<IGLTexture>          p_CreateTextureUniquePtr(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
+                                                    IRenderingManagerBackend* rm, const char* name);
+
 #ifndef RENDERING_KIT_USING_OPENGL_ES
 	shared_ptr<IGLDeferredShadingManager> p_CreateGLDeferredShadingManager();
 #endif
