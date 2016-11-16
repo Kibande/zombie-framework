@@ -4,6 +4,8 @@
 
 #include <framework/utility/essentials.hpp>
 
+#include <littl/Stream.hpp>
+
 namespace zfw
 {
     /*

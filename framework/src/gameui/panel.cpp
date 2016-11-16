@@ -29,6 +29,7 @@ namespace gameui
 
     bool Panel::AcquireResources()
     {
+        layoutValid = false;
         minSizeValid = false;
 
         return thm->AcquireResources() && WidgetContainer::AcquireResources();

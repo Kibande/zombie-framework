@@ -2,6 +2,7 @@
 #include <framework/errorbuffer.hpp>
 #include <framework/filesystem.hpp>
 
+#include <string>
 #include <utility>
 #include <vector>
 

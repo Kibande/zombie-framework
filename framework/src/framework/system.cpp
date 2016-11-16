@@ -726,6 +726,10 @@ namespace zfw
         svcExitProcess();
 #endif
 
+#ifdef ZOMBIE_EMSCRIPTEN
+		emscripten_cancel_main_loop();
+#endif
+
         exit(-1);
     }
 

@@ -1,5 +1,5 @@
 
-#include "RenderingKitImpl.hpp"
+#include "../RenderingKitImpl.hpp"
 
 #include <framework/errorbuffer.hpp>
 #include <framework/event.hpp>

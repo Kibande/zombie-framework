@@ -28,8 +28,10 @@ file(GLOB sources
 )
 
 if (USING_OPENGL_ES)
-	list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/DeferredShadingManager.cpp)
+    list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/DeferredShadingManager.cpp)
 endif()
+
+list(APPEND sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/wm/WindowManager_SDL2.cpp)
 
 if (NOT EMSCRIPTEN)
     list(APPEND sources ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c)

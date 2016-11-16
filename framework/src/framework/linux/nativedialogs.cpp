@@ -1,6 +1,6 @@
 
-#include <framework/framework.hpp>
 #include <framework/nativedialogs.hpp>
+#include <framework/utility/essentials.hpp>
 
 namespace zfw
 {

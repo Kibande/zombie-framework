@@ -99,23 +99,6 @@ namespace zfw
             //virtual const char* TryGetResourceClassName(const TypeID& resourceClass) = 0;
     };
 
-	template <typename T>
-	class Resource
-	{
-		public:
-			T* operator* () { return res; }
-
-			void ByPath(const char* path, int flags = IResourceManager2::kResourceRequired)
-			{
-				auto resMgr = ResourceManagerScope::GetScopedResourceManager(true);
-				res = resMgr->GetResourceByPath<T>(path, flags);
-				zombie_assert(res);
-			}
-
-		private:
-			T* res;
-	};
-
 	class ResourceManagerScope {
 		public:
 			ResourceManagerScope(IResourceManager2* resMgr)
@@ -134,5 +117,22 @@ namespace zfw
 
 		private:
 			IResourceManager2* backup;
+	};
+
+	template <typename T>
+	class Resource
+	{
+		public:
+			T* operator* () { return res; }
+
+			void ByPath(const char* path, int flags = IResourceManager2::kResourceRequired)
+			{
+				auto resMgr = ResourceManagerScope::GetScopedResourceManager(true);
+				res = resMgr->GetResourceByPath<T>(path, flags);
+				zombie_assert(res);
+			}
+
+		private:
+			T* res;
 	};
 }
