@@ -35,9 +35,14 @@ namespace Container {
             auto a3dLayer = dynamic_cast<SceneLayer3D*>(layer);
 
             if (a3dLayer) {
-                rm->SetCamera(a3dLayer->GetCamera());
-                rm->SetRenderState(RenderingKit::RK_DEPTH_TEST, 1);
-                a3dLayer->DrawContents();
+                auto cam = a3dLayer->GetCamera();
+
+                if (cam) {
+                    rm->SetCamera(a3dLayer->GetCamera());
+                    rm->SetRenderState(RenderingKit::RK_DEPTH_TEST, 1);
+                    a3dLayer->DrawContents();
+                }
+
                 return;
             }
         }
@@ -47,21 +52,24 @@ namespace Container {
     };
 
     bool ContainerScene::AcquireResources() {
+        ErrorCheck(PreRealize());
+
         if (sceneLayerUI) {
             uiResMgr->SetTargetState(zfw::IResource2::REALIZED);
             ErrorCheck(uiResMgr->MakeAllResourcesTargetState(true));
 
-            if (!uiThemer->AcquireResources())
-                return false;
+            ErrorCheck(uiThemer->AcquireResources());
 
             auto ui = sceneLayerUI->GetUIContainer();
-            ui->AcquireResources();
+            ErrorCheck(ui->AcquireResources());
         }
 
         if (worldResMgr) {
             worldResMgr->SetTargetState(zfw::IResource2::REALIZED);
             ErrorCheck(worldResMgr->MakeAllResourcesTargetState(true));
         }
+
+        ErrorCheck(PostRealize());
 
         return true;
     }
@@ -80,6 +88,8 @@ namespace Container {
     }
 
     bool ContainerScene::Init() {
+		SetClearColor(zfw::Float4(1.0, 1.0, 1.0, 1.0));
+
         if (options & kUseUI)
             InitGameUI();
 
@@ -87,8 +97,7 @@ namespace Container {
             InitWorld();
 
         // BindDependencies step
-        if (!PreBindDependencies())
-            return false;
+        ErrorCheck(PreBindDependencies());
 
 		if (world) {
 			zfw::ResourceManagerScope scope(worldResMgr.get());
@@ -100,14 +109,23 @@ namespace Container {
             ErrorCheck(worldResMgr->MakeAllResourcesState(zfw::IResource2::BOUND, true));
         }
 
+        ErrorCheck(PostBindDependencies());
+
         // Preload step
+        ErrorCheck(PrePreload());
+
         if (worldResMgr) {
             ErrorCheck(worldResMgr->MakeAllResourcesState(zfw::IResource2::PRELOADED, true));
         }
 
+        ErrorCheck(PostPreload());
+
         // Realize step
         if (!AcquireResources())
             return false;
+
+        if (sceneLayerUI)
+            sceneLayerUI->GetUIContainer()->Layout();
 
         return true;
     }
@@ -115,6 +133,9 @@ namespace Container {
     void ContainerScene::InitGameUI() {
         auto rk = app->GetRenderingHandler()->GetRenderingKit();
         auto rm = rk->GetRenderingManager();
+
+        // Event Queue
+        gameui::Widget::SetMessageQueue(app->GetEventQueue().get());
 
         // Resource Manager
         uiResMgr.reset(app->GetSystem()->CreateResourceManager2());
@@ -157,11 +178,16 @@ namespace Container {
     void ContainerScene::OnFrame(double delta) {
         zfw::MessageHeader* msg;
 
-        auto msgQueue = app->GetMessageQueue();
+        auto eventQueue = app->GetEventQueue();
 
-        while ((msg = msgQueue->Retrieve(li::Timeout(0))) != nullptr) {
-            if (HandleEvent(msg))
+        while ((msg = eventQueue->Retrieve(li::Timeout(0))) != nullptr) {
+            int h = HandleEvent(msg, zfw::h_new);
+
+            if (h >= zfw::h_stop)
                 continue;
+
+            if (sceneLayerUI)
+                h = sceneLayerUI->GetUIContainer()->HandleMessage(h, msg);
 
             switch (msg->type) {
             case zfw::EVENT_WINDOW_CLOSE:

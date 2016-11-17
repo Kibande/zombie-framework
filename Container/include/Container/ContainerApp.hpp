@@ -9,7 +9,7 @@ namespace Container {
 
         int Execute();
 
-        std::shared_ptr<zfw::MessageQueue> GetMessageQueue() { return msgQueue; }
+        std::shared_ptr<zfw::MessageQueue> GetEventQueue() { return eventQueue; }
         IRenderingHandler* GetRenderingHandler() { return renderingHandler.get(); }
         zfw::ISystem* GetSystem() { return sys; }
 
@@ -38,7 +38,7 @@ namespace Container {
 
         zfw::ISystem* sys;
         zfw::ErrorBuffer_t* eb;
-        std::shared_ptr<zfw::MessageQueue> msgQueue;
+        std::shared_ptr<zfw::MessageQueue> eventQueue;
 
         std::unique_ptr<IRenderingHandler> renderingHandler;
     };

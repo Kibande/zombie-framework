@@ -21,7 +21,7 @@ namespace Container {
     }
 
     std::unique_ptr<IRenderingHandler> ContainerApp::CreateRenderingHandler() {
-        return std::make_unique<RenderingHandler>(sys, msgQueue);
+        return std::make_unique<RenderingHandler>(sys, eventQueue);
     }
 
     int ContainerApp::Execute() {
@@ -94,7 +94,7 @@ namespace Container {
         this->sys = sys;
         this->eb = eb;
 
-        msgQueue = std::shared_ptr<zfw::MessageQueue>(zfw::MessageQueue::Create());
+        eventQueue = std::shared_ptr<zfw::MessageQueue>(zfw::MessageQueue::Create());
 
         return true;
     }

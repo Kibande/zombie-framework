@@ -77,10 +77,17 @@ namespace Container {
         // Resource Management
 
         virtual bool PreBindDependencies() { return true; }
+        virtual bool PostBindDependencies() { return true; }
+
+        virtual bool PrePreload() { return true; }
+        virtual bool PostPreload() { return true; }
+
+        virtual bool PreRealize() { return true; }
+        virtual bool PostRealize() { return true; }
 
         // Frame-to-frame operations
 
-        virtual bool HandleEvent(zfw::MessageHeader* msg) { return false; }
+        virtual int HandleEvent(zfw::MessageHeader* msg, int h) { return false; }
 
     private:
 

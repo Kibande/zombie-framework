@@ -63,9 +63,9 @@ namespace example {
             return true;
         }
 
-        virtual bool HandleEvent(MessageHeader* msg) override {
+        virtual int HandleEvent(MessageHeader* msg, int h) override {
             camControl.HandleMessage(msg);
-            return false;
+            return h;
         }
 
     private:

@@ -2,3 +2,5 @@
 /vcxproj/
 /emscripten/
 /dist/
+/web_build/
+/web-dist/
