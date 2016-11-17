@@ -307,11 +307,11 @@ namespace ntile
         world.reset(new EntityWorld(g_sys));
         world->AddEntityFilter(this);
 
-        sunInterpolator.Init(sunColours, lengthof(sunColours), false);
+        sunInterpolator.Init(sunColours, li_lengthof(sunColours), false);
         sunInterpolator.SetTime<CHECK_OVERFLOW>((float) daytime);
         sunInterpolator.SetMaxValue(DAY_TICKS);
 
-        for (size_t i = 0; i < lengthof(controlVarNames); i++)
+        for (size_t i = 0; i < li_lengthof(controlVarNames); i++)
             var->BindVariable(controlVarNames[i], reflection::ReflectedValue_t(controls[i]), IVarSystem::kReadWrite, 0);
 
 #ifndef ZOMBIE_CTR
@@ -894,7 +894,7 @@ namespace ntile
                         //Sys::printk("Bound: %s", Event::FormatVkey(ev->vkey.vk));
                         setControlsIndex++;
 
-                        if (setControlsIndex < lengthof(controlNames))
+                        if (setControlsIndex < li_lengthof(controlNames))
                             setControlsControl->SetLabel(controlNames[setControlsIndex]);
                         else
                         {
@@ -1283,7 +1283,7 @@ namespace ntile
 
         if (bindings)
             zombie_ErrorLog(g_sys, g_eb, var->DeserializeVariables(bindings.get(), bindingsFileName, IVarSystem::kListedOnly,
-                    controlVarNames, lengthof(controlVarNames)));
+                    controlVarNames, li_lengthof(controlVarNames)));
 
         return true;
     }
@@ -1296,7 +1296,7 @@ namespace ntile
 
         if (bindings)
             zombie_ErrorLog(g_sys, g_eb, var->SerializeVariables(bindings.get(), bindingsFileName, IVarSystem::kListedOnly,
-                    controlVarNames, lengthof(controlVarNames)));
+                    controlVarNames, li_lengthof(controlVarNames)));
 
         return true;
     }

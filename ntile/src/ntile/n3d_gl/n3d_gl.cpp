@@ -520,7 +520,7 @@ namespace n3d
             typeID<IFont>(), typeID<IGraphics2>(), typeID<IModel>(), typeID<IShaderProgram>(), typeID<ITexture>()
         };
 
-        res->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this);
+        res->RegisterResourceProvider(resourceClasses, li_lengthof(resourceClasses), this);
     }
 
     /*const char* GLRenderer::TryGetResourceClassName(const TypeID& resourceClass)

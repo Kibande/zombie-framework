@@ -866,7 +866,7 @@ namespace RenderingKit
             typeid(IGLShaderProgram)
         };
 
-        res->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this, 0);
+        res->RegisterResourceProvider(resourceClasses, li_lengthof(resourceClasses), this, 0);
     }
 
     void RenderingManager::RegisterResourceProviders(zfw::IResourceManager2* res)
@@ -876,7 +876,7 @@ namespace RenderingKit
             typeid(IGLShaderProgram), typeid(IGLTexture),
         };
 
-        res->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this);
+        res->RegisterResourceProvider(resourceClasses, li_lengthof(resourceClasses), this);
     }
 
     void RenderingManager::SetCamera(ICamera* camera)

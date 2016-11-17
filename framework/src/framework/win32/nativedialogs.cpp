@@ -63,8 +63,8 @@ namespace zfw
     {
         if (defaultFileName != nullptr)
         {
-            strncpy(s_pathBuffer, defaultFileName, lengthof(s_pathBuffer) - 1);
-            s_pathBuffer[lengthof(s_pathBuffer) - 1] = 0;
+            strncpy(s_pathBuffer, defaultFileName, li_lengthof(s_pathBuffer) - 1);
+            s_pathBuffer[li_lengthof(s_pathBuffer) - 1] = 0;
         }
         else
             s_pathBuffer[0] = 0;
@@ -74,7 +74,7 @@ namespace zfw
         ofn.lStructSize = sizeof(ofn);
 
         ofn.lpstrFile = s_pathBuffer;
-        ofn.nMaxFile = lengthof(s_pathBuffer);
+        ofn.nMaxFile = li_lengthof(s_pathBuffer);
         ofn.lpstrInitialDir = defaultDir;
         ofn.Flags = OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
@@ -88,8 +88,8 @@ namespace zfw
     {
         if (defaultFileName != nullptr)
         {
-            strncpy(s_pathBuffer, defaultFileName, lengthof(s_pathBuffer) - 1);
-            s_pathBuffer[lengthof(s_pathBuffer) - 1] = 0;
+            strncpy(s_pathBuffer, defaultFileName, li_lengthof(s_pathBuffer) - 1);
+            s_pathBuffer[li_lengthof(s_pathBuffer) - 1] = 0;
         }
         else
             s_pathBuffer[0] = 0;
@@ -99,7 +99,7 @@ namespace zfw
         ofn.lStructSize = sizeof(ofn);
 
         ofn.lpstrFile = s_pathBuffer;
-        ofn.nMaxFile = lengthof(s_pathBuffer);
+        ofn.nMaxFile = li_lengthof(s_pathBuffer);
         ofn.lpstrInitialDir = defaultDir;
         ofn.Flags = OFN_NOCHANGEDIR;
 

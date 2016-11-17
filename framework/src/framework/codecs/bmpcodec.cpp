@@ -111,7 +111,7 @@ namespace zfw
         static const char* fileTypes[] = {"bmp"};
 
         *fileTypes_out = fileTypes;
-        *numFileTypes_out = lengthof(fileTypes);
+        *numFileTypes_out = li_lengthof(fileTypes);
 
         return true;
     }

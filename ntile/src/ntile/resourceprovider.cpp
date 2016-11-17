@@ -38,6 +38,6 @@ namespace ntile
             typeid(CharacterModel)
         };
 
-        res->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this);
+        res->RegisterResourceProvider(resourceClasses, li_lengthof(resourceClasses), this);
     }
 }

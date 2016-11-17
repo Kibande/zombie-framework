@@ -206,7 +206,7 @@ namespace zfw
         static const uint8_t signature[] = {0xFF, 0xD8, 0xFF};
 
         *signature_out = signature;
-        *signatureLength_out = lengthof(signature);
+        *signatureLength_out = li_lengthof(signature);
 
         return true;
     }

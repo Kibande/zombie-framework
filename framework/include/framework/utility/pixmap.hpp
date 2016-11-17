@@ -5,6 +5,8 @@
 #include <framework/system.hpp>
 #include <framework/utility/essentials.hpp>
 
+#include <littl/Algorithm.hpp>
+
 // FIXME: This shouldn't be here and LoadFromFile shouldn't be inline
 #include <littl/Stream.hpp>
 
@@ -77,10 +79,10 @@ namespace zfw
 
                 uint8_t signature[8];
 
-                if (!stream->read(signature, lengthof(signature)) || !stream->setPos(0))
+                if (!stream->read(signature, li_lengthof(signature)) || !stream->setPos(0))
                     return false;
 
-                auto decoder = imch->GetDecoderByFileSignature<IPixmapDecoder>(signature, lengthof(signature),
+                auto decoder = imch->GetDecoderByFileSignature<IPixmapDecoder>(signature, li_lengthof(signature),
                     fileName, kCodecRequired);
 
                 if (!decoder)

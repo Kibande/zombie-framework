@@ -1,6 +1,6 @@
 #pragma once
 
-#include <littl/Base.hpp>
+#include <cstdint>
 
 namespace zshared
 {

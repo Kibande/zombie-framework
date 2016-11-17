@@ -243,7 +243,7 @@ namespace ntile
             type = blocks[selectedBlock.y * worldSize.x + selectedBlock.x].type;
         }
 
-        for (int i = 0; type != -1 && i < lengthof(Edit_blockTypes); i++)
+        for (int i = 0; type != -1 && i < li_lengthof(Edit_blockTypes); i++)
         {
             if (Edit_blockTypes[i] == type)
             {

@@ -120,7 +120,7 @@ namespace zfw
         {
             Signature s {signatureLength, iface, decoder.get()};
 
-            zombie_assert(signatureLength <= lengthof(s.bytes));
+            zombie_assert(signatureLength <= li_lengthof(s.bytes));
             memcpy(s.bytes, signature, signatureLength);
 
             signatures.push_back(move(s));

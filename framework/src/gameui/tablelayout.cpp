@@ -3,6 +3,8 @@
 #include <framework/utility/essentials.hpp>
 #include <framework/utility/util.hpp>
 
+#include <littl/Algorithm.hpp>
+
 // Uncomment to enable performance timing in this unit
 //#define TABLE_PERFTIMING
 

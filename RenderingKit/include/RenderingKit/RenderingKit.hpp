@@ -7,7 +7,6 @@
  *  Copyright (c) 2013, 2014, 2016 Minexew Games
  */
 
-#include <framework/app.hpp>
 #include <framework/datamodel.hpp>
 #include <framework/modulehandler.hpp>
 #include <framework/resource.hpp>

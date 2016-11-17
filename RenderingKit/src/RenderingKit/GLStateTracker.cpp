@@ -68,7 +68,7 @@ namespace RenderingKit
 
     void GLStateTracker::InvalidateTexture(GLuint handle)
     {
-        for (size_t i = 0; i < lengthof(currentTex); i++)
+        for (size_t i = 0; i < li_lengthof(currentTex); i++)
             if (currentTex[i] == handle)
                 BindTexture(i, 0);
     }

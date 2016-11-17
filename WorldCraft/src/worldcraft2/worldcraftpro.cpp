@@ -285,7 +285,7 @@ namespace worldcraftpro
         s_brushTexMgr = brushTexMgr.get();
 
         static const std::type_index resourceClasses[] = { typeid(ITexture) };
-        brushTexMgr->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this, 0);
+        brushTexMgr->RegisterResourceProvider(resourceClasses, li_lengthof(resourceClasses), this, 0);
 
         widgetLoaderTexPreviewCache = texPreviewCache;
         

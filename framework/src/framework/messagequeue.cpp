@@ -90,7 +90,7 @@ namespace zfw
             virtual void PostCall(MessageQueueCallable callback) override;
             virtual MessageHeader* Retrieve(li::Timeout timeout) override;
 
-            li_force_inline(void InlineFinishMessage(volatile MessageHeader* header))
+            void InlineFinishMessage(volatile MessageHeader* header)
             {
                 header->flags &= ~MESSAGE_UNDER_CONSTRUCTION;
 

@@ -9,6 +9,7 @@ extern "C" {
 #include <cctype>
 #include <cerrno>
 #include <cstdarg>
+#include <ctime>
 
 #pragma warning( disable : 4127 )
 
@@ -110,25 +111,25 @@ namespace zfw
 
     const char* Util::Format(const glm::ivec2& vec)
     {
-        snprintf(convBuffer, lengthof(convBuffer), "%i, %i", vec.x, vec.y);
+        snprintf(convBuffer, li_lengthof(convBuffer), "%i, %i", vec.x, vec.y);
         return convBuffer;
     }
 
     const char* Util::Format(const glm::vec2& vec)
     {
-        snprintf(convBuffer, lengthof(convBuffer), "%g, %g", vec.x, vec.y);
+        snprintf(convBuffer, li_lengthof(convBuffer), "%g, %g", vec.x, vec.y);
         return convBuffer;
     }
 
     const char* Util::Format(const glm::vec3& vec)
     {
-        snprintf(convBuffer, lengthof(convBuffer), "%g, %g, %g", vec.x, vec.y, vec.z);
+        snprintf(convBuffer, li_lengthof(convBuffer), "%g, %g, %g", vec.x, vec.y, vec.z);
         return convBuffer;
     }
 
     const char* Util::Format(const glm::vec4& vec)
     {
-        snprintf(convBuffer, lengthof(convBuffer), "%g, %g, %g, %g", vec.x, vec.y, vec.z, vec.w);
+        snprintf(convBuffer, li_lengthof(convBuffer), "%g, %g, %g, %g", vec.x, vec.y, vec.z, vec.w);
         return convBuffer;
     }
 
@@ -138,7 +139,7 @@ namespace zfw
 
         if (colour.a != 0xFF)
         {
-            snprintf(convBuffer, lengthof(convBuffer), "#%02X%02X%02X%02X", colour.r, colour.g, colour.b, colour.a);
+            snprintf(convBuffer, li_lengthof(convBuffer), "#%02X%02X%02X%02X", colour.r, colour.g, colour.b, colour.a);
             return convBuffer;
         }
 
@@ -153,22 +154,22 @@ namespace zfw
         const unsigned int rgba_lonib = rgba & 0x000F0F0F;
 
         if (rgba_hinib == rgba_lonib)
-            snprintf(convBuffer, lengthof(convBuffer), "#%01X%01X%01X", rgba_lonib & 0x0F, (rgba_lonib >> 8) & 0x0F, rgba_lonib >> 16);
+            snprintf(convBuffer, li_lengthof(convBuffer), "#%01X%01X%01X", rgba_lonib & 0x0F, (rgba_lonib >> 8) & 0x0F, rgba_lonib >> 16);
         else
-            snprintf(convBuffer, lengthof(convBuffer), "#%02X%02X%02X", colour.r, colour.g, colour.b);
+            snprintf(convBuffer, li_lengthof(convBuffer), "#%02X%02X%02X", colour.r, colour.g, colour.b);
 
         return convBuffer;
     }
 
     const char* Util::FormatColourHRRGGBB(Byte4 colour)
     {
-        snprintf(convBuffer, lengthof(convBuffer), "#%02X%02X%02X", colour.r, colour.g, colour.b);
+        snprintf(convBuffer, li_lengthof(convBuffer), "#%02X%02X%02X", colour.r, colour.g, colour.b);
         return convBuffer;
     }
     
     const char* Util::FormatTimestamp(const time_t* t)
     {
-        strftime(convBuffer, lengthof(convBuffer), "%Y-%m-%dT%H:%M:%S", localtime(t));
+        strftime(convBuffer, li_lengthof(convBuffer), "%Y-%m-%dT%H:%M:%S", localtime(t));
         return convBuffer;
     }
 

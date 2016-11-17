@@ -103,7 +103,7 @@ namespace zfw
         static const uint8_t signature[] = {0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A};
 
         *signature_out = signature;
-        *signatureLength_out = lengthof(signature);
+        *signatureLength_out = li_lengthof(signature);
 
         return true;
     }
@@ -163,7 +163,7 @@ namespace zfw
         static const char* fileTypes[] = {"png"};
 
         *fileTypes_out = fileTypes;
-        *numFileTypes_out = lengthof(fileTypes);
+        *numFileTypes_out = li_lengthof(fileTypes);
 
         return true;
     }

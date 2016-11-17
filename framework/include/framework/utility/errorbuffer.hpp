@@ -7,9 +7,7 @@
 #include <framework/utility/util.hpp>
 
 #include <cstdarg>
-
-#pragma warning(push)
-#pragma warning(disable : 4706)
+#include <ctime>
 
 namespace zfw
 {
@@ -211,5 +209,3 @@ namespace zfw
             }
     };
 }
-
-#pragma warning(pop)
