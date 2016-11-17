@@ -42,17 +42,13 @@ namespace RenderingKit
         public:
             typedef TexturedVertex_t<PosType, UVType, ColourType> VertexType;
 
-            TexturedPainter();
-
             bool Init(IRenderingManager* rm);
             void Shutdown();
 
         protected:
-            IRenderingManager* rm;
-
+            IRenderingManager* rm = nullptr;
+            IMaterial* material = nullptr;
             shared_ptr<IVertexFormat> vertexFormat;
-
-            IMaterial* material;
 
             void DropResources();
 
@@ -89,12 +85,6 @@ namespace RenderingKit
     // ====================================================================== //
     //  class TexturedPainter
     // ====================================================================== //
-
-    template <typename PosType, typename UVType, typename ColourType>
-    TexturedPainter<PosType, UVType, ColourType>::TexturedPainter()
-    {
-        rm = nullptr;
-    }
 
     template <typename PosType, typename UVType, typename ColourType>
     bool TexturedPainter<PosType, UVType, ColourType>::Init(IRenderingManager* rm)

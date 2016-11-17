@@ -349,8 +349,13 @@ namespace RenderingKit
         public:
             virtual IShader* GetShader() = 0;
 
-            virtual void SetTexture(const char* name, shared_ptr<ITexture>&& texture) = 0;
-            virtual void SetTexture(const char* name, ITexture* texture) = 0;
+#if ZOMBIE_API_VERSION < 201701
+            virtual intptr_t SetTexture(const char* name, shared_ptr<ITexture>&& texture) = 0;
+#endif
+
+            virtual intptr_t SetTexture(const char* name, ITexture* texture) = 0;
+
+            virtual void SetTextureByIndex(intptr_t index, ITexture* texture) = 0;
     };
 
     class IGeomChunk
@@ -448,15 +453,22 @@ namespace RenderingKit
 
             virtual void AddBufferByte4(Int2 size, const char* nameInShader) = 0;
             virtual void AddBufferFloat4(Int2 size, const char* nameInShader) = 0;
-            virtual unique_ptr<IDeferredShaderBinding> CreateShaderBinding(shared_ptr<IShader> shader) = 0;
 
             virtual void BeginScene() = 0;
             virtual void EndScene() = 0;
 
+            virtual void BeginDeferred() = 0;
+            virtual void EndDeferred() = 0;
+
+            virtual void InjectTexturesInto(IMaterial* material) = 0;
+
+#if ZOMBIE_API_VERSION < 201701
+            virtual unique_ptr<IDeferredShaderBinding> CreateShaderBinding(shared_ptr<IShader> shader) = 0;
             virtual void BeginShading(IDeferredShaderBinding* binding, const Float3& cameraPos) = 0;
             virtual void DrawPointLight(const Float3& pos, const Float3& ambient, const Float3& diffuse, float range,
                     ITexture* shadowMap, const glm::mat4x4& shadowMatrix) = 0;
             virtual void EndShading() = 0;
+#endif
     };
 
     class IRenderingManager
@@ -497,7 +509,8 @@ namespace RenderingKit
             // Frame
             virtual void BeginFrame() = 0;
             virtual void Clear() = 0;
-            virtual void ClearDepth() = 0;
+            virtual void ClearBuffers(bool color, bool depth, bool stencil) = 0;
+            [[deprecated]] virtual void ClearDepth() = 0;
             virtual void EndFrame(int ticksElapsed) = 0;
             virtual void SetClearColour(const Float4& colour) = 0;
 

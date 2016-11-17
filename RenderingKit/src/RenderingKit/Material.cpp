@@ -21,8 +21,11 @@ namespace RenderingKit
             virtual const char* GetName() override { return name.c_str(); }
 
             virtual IShader* GetShader() override { return program; }
-            virtual void SetTexture(const char* name, shared_ptr<ITexture>&& texture) override;
-            virtual void SetTexture(const char* name, ITexture* texture) override;
+#if ZOMBIE_API_VERSION < 201701
+            virtual intptr_t SetTexture(const char* name, shared_ptr<ITexture>&& texture) override;
+#endif
+            virtual intptr_t SetTexture(const char* name, ITexture* texture) override;
+            virtual void SetTextureByIndex(intptr_t index, ITexture* texture) override;
 
             virtual void GLSetup(const MaterialSetupOptions& options, const glm::mat4x4& projection, const glm::mat4x4& modelView) override;
 
@@ -45,6 +48,7 @@ namespace RenderingKit
         private:
             void BuiltinUniformsInitialize();
             void BuiltinUniformsSetup(const glm::mat4x4& projection, const glm::mat4x4& modelView);
+            intptr_t p_GetTextureIndexByUniformIndex(size_t uniformIndex);
 
             struct Texture_t
             {
@@ -149,6 +153,7 @@ namespace RenderingKit
         }
         else
         {
+            // TODO - optimization: don't redo this on every GLSetup if nont necessary
             for (unsigned int i = 0; i < numTextures; i++)
             {
                 textures[i].texture->GLBind(i);
@@ -159,28 +164,69 @@ namespace RenderingKit
         BuiltinUniformsSetup(projection, modelView);
     }
 
-    void GLMaterial::SetTexture(const char* name, shared_ptr<ITexture>&& texture)
+    intptr_t GLMaterial::p_GetTextureIndexByUniformIndex(size_t uniformIndex)
     {
-        intptr_t index = program->GetUniformLocation(name);
+        for (size_t i = 0; i < numTextures; i++)
+            if (textures[i].samplerUniformIndex == uniformIndex)
+                return i;
 
-        if (index >= 0)
-        {
-            auto& entry = textures[numTextures++];
-            entry.textureHandle = std::static_pointer_cast<IGLTexture>(texture);
-            entry.texture = entry.textureHandle.get();
-            entry.samplerUniformIndex = index;
-        }
+        return -1;
     }
 
-    void GLMaterial::SetTexture(const char* name, ITexture* texture)
+#if ZOMBIE_API_VERSION < 201701
+    intptr_t GLMaterial::SetTexture(const char* name, shared_ptr<ITexture>&& texture)
     {
-        intptr_t index = program->GetUniformLocation(name);
+        intptr_t uniformIndex = program->GetUniformLocation(name);
 
+        if (uniformIndex < 0)
+            return -1;
+
+        intptr_t index = p_GetTextureIndexByUniformIndex(uniformIndex);
+
+        if (index < 0)
+        {
+            zombie_assert(numTextures < MAX_TEX);
+            index = numTextures++;
+
+            textures[index].samplerUniformIndex = uniformIndex;
+        }
+
+        textures[index].textureHandle = std::static_pointer_cast<IGLTexture>(texture);
+        textures[index].texture = textures[index].textureHandle.get();
+        return index;
+    }
+#endif
+
+    intptr_t GLMaterial::SetTexture(const char* name, ITexture* texture)
+    {
+        intptr_t uniformIndex = program->GetUniformLocation(name);
+
+        if (uniformIndex < 0)
+            return -1;
+
+        intptr_t index = p_GetTextureIndexByUniformIndex(uniformIndex);
+
+        if (index < 0)
+        {
+            zombie_assert(numTextures < MAX_TEX);
+            index = numTextures++;
+
+            textures[index].samplerUniformIndex = uniformIndex;
+        }
+
+        textures[index].textureHandle = nullptr;
+        textures[index].texture = static_cast<IGLTexture*>(texture);
+        return index;
+    }
+
+    void GLMaterial::SetTextureByIndex(intptr_t index, ITexture* texture)
+    {
         if (index >= 0)
         {
-            auto& entry = textures[numTextures++];
-            entry.texture = static_cast<IGLTexture*>(texture);
-            entry.samplerUniformIndex = index;
+            textures[index].texture = static_cast<IGLTexture*>(texture);
+
+            // TODO: should BindTexture if material is already active
+            //GLStateTracker::BindTexture(index, texture->GLGetTex());
         }
     }
 }

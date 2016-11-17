@@ -39,15 +39,22 @@ namespace RenderingKit
 
             virtual void AddBufferByte4(Int2 size, const char* nameInShader) override;
             virtual void AddBufferFloat4(Int2 size, const char* nameInShader) override;
-            virtual unique_ptr<IDeferredShaderBinding> CreateShaderBinding(shared_ptr<IShader> shader) override;
 
             virtual void BeginScene() override;
             virtual void EndScene() override;
 
+            virtual void BeginDeferred() override;
+            virtual void EndDeferred() override;
+
+            virtual void InjectTexturesInto(IMaterial* material) override;
+
+#if ZOMBIE_API_VERSION < 201701
+            virtual unique_ptr<IDeferredShaderBinding> CreateShaderBinding(shared_ptr<IShader> shader) override;
             virtual void BeginShading(IDeferredShaderBinding* binding, const Float3& cameraPos) override;
             virtual void DrawPointLight(const Float3& pos, const Float3& ambient, const Float3& diffuse, float range,
                     ITexture* shadowMap, const glm::mat4x4& shadowMatrix) override;
-            virtual void EndShading() override;
+            virtual void EndShading() override { EndDeferred(); }
+#endif
 
         private:
             ErrorBuffer_t* eb;
@@ -113,6 +120,7 @@ namespace RenderingKit
         renderBuffer->GLAddColourAttachment(buffer.texture);
     }
 
+#if ZOMBIE_API_VERSION < 201701
     unique_ptr<IDeferredShaderBinding> DeferredShadingManager::CreateShaderBinding(shared_ptr<IShader> shader)
     {
         unique_ptr<DeferredShaderBinding> binding(new DeferredShaderBinding());
@@ -137,17 +145,30 @@ namespace RenderingKit
 
         return std::move(binding);
     }
+#endif
+
+    void DeferredShadingManager::BeginDeferred()
+    {
+        rm->SetProjection(glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f));
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+        rm->SetClearColour(RGBA_BLACK);
+        rm->ClearBuffers(true, false, false);
+    }
 
     void DeferredShadingManager::BeginScene()
     {
         rm->PushRenderBuffer(renderBuffer.get());
 
         // Specify what to render an start acquiring
+        // FIXME: this must match attachments.length
         GLenum buffers[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT, 
                          GL_COLOR_ATTACHMENT2_EXT };
         glDrawBuffers(3, buffers);
     }
 
+#if ZOMBIE_API_VERSION < 201701
     void DeferredShadingManager::BeginShading(IDeferredShaderBinding* binding_in, const Float3& cameraPos)
     {
         // TODO: Evaluate passing of these
@@ -187,6 +208,13 @@ namespace RenderingKit
 
         binding->bp.DrawFilledRectangle(Float2(-1.0f, -1.0f), Float2(2.0f, 2.0f), RGBA_WHITE);
     }
+#endif
+
+    void DeferredShadingManager::EndDeferred()
+    {
+        rm->VertexCacheFlush();
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 
     void DeferredShadingManager::EndScene()
     {
@@ -198,9 +226,9 @@ namespace RenderingKit
         glDrawBuffer(GL_BACK);
     }
 
-    void DeferredShadingManager::EndShading()
+    void DeferredShadingManager::InjectTexturesInto(IMaterial* material)
     {
-        rm->VertexCacheFlush();
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        for (auto& buffer : buffers)
+            material->SetTexture(buffer.nameInShader, buffer.texture.get());
     }
 }

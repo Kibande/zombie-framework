@@ -42,17 +42,19 @@ namespace RenderingKit
         public:
             typedef BasicVertex_t<PosType, ColourType> VertexType;
 
-            BasicPainter();
-
             bool Init(IRenderingManager* rm);
-            bool InitWithShader(IRenderingManager* rm, shared_ptr<IShader> program);
+            bool InitWithMaterial(IRenderingManager* rm, IMaterial* material);
             void Shutdown();
 
-        protected:
-            IRenderingManager* rm;
+#if ZOMBIE_API_VERSION < 201701
+            bool InitWithShader(IRenderingManager* rm, shared_ptr<IShader> program);
+#endif
 
+        protected:
+            IRenderingManager* rm = nullptr;
+            IMaterial* material = nullptr;
+            shared_ptr<IMaterial> materialReference;
             shared_ptr<IVertexFormat> vertexFormat;
-            shared_ptr<IMaterial> material;
 
             void DropResources();
     };
@@ -87,12 +89,6 @@ namespace RenderingKit
     // ====================================================================== //
 
     template <typename PosType, typename ColourType>
-    BasicPainter<PosType, ColourType>::BasicPainter()
-    {
-        rm = nullptr;
-    }
-
-    template <typename PosType, typename ColourType>
     bool BasicPainter<PosType, ColourType>::Init(IRenderingManager* rm)
     {
         this->rm = rm;
@@ -102,21 +98,36 @@ namespace RenderingKit
 
         vertexFormat = rm->CompileVertexFormat(shader.get(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
 
-        material = rm->CreateMaterial("BasicPainter/material", shader);
+        materialReference = rm->CreateMaterial("BasicPainter/material", shader);
+        material = materialReference.get();
 
         return true;
     }
 
+    template <typename PosType, typename ColourType>
+    bool BasicPainter<PosType, ColourType>::InitWithMaterial(IRenderingManager* rm, IMaterial* material)
+    {
+        this->rm = rm;
+
+        vertexFormat = rm->CompileVertexFormat(material->GetShader(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
+        this->material = material;
+
+        return true;
+    }
+
+#if ZOMBIE_API_VERSION < 201701
     template <typename PosType, typename ColourType>
     bool BasicPainter<PosType, ColourType>::InitWithShader(IRenderingManager* rm, shared_ptr<IShader> program)
     {
         this->rm = rm;
 
         vertexFormat = rm->CompileVertexFormat(program.get(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
-        material = rm->CreateMaterial("BasicPainter/material", program);
+        materialReference = rm->CreateMaterial("BasicPainter/material", program);
+        material = materialReference.get();
 
         return true;
     }
+#endif
 
     template <typename PosType, typename ColourType>
     void BasicPainter<PosType, ColourType>::Shutdown()
@@ -127,7 +138,7 @@ namespace RenderingKit
     template <typename PosType, typename ColourType>
     void BasicPainter<PosType, ColourType>::DropResources()
     {
-        material.reset();
+        materialReference.reset();
         vertexFormat.reset();
     }
 
@@ -146,7 +157,7 @@ namespace RenderingKit
     void BasicPainter2D<PosType, ColourType>::DrawFilledRectangle(const PosType& pos, const PosType& size, const ColourType& colour)
     {
         VertexType* p_vertices = reinterpret_cast<VertexType*>(
-                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material.get(), RK_TRIANGLES, 6)
+                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material, RK_TRIANGLES, 6)
         );
 
         vert(pos.x,             pos.y,          colour);
@@ -161,7 +172,7 @@ namespace RenderingKit
     void BasicPainter2D<PosType, ColourType>::DrawFilledRectangle(const PosType& pos, const PosType& size, const ColourType colours[4])
     {
         VertexType* p_vertices = reinterpret_cast<VertexType*>(
-                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material.get(), RK_TRIANGLES, 6)
+                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material, RK_TRIANGLES, 6)
         );
 
         vert(pos.x,             pos.y,          colours[0]);
@@ -176,7 +187,7 @@ namespace RenderingKit
     void BasicPainter2D<PosType, ColourType>::DrawFilledTriangle(const PosType abc[3], const ColourType colours[3])
     {
         VertexType* p_vertices = reinterpret_cast<VertexType*>(
-                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material.get(), RK_TRIANGLES, 3)
+                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material, RK_TRIANGLES, 3)
         );
 
         vert(abc[0].x,  abc[0].y,   colours[0]);
@@ -202,7 +213,7 @@ namespace RenderingKit
     void BasicPainter3D<PosType, ColourType>::DrawCuboidWireframe(const PosType& pos, const PosType& size, const ColourType& colour)
     {
         VertexType* p_vertices = reinterpret_cast<VertexType*>(
-                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material.get(), RK_LINES, 24)
+                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material, RK_LINES, 24)
         );
 
         // front
@@ -249,7 +260,7 @@ namespace RenderingKit
     void BasicPainter3D<PosType, ColourType>::DrawFilledCuboid(const PosType& pos, const PosType& size, const ColourType& colour)
     {
         VertexType* p_vertices = reinterpret_cast<VertexType*>(
-                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material.get(), RK_TRIANGLES, 6 * 6)
+                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material, RK_TRIANGLES, 6 * 6)
         );
 
         // front
@@ -311,7 +322,7 @@ namespace RenderingKit
     void BasicPainter3D<PosType, ColourType>::DrawFilledRectangle(const PosType& pos, const PosType& size, const ColourType& colour)
     {
         VertexType* p_vertices = reinterpret_cast<VertexType*>(
-                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material.get(), RK_TRIANGLES, 6)
+                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material, RK_TRIANGLES, 6)
         );
 
         vert(pos.x,             pos.y,          pos.z,  colour);
@@ -326,7 +337,7 @@ namespace RenderingKit
     void BasicPainter3D<PosType, ColourType>::DrawFilledTriangle(const PosType abc[3], const ColourType& colour)
     {
         VertexType* p_vertices = reinterpret_cast<VertexType*>(
-                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material.get(), RK_TRIANGLES, 3)
+                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material, RK_TRIANGLES, 3)
         );
 
         vert(abc[0].x,  abc[0].y,   abc[0].z,   colour);
@@ -351,7 +362,7 @@ namespace RenderingKit
         const auto z = pos.z;
 
         VertexType* p_vertices = reinterpret_cast<VertexType*>(
-                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material.get(), RK_LINES, numVertices)
+                this->rm->VertexCacheAlloc(this->vertexFormat.get(), this->material, RK_LINES, numVertices)
         );
 
         auto x = x0;

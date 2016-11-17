@@ -138,12 +138,15 @@ namespace RenderingKit {
         //  Move to WorldLoader: section zombie.WorldMaterials
         // ================================================================== //
 
-        std::unique_ptr<InputStream> materials(rk->GetSys()->OpenInput("zombie.WorldMaterials"));
+        std::string materialsPath = sprintf_255("%s/materials", path.c_str());
+        std::unique_ptr<InputStream> materials(rk->GetSys()->OpenInput(materialsPath.c_str()));
 
-        if (materials == nullptr)
-            return ErrorBuffer::SetError3(EX_ASSET_CORRUPTED, 1,
-                "desc", "The map is corrupted (missing section zombie.WorldMaterials)"
+        if (materials == nullptr) {
+            return ErrorBuffer::SetError3(EX_ASSET_CORRUPTED, 2,
+                "desc", "The map is corrupted.",
+                "missingFile", materialsPath.c_str()
             ), false;
+        }
 
         while (!materials->eof()) {
             auto desc = materials->readString();
@@ -179,12 +182,15 @@ namespace RenderingKit {
         //  Move to WorldLoader: section zombie.WorldVertices
         // ================================================================== //
 
-        std::unique_ptr<InputStream> vertices(rk->GetSys()->OpenInput("zombie.WorldVertices"));
+        std::string verticesPath = sprintf_255("%s/geometry", path.c_str());
+        std::unique_ptr<InputStream> vertices(rk->GetSys()->OpenInput(verticesPath.c_str()));
 
-        if (vertices == nullptr)
-            return ErrorBuffer::SetError3(EX_ASSET_CORRUPTED, 1,
-                "desc", "The map is corrupted (missing section zombie.WorldVertices)"
+        if (vertices == nullptr) {
+            return ErrorBuffer::SetError3(EX_ASSET_CORRUPTED, 2,
+                "desc", "The map is corrupted.",
+                "missingFile", verticesPath.c_str()
             ), false;
+        }
 
         std::vector<uint8_t> vertexBuffer;
 

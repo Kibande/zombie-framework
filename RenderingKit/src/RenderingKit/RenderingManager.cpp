@@ -40,6 +40,7 @@ namespace RenderingKit
 
             virtual void BeginFrame() override;
             virtual void Clear() override;
+            virtual void ClearBuffers(bool color, bool depth, bool stencil) override;
             virtual void ClearDepth() override;
             virtual void EndFrame(int ticksElapsed) override;
             virtual void SetClearColour(const Float4& colour) override;
@@ -237,6 +238,11 @@ namespace RenderingKit
     void RenderingManager::Clear()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    void RenderingManager::ClearBuffers(bool color, bool depth, bool stencil)
+    {
+        glClear((color ? GL_COLOR_BUFFER_BIT : 0) | (depth ? GL_DEPTH_BUFFER_BIT : 0) | (stencil ? GL_STENCIL_BUFFER_BIT : 0));
     }
 
     void RenderingManager::ClearDepth()
@@ -1011,8 +1017,8 @@ namespace RenderingKit
 
         // Initialize shared ResourceManager2
         sharedResourceManager2.reset(rk->GetSys()->CreateResourceManager2());
-        this->RegisterResourceProviders(sharedResourceManager2.get());
         sharedResourceManager2->SetTargetState(IResource2::REALIZED);
+        this->RegisterResourceProviders(sharedResourceManager2.get());
 
         return true;
     }
