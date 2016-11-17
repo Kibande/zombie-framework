@@ -48,6 +48,9 @@ namespace Container {
 
     bool ContainerScene::AcquireResources() {
         if (sceneLayerUI) {
+            uiResMgr->SetTargetState(zfw::IResource2::REALIZED);
+            ErrorCheck(uiResMgr->MakeAllResourcesTargetState(true));
+
             if (!uiThemer->AcquireResources())
                 return false;
 
@@ -56,7 +59,8 @@ namespace Container {
         }
 
         if (worldResMgr) {
-            ErrorCheck(worldResMgr->MakeAllResourcesState(zfw::IResource2::REALIZED, true));
+            worldResMgr->SetTargetState(zfw::IResource2::REALIZED);
+            ErrorCheck(worldResMgr->MakeAllResourcesTargetState(true));
         }
 
         return true;
@@ -113,7 +117,7 @@ namespace Container {
         auto rm = rk->GetRenderingManager();
 
         // Resource Manager
-        uiResMgr.reset(app->GetSystem()->CreateResourceManager("uiThemer Resource Manager"));
+        uiResMgr.reset(app->GetSystem()->CreateResourceManager2());
         rm->RegisterResourceProviders(uiResMgr.get());
 
         // UI Themer

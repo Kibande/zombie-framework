@@ -3,7 +3,6 @@
 #include <Container/SceneGraph.hpp>
 #include <Container/SceneLayerGameUI.hpp>
 
-#include <framework/resourcemanager.hpp>
 #include <framework/resourcemanager2.hpp>
 #include <framework/scene.hpp>
 
@@ -102,7 +101,7 @@ namespace Container {
 
         // UI - should be encapsulated
         SceneLayerGameUI* sceneLayerUI = nullptr;
-        std::unique_ptr<zfw::IResourceManager> uiResMgr;
+        std::unique_ptr<zfw::IResourceManager2> uiResMgr;
         std::unique_ptr<gameui::UIThemer> uiThemer;
     };
 }
