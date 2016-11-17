@@ -1,13 +1,11 @@
 #pragma once
 
-// Project:             Zombie Framework Rendering Kit (Minexew Games 2013)
-
-// Safety:              64-bit          UNTESTED SAFE
-// Safety:              endianness      UNTESTED SAFE
-// Safety:              multithread     SAFE
-
-// Copyright:           Original code by Xeatheran Minexew, 2013
-
+/*
+ *  Rendering Kit II
+ *
+ *  Part of Zombie Framework
+ *  Copyright (c) 2013, 2014, 2016 Minexew Games
+ */
 
 #include <RenderingKit/RenderingKit.hpp>
 
@@ -50,6 +48,7 @@ namespace RenderingKit
     class RenderingKit;
 
     enum State { ST_GL_BLEND, ST_GL_DEPTH_TEST, ST_MAX };
+    enum { MAX_SHADER_OUTPUTS = 8 };
     enum { MAX_TEX = 8 };
 
     enum RKTextureFormat_t
@@ -199,9 +198,10 @@ namespace RenderingKit
     class IGLShaderProgram : public IShader
     {
         public:
-            virtual bool GLCompile(const char* path, const char** outputNames) = 0;
+            virtual bool GLCompile(const char* path, const char** outputNames, size_t numOutputNames) = 0;
             virtual int GLGetAttribLocation(const char* name) = 0;
             virtual void GLSetup() = 0;
+            virtual void SetOutputNames(const char** outputNames, size_t numOutputNames) = 0;
     };
 
     class IGLTexture : public ITexture
@@ -295,8 +295,12 @@ namespace RenderingKit
     IGLVertexCache*                 p_CreateVertexCache(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
             IRenderingManagerBackend* rm, size_t size);
 
+    unique_ptr<IGLMaterial>         p_CreateMaterialUniquePtr(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
+                                            IGLShaderProgram* program);
     unique_ptr<IGLTexture>          p_CreateTextureUniquePtr(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
-                                                    IRenderingManagerBackend* rm, const char* name);
+                                            IRenderingManagerBackend* rm, const char* name);
+    unique_ptr<IGLShaderProgram>    p_CreateShaderProgramUniquePtr(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
+                                            IRenderingManagerBackend* rm, const char* name);
 
 #ifndef RENDERING_KIT_USING_OPENGL_ES
 	shared_ptr<IGLDeferredShadingManager> p_CreateGLDeferredShadingManager();

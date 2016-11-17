@@ -29,9 +29,13 @@ namespace RenderingKit
             RenderingManager(zfw::ErrorBuffer_t* eb, RenderingKit* rk);
             ~RenderingManager();
 
+#if ZOMBIE_API_VERSION < 201701
             virtual void RegisterResourceProviders(zfw::IResourceManager* res) override;
-            virtual void RegisterResourceProviders(zfw::IResourceManager2* res) override;
             virtual zfw::IResourceManager* GetSharedResourceManager() override;
+#endif
+
+            virtual void RegisterResourceProviders(zfw::IResourceManager2* res) override;
+            virtual zfw::IResourceManager2* GetSharedResourceManager2() override { return sharedResourceManager2.get(); }
 
             virtual void BeginFrame() override;
             virtual void Clear() override;
@@ -107,6 +111,7 @@ namespace RenderingKit
             // State (objects)
             Stack<IGLRenderBuffer*> renderBufferStack;
             unique_ptr<zfw::IResourceManager> sharedResourceManager;
+            unique_ptr<zfw::IResourceManager2> sharedResourceManager2;
 
             struct VertexCache_t
             {
@@ -174,6 +179,7 @@ namespace RenderingKit
     RenderingManager::~RenderingManager()
     {
         sharedResourceManager.reset();
+        sharedResourceManager2.reset();
     }
 
     void RenderingManager::BeginFrame()
@@ -442,14 +448,12 @@ namespace RenderingKit
                     }
                 }
 
-                outputNames_.add(nullptr);
-
-                if (!program->GLCompile(path, outputNames_.c_array()))
+                if (!program->GLCompile(path, outputNames_.c_array(), outputNames_.getLength()))
                     return nullptr;
             }
             else
             {
-                if (!program->GLCompile(path, nullptr))
+                if (!program->GLCompile(path, nullptr, 0))
                     return nullptr;
             }
 
@@ -506,7 +510,76 @@ namespace RenderingKit
 
     IResource2* RenderingManager::CreateResource(IResourceManager2* res, const std::type_index& resourceClass, const char* recipe, int flags)
     {
-        if (resourceClass == typeid(ITexture))
+        if (resourceClass == typeid(IMaterial))
+        {
+            std::string shader;
+
+            const char *key, *value;
+
+            while (Params::Next(recipe, key, value))
+            {
+                if (strcmp(key, "shader") == 0)
+                    shader = value;
+            }
+
+            // TODO: this should be done by GLMaterial::BindDependencies
+            auto program = res->GetResource<IGLShaderProgram>(shader.c_str(), flags);
+
+            if (!program)
+                return nullptr;
+
+            auto material = p_CreateMaterialUniquePtr(eb, rk, this, recipe, program);
+
+            return material.release();
+        }
+        else if (resourceClass == typeid(IShader) || resourceClass == typeid(IGLShaderProgram))
+        {
+            std::string path;
+            std::string outputNames;
+
+            const char *key, *value;
+
+            while (Params::Next(recipe, key, value))
+            {
+                if (strcmp(key, "path") == 0)
+                    path = value;
+                else if (strcmp(key, "outputNames") == 0)
+                    outputNames = value;
+            }
+
+            zombie_assert(!path.empty());
+
+            auto program = p_CreateShaderProgramUniquePtr(eb, rk, this, path.c_str());
+
+            if (!outputNames.empty())
+            {
+                std::vector<const char*> outputNames_;
+
+                char* search = const_cast<char*>(outputNames.c_str());
+
+                while (true)
+                {
+                    char* space = strchr(search, ' ');
+
+                    if (space != nullptr)
+                    {
+                        *space = 0;
+                        outputNames_.push_back(search);
+                        search = space + 1;
+                    }
+                    else
+                    {
+                        outputNames_.push_back(search);
+                        break;
+                    }
+                }
+
+                program->SetOutputNames(&outputNames_[0], outputNames_.size());
+            }
+
+            return program.release();
+        }
+        else if (resourceClass == typeid(ITexture))
         {
             std::string path;
             RKTextureWrap_t wrapx = kTextureWrapClamp, wrapy = kTextureWrapClamp;
@@ -783,7 +856,8 @@ namespace RenderingKit
     void RenderingManager::RegisterResourceProviders(zfw::IResourceManager2* res)
     {
         static const std::type_index resourceClasses[] = {
-            typeid(ITexture),
+            typeid(IMaterial), typeid(IShader), typeid(ITexture),
+            typeid(IGLShaderProgram),
         };
 
         res->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this);
@@ -896,6 +970,12 @@ namespace RenderingKit
         framebufferSize = windowSize;
         SetViewportPosAndSize(Int2(), framebufferSize);
         CheckErrors(li_functionName);
+
+        // Initialize shared ResourceManager2
+        sharedResourceManager2.reset(rk->GetSys()->CreateResourceManager2());
+        this->RegisterResourceProviders(sharedResourceManager2.get());
+        sharedResourceManager2->SetTargetState(IResource2::REALIZED);
+
         return true;
     }
 

@@ -15,12 +15,31 @@ namespace RenderingKit
         public:
             GLMaterial(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
                     shared_ptr<IGLShaderProgram>&& program);
+            GLMaterial(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
+                   IGLShaderProgram* program);
 
             virtual const char* GetName() override { return name.c_str(); }
 
+            virtual IShader* GetShader() override { return program; }
             virtual void SetTexture(const char* name, shared_ptr<ITexture>&& texture) override;
 
             virtual void GLSetup(const MaterialSetupOptions& options, const glm::mat4x4& projection, const glm::mat4x4& modelView) override;
+
+            // IResource2
+            bool BindDependencies(IResourceManager2* resMgr) { return true; }
+            bool Preload(IResourceManager2* resMgr) { return true; }
+            void Unload() {}
+            bool Realize(IResourceManager2* resMgr) { return true; }
+            void Unrealize() {}
+
+            virtual void* Cast(const TypeID& resourceClass) final override { return DefaultCast(this, resourceClass); }
+
+            virtual State_t GetState() const final override { return state; }
+
+            virtual bool StateTransitionTo(State_t targetState, IResourceManager2* resMgr) final override
+            {
+                return DefaultStateTransitionTo(this, targetState, resMgr);
+            }
 
         private:
             void BuiltinUniformsInitialize();
@@ -32,26 +51,39 @@ namespace RenderingKit
                 intptr_t samplerUniformIndex;
             };
 
+            State_t state = CREATED;
+
             zfw::ErrorBuffer_t* eb;
             RenderingKit* rk;
             IRenderingManagerBackend* rm;
             String name;
 
-            shared_ptr<IGLShaderProgram> program;
+            IGLShaderProgram* program;
+            shared_ptr<IGLShaderProgram> programReference;
 
-            unsigned int numTextures;
+            unsigned int numTextures = 0;
             Texture_t textures[MAX_TEX];
 
             // OpenGL 3 Core NEW
             intptr_t u_ModelViewProjectionMatrix, u_ProjectionMatrix;
+
+        friend class IResource2;
     };
 
     shared_ptr<IGLMaterial> p_CreateMaterial(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
-            shared_ptr<IGLShaderProgram> program)
+                                             shared_ptr<IGLShaderProgram> program)
     {
-        ZFW_DBGASSERT(program != nullptr)
+        zombie_assert(program != nullptr);
 
         return std::make_shared<GLMaterial>(eb, rk, rm, name, move(program));
+    }
+
+    unique_ptr<IGLMaterial> p_CreateMaterialUniquePtr(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
+                                                      IGLShaderProgram* program)
+    {
+        zombie_assert(program != nullptr);
+
+        return std::make_unique<GLMaterial>(eb, rk, rm, name, program);
     }
 
     GLMaterial::GLMaterial(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
@@ -62,9 +94,21 @@ namespace RenderingKit
         this->rk = rk;
         this->rm = rm;
 
-        this->program = move(program);
+        this->programReference = move(program);
+        this->program = programReference.get();
 
-        numTextures = 0;
+        BuiltinUniformsInitialize();
+    }
+
+    GLMaterial::GLMaterial(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
+                           IGLShaderProgram* program)
+            : name(name)
+    {
+        this->eb = eb;
+        this->rk = rk;
+        this->rm = rm;
+
+        this->program = program;
 
         BuiltinUniformsInitialize();
     }

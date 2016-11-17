@@ -4,7 +4,7 @@
  *  Rendering Kit II
  *
  *  Part of Zombie Framework
- *  Copyright (c) 2012-2014 Minexew Games
+ *  Copyright (c) 2013, 2014, 2016 Minexew Games
  */
 
 #include <framework/app.hpp>
@@ -344,9 +344,11 @@ namespace RenderingKit
     };
 #endif
 
-    class IMaterial: public zfw::IResource
+    class IMaterial: public zfw::IResource, public zfw::IResource2
     {
         public:
+            virtual IShader* GetShader() = 0;
+
             virtual void SetTexture(const char* name, shared_ptr<ITexture>&& texture) = 0;
     };
 
@@ -388,7 +390,7 @@ namespace RenderingKit
             virtual shared_ptr<ITexture> GetTexture() = 0;
     };
 
-    class IShader: public zfw::IResource {
+    class IShader: public zfw::IResource, public zfw::IResource2 {
         public:
             virtual intptr_t GetUniformLocation(const char* name) = 0;
             virtual void SetUniformInt(intptr_t location, int value) = 0;
@@ -462,9 +464,13 @@ namespace RenderingKit
             ~IRenderingManager() {}
 
         public:
+#if ZOMBIE_API_VERSION < 201701
             virtual void RegisterResourceProviders(zfw::IResourceManager* res) = 0;
-            virtual void RegisterResourceProviders(zfw::IResourceManager2* res) = 0;
             virtual zfw::IResourceManager* GetSharedResourceManager() = 0;
+#endif
+
+            virtual void RegisterResourceProviders(zfw::IResourceManager2* res) = 0;
+            virtual zfw::IResourceManager2* GetSharedResourceManager2() = 0;
 
             // Creators
             virtual shared_ptr<ICamera>        CreateCamera(const char* name) = 0;

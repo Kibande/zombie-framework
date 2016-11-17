@@ -4,7 +4,7 @@
 #include "../TypeReflection.hpp"
 
 #include <framework/errorcheck.hpp>
-#include <framework/resourcemanager.hpp>
+#include <framework/resourcemanager2.hpp>
 
 #include <cstddef>
 
@@ -52,7 +52,7 @@ namespace RenderingKit
 
             shared_ptr<IVertexFormat> vertexFormat;
 
-            shared_ptr<IMaterial> material;
+            IMaterial* material;
 
             void DropResources();
 
@@ -101,13 +101,14 @@ namespace RenderingKit
     {
         this->rm = rm;
 
-        auto shader = rm->GetSharedResourceManager()->GetResource<IShader>("path=RenderingKit/basicTextured", zfw::RESOURCE_REQUIRED, 0);
-        zombie_ErrorCheck(shader);
+        material = rm->GetSharedResourceManager2()->GetResource<IMaterial>("shader=path=RenderingKit/basicTextured", zfw::IResourceManager2::kResourceRequired);
 
-        vertexFormat = rm->CompileVertexFormat(shader.get(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
+        if (!material)
+            return false;
 
-        material = rm->CreateMaterial("TexturedPainter/material", shader);
         material->SetTexture("tex", nullptr);
+
+        vertexFormat = rm->CompileVertexFormat(material->GetShader(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
 
         return true;
     }
@@ -121,7 +122,6 @@ namespace RenderingKit
     template <typename PosType, typename UVType, typename ColourType>
     void TexturedPainter<PosType, UVType, ColourType>::DropResources()
     {
-        material.reset();
         vertexFormat.reset();
     }
 
@@ -148,7 +148,7 @@ namespace RenderingKit
         static const auto v1 = TypeReflection<decltype(std::declval<UVType>().y)>::one;
 
         VertexType* p_vertices = this->rm->template VertexCacheAllocAs<VertexType>(this->vertexFormat.get(),
-                this->material.get(), this->SetTexture(texture), RK_TRIANGLES, 6);
+                this->material, this->SetTexture(texture), RK_TRIANGLES, 6);
 
         vert(pos.x,             pos.y,          u0, v0, colour);
         vert(pos.x,             pos.y + size.y, u0, v1, colour);
@@ -162,7 +162,7 @@ namespace RenderingKit
     void TexturedPainter2D<PosType, UVType, ColourType>::DrawFilledRectangleUV(ITexture* texture, const PosType& pos, const PosType& size, const UVType uv[2], const ColourType& colour)
     {
         VertexType* p_vertices = this->rm->template VertexCacheAllocAs<VertexType>(this->vertexFormat.get(),
-                this->material.get(), this->SetTexture(texture), RK_TRIANGLES, 6);
+                this->material, this->SetTexture(texture), RK_TRIANGLES, 6);
 
         vert(pos.x,             pos.y,          uv[0].x,    uv[0].y,    colour);
         vert(pos.x,             pos.y + size.y, uv[0].x,    uv[1].y,    colour);
@@ -197,7 +197,7 @@ namespace RenderingKit
         static const auto v1 = TypeReflection<decltype(std::declval<UVType>().y)>::one;
 
         VertexType* p_vertices = this->rm->template VertexCacheAllocAs<VertexType>(this->vertexFormat.get(),
-                this->material.get(), this->SetTexture(texture), RK_TRIANGLES, 6 * 6);
+                this->material, this->SetTexture(texture), RK_TRIANGLES, 6 * 6);
 
         // front
         vert(pos.x,             pos.y + size.y, pos.z + size.z, u0, v0, colour);
@@ -263,7 +263,7 @@ namespace RenderingKit
         static const auto v1 = TypeReflection<decltype(std::declval<UVType>().y)>::one;
 
         VertexType* p_vertices = this->rm->template VertexCacheAllocAs<VertexType>(this->vertexFormat.get(),
-                                                                                   this->material.get(), this->SetTexture(texture), RK_TRIANGLES, 2 * 6);
+                                                                                   this->material, this->SetTexture(texture), RK_TRIANGLES, 2 * 6);
 
         // top
         vert(pos.x,             pos.y,          pos.z, u0, v0, colour);
@@ -279,7 +279,7 @@ namespace RenderingKit
     void TexturedPainter3D<PosType, UVType, ColourType>::DrawFilledTriangleUV(ITexture* texture, const PosType abc[3], const UVType uv[3], const ColourType colours[3])
     {
         VertexType* p_vertices = this->rm->template VertexCacheAllocAs<VertexType>(this->vertexFormat.get(),
-                this->material.get(), this->SetTexture(texture), RK_TRIANGLES, 3);
+                this->material, this->SetTexture(texture), RK_TRIANGLES, 3);
 
         vert(abc[0].x,  abc[0].y,   abc[0].z,   uv[0].x,    uv[0].y,    colours[0]);
         vert(abc[1].x,  abc[1].y,   abc[1].z,   uv[1].x,    uv[1].y,    colours[1]);

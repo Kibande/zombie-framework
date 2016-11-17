@@ -6,7 +6,10 @@
 #include <framework/shader_preprocessor.hpp>
 #include <framework/system.hpp>
 
-#include <littl/String.hpp>
+#include <string>
+#include <vector>
+
+#include <malloc.h>
 
 namespace RenderingKit
 {
@@ -17,17 +20,16 @@ namespace RenderingKit
         zfw::ErrorBuffer_t* eb;
         RenderingKit* rk;
         IRenderingManagerBackend* rm;
-        String name;
 
         GLuint handle;
 
         GLuint p_LoadShader(const char* filename, const char* source, GLuint type);
 
         public:
-            GLShader(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name);
+            GLShader(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* path);
             ~GLShader();
 
-            virtual const char* GetName() override { return name.c_str(); }
+            virtual const char* GetName() override { return path.c_str(); }
 
             virtual intptr_t GetUniformLocation(const char* name) override;
             virtual void SetUniformInt(intptr_t location, int value) override;
@@ -37,18 +39,49 @@ namespace RenderingKit
             virtual void SetUniformFloat4(intptr_t location, const Float4& value) override;
             virtual void SetUniformMat4x4(intptr_t location, const glm::mat4x4& value) override;
 
-            virtual bool GLCompile(const char* path, const char** outputNames) override;
+            virtual bool GLCompile(const char* path, const char** outputNames, size_t numOutputNames) override;
             virtual int GLGetAttribLocation(const char* name) override;
             virtual void GLSetup() override;
+            virtual void SetOutputNames(const char** outputNames, size_t numOutputNames) override;
+
+            // IResource2
+            bool BindDependencies(IResourceManager2* resMgr) { return true; }
+            bool Preload(IResourceManager2* resMgr) { return true; }
+            void Unload() {}
+            bool Realize(IResourceManager2* resMgr);
+            void Unrealize();
+
+            virtual void* Cast(const TypeID& resourceClass) final override { return DefaultCast(this, resourceClass); }
+
+            virtual State_t GetState() const final override { return state; }
+
+            virtual bool StateTransitionTo(State_t targetState, IResourceManager2* resMgr) final override
+            {
+                return DefaultStateTransitionTo(this, targetState, resMgr);
+            }
+
+        private:
+            State_t state = CREATED;
+            std::string path;
+
+            std::string outputNames[MAX_SHADER_OUTPUTS];
+            size_t numOutputNames = 0;
+
+        friend class IResource2;
     };
 
-    shared_ptr<IGLShaderProgram> p_CreateShaderProgram(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)
+    shared_ptr<IGLShaderProgram> p_CreateShaderProgram(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* path)
     {
-        return std::make_shared<GLShader>(eb, rk, rm, name);
+        return std::make_shared<GLShader>(eb, rk, rm, path);
     }
 
-    GLShader::GLShader(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)
-            : name(name)
+    unique_ptr<IGLShaderProgram> p_CreateShaderProgramUniquePtr(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* path)
+    {
+        return std::make_unique<GLShader>(eb, rk, rm, path);
+    }
+
+    GLShader::GLShader(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* path)
+            : path(path)
     {
         this->eb = eb;
         this->rk = rk;
@@ -59,7 +92,8 @@ namespace RenderingKit
 
     GLShader::~GLShader()
     {
-        glDeleteProgram(handle);
+        Unrealize();
+        Unload();
     }
 
     intptr_t GLShader::GetUniformLocation(const char* name)
@@ -68,7 +102,7 @@ namespace RenderingKit
         return glGetUniformLocation(handle, name);
     }
 
-    bool GLShader::GLCompile(const char* path, const char** outputNames)
+    bool GLShader::GLCompile(const char* path, const char** outputNames, size_t numOutputNames)
     {
         rm->CheckErrors(li_functionName);
 
@@ -78,16 +112,16 @@ namespace RenderingKit
 
         auto shaderPreprocessor = rk->GetShaderPreprocessor();
 
-        String vertexPath = (String) path + ".vert";
-        String pixelPath = (String) path + ".frag";
+        auto vertexPath = (std::string) path + ".vert";
+        auto pixelPath = (std::string) path + ".frag";
 
         char* vertexSource = nullptr, * pixelSource = nullptr;
 
         const char* vertexShaderPrepend = "";
         const char* pixelShaderPrepend = "";
 
-        if (!shaderPreprocessor->LoadShader(vertexPath, vertexShaderPrepend, &vertexSource)
-                || !shaderPreprocessor->LoadShader(pixelPath, pixelShaderPrepend, &pixelSource))
+        if (!shaderPreprocessor->LoadShader(vertexPath.c_str(), vertexShaderPrepend, &vertexSource)
+                || !shaderPreprocessor->LoadShader(pixelPath.c_str(), pixelShaderPrepend, &pixelSource))
         {
             shaderPreprocessor->ReleaseShader(vertexSource);
 
@@ -96,8 +130,8 @@ namespace RenderingKit
         }
 
         // FIXME: Check for errors
-        GLuint vertexShader = p_LoadShader(vertexPath, vertexSource, GL_VERTEX_SHADER);
-        GLuint pixelShader = p_LoadShader(pixelPath, pixelSource, GL_FRAGMENT_SHADER);
+        GLuint vertexShader = p_LoadShader(vertexPath.c_str(), vertexSource, GL_VERTEX_SHADER);
+        GLuint pixelShader = p_LoadShader(pixelPath.c_str(), pixelSource, GL_FRAGMENT_SHADER);
 
         shaderPreprocessor->ReleaseShader(vertexSource);
         shaderPreprocessor->ReleaseShader(pixelSource);
@@ -121,9 +155,9 @@ namespace RenderingKit
         rm->CheckErrors("glBindAttribLocation");
 
 #ifndef RENDERING_KIT_USING_OPENGL_ES
-        if (outputNames != nullptr)
+        if (numOutputNames > 0)
         {
-            for (size_t i = 0; outputNames[i]; i++)
+            for (size_t i = 0; i < numOutputNames; i++)
                 glBindFragDataLocation(handle, i, outputNames[i]);
         }
 #endif
@@ -165,16 +199,22 @@ namespace RenderingKit
             glGetProgramBinary(handle, 0, &length, );
         }*/
 
+        // TODO: this can be removed once GLCompile isn't called externally
+        this->state = REALIZED;
         return true;
     }
 
     int GLShader::GLGetAttribLocation(const char* name)
     {
+        zombie_assert_resource_state(REALIZED, path.c_str());
+
         return glGetAttribLocation(handle, name);
     }
 
     void GLShader::GLSetup()
     {
+        zombie_assert_resource_state(REALIZED, path.c_str());
+
         GLStateTracker::UseProgram(handle);
         rm->CheckErrors(li_functionName);
     }
@@ -186,8 +226,6 @@ namespace RenderingKit
 
     GLuint GLShader::p_LoadShader(const char* filename, const char* source, GLuint type)
     {
-        String sourceStr;
-
         GLuint shader = glCreateShader( type );
         glShaderSource( shader, 1, &source, 0 );
         glCompileShader( shader );
@@ -220,6 +258,29 @@ namespace RenderingKit
         }
 
         return shader;
+    }
+
+    bool GLShader::Realize(IResourceManager2* resMgr)
+    {
+        zombie_assert_resource_state(PRELOADED, path.c_str());
+
+        const char* pointers[MAX_SHADER_OUTPUTS];
+
+        for (size_t i = 0; i < numOutputNames; i++)
+            pointers[i] = outputNames[i].c_str();
+
+        return GLCompile(path.c_str(), pointers, numOutputNames);
+    }
+
+    void GLShader::SetOutputNames(const char** outputNames, size_t numOutputNames)
+    {
+        zombie_assert_resource_state(CREATED, path.c_str());
+        zombie_assert(numOutputNames < MAX_SHADER_OUTPUTS);
+
+        for (size_t i = 0; i < numOutputNames; i++)
+            this->outputNames[i] = outputNames[i];
+
+        this->numOutputNames = numOutputNames;
     }
 
     void GLShader::SetUniformInt(intptr_t location, int value)
@@ -256,5 +317,14 @@ namespace RenderingKit
     {
         GLStateTracker::UseProgram(handle);
         glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+    }
+
+    void GLShader::Unrealize()
+    {
+        if (handle != 0)
+        {
+            glDeleteProgram(handle);
+            handle = 0;
+        }
     }
 }
