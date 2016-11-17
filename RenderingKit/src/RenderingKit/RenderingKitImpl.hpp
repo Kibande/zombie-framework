@@ -302,6 +302,9 @@ namespace RenderingKit
     unique_ptr<IGLShaderProgram>    p_CreateShaderProgramUniquePtr(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
                                             IRenderingManagerBackend* rm, const char* name);
 
+    unique_ptr<IWorldGeometry>      p_CreateWorldGeometry(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
+                                            IRenderingManagerBackend* rm, const char* path, const char* worldShaderRecipe);
+
 #ifndef RENDERING_KIT_USING_OPENGL_ES
 	shared_ptr<IGLDeferredShadingManager> p_CreateGLDeferredShadingManager();
 #endif

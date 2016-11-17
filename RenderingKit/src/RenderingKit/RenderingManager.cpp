@@ -1,6 +1,7 @@
 
 #include "RenderingKitImpl.hpp"
 #include <RenderingKit/RenderingKitUtility.hpp>
+#include <RenderingKit/WorldGeometry.hpp>
 
 #include <framework/resourcemanager.hpp>
 #include <framework/resourcemanager2.hpp>
@@ -627,6 +628,27 @@ namespace RenderingKit
 
             return texture.release();
         }
+        else if (resourceClass == typeid(IWorldGeometry))
+        {
+            std::string path, worldShaderRecipe;
+
+            const char *key, *value;
+
+            while (Params::Next(recipe, key, value))
+            {
+                if (strcmp(key, "path") == 0)
+                    path = value;
+                else if (strcmp(key, "worldShader") == 0)
+                    worldShaderRecipe = value;
+            }
+
+            zombie_assert(!path.empty());
+            zombie_assert(!worldShaderRecipe.empty());
+
+            auto geom = p_CreateWorldGeometry(eb, rk, this, path.c_str(), worldShaderRecipe.c_str());
+
+            return geom.release();
+        }
         else
         {
             zombie_assert(resourceClass != resourceClass);
@@ -872,7 +894,7 @@ namespace RenderingKit
     void RenderingManager::RegisterResourceProviders(zfw::IResourceManager2* res)
     {
         static const std::type_index resourceClasses[] = {
-            typeid(IMaterial), typeid(IShader), typeid(ITexture),
+            typeid(IMaterial), typeid(IShader), typeid(ITexture), typeid(IWorldGeometry),
             typeid(IGLShaderProgram), typeid(IGLTexture),
         };
 

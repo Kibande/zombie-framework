@@ -50,6 +50,7 @@ namespace RenderingKit
     class ITexture;
     class ITextureAtlas;
     class IVertexFormat;
+    class IWorldGeometry;
 
     enum RKAttribDataType_t
     {

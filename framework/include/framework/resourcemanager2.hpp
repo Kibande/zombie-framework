@@ -124,13 +124,21 @@ namespace zfw
 	{
 		public:
 			T* operator* () { return res; }
+            T* operator-> () { return res; }
 
-			void ByPath(const char* path, int flags = IResourceManager2::kResourceRequired)
+            bool ByPath(const char* path, int flags = IResourceManager2::kResourceRequired)
 			{
 				auto resMgr = ResourceManagerScope::GetScopedResourceManager(true);
 				res = resMgr->GetResourceByPath<T>(path, flags);
-				zombie_assert(res);
+				return (res != nullptr);
 			}
+
+            bool ByRecipe(const char* recipe, int flags = IResourceManager2::kResourceRequired)
+            {
+                auto resMgr = ResourceManagerScope::GetScopedResourceManager(true);
+                res = resMgr->GetResource<T>(recipe, flags);
+                return (res != nullptr);
+            }
 
 		private:
 			T* res;
