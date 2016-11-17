@@ -4,13 +4,14 @@
 #include <RenderingKit/gameui/RKUIThemer.hpp>
 
 #include <framework/colorconstants.hpp>
+#include <framework/errorcheck.hpp>
 #include <framework/graphics.hpp>
-#include <framework/resourcemanager.hpp>
+#include <framework/resourcemanager2.hpp>
 #include <framework/system.hpp>
 
-// FIXME: Use ISys::ErrorAbort
-#undef ZFW_ASSERT
-#define ZFW_ASSERT(x) { if (!(x)) abort(); }
+#if ZOMBIE_API_VERSION < 201701
+#include <framework/resourcemanager.hpp>
+#endif
 
 namespace RenderingKit
 {
@@ -124,15 +125,18 @@ namespace RenderingKit
     class RKUIPainter : public RenderingKit::IFontQuadSink
     {
         IRenderingManager* rm;
-        IResourceManager* res;
+        IResourceManager* res = nullptr;
+        IResourceManager2* res2 = nullptr;
 
         shared_ptr<ITextureAtlas> fontAtlas;
-
         shared_ptr<IVertexFormat> vertexFormat;
-        shared_ptr<IMaterial> material;
+
+        IMaterial* material;
+        shared_ptr<IMaterial> materialReference;
 
         public:
             RKUIPainter(IRenderingManager* rm, IResourceManager* res);
+            RKUIPainter(IRenderingManager* rm, IResourceManager2* res2);
             ~RKUIPainter() { DropResources(); }
 
             bool AcquireResources();
@@ -506,7 +510,11 @@ namespace RenderingKit
             RKUIThemer();
             ~RKUIThemer();
 
+#if ZOMBIE_API_VERSION < 201701
             virtual void Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* resRef) override;
+#endif
+
+            virtual bool Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager2* res) override;
 
             virtual bool AcquireResources() override;
             virtual void DropResources() override;
@@ -1216,26 +1224,42 @@ namespace RenderingKit
     {
     }
 
+    RKUIPainter::RKUIPainter(IRenderingManager* rm, IResourceManager2* res2)
+            : rm(rm), res2(res2)
+    {
+    }
+
     bool RKUIPainter::AcquireResources()
     {
-        shared_ptr<IShader> program = res->GetResource<IShader>("path=RenderingKit/ui", RESOURCE_REQUIRED, 0);
-
-        if (program == nullptr)
-            return false;
+        zombie_assert(res != nullptr || res2 != nullptr);
 
         fontAtlas = rm->CreateTextureAtlas2D("RKUIPainter::fontAtlas", kFontAtlasInitSize);
 
-        vertexFormat = rm->CompileVertexFormat(program.get(), 16, uiVertexAttribs, false);
+        if (res2)
+        {
+            material = res2->GetResource<IMaterial>("shader=path=RenderingKit/ui", IResourceManager2::kResourceRequired);
+        }
+        else
+        {
+            shared_ptr<IShader> program = res->GetResource<IShader>("path=RenderingKit/ui", RESOURCE_REQUIRED, 0);
 
-        material = rm->CreateMaterial("ui_material", program);
+            if (program == nullptr)
+                return false;
+
+            materialReference = rm->CreateMaterial("ui_material", program);
+            this->material = materialReference.get();
+        }
+
         material->SetTexture("tex", fontAtlas->GetTexture());
+
+        vertexFormat = rm->CompileVertexFormat(material->GetShader(), 16, uiVertexAttribs, false);
 
         return true;
     }
 
     void RKUIPainter::DropResources()
     {
-        material.reset();
+        materialReference.reset();
         vertexFormat.reset();
         fontAtlas.reset();
     }
@@ -1252,7 +1276,7 @@ namespace RenderingKit
 
     void RKUIPainter::DrawFilledRectangle(const Short2 pos, const Short2 size, const Byte4 colour)
     {
-        UIVertex_t* p_vertices = reinterpret_cast<UIVertex_t*>(rm->VertexCacheAlloc(vertexFormat.get(), material.get(), RK_TRIANGLES, 6));
+        UIVertex_t* p_vertices = reinterpret_cast<UIVertex_t*>(rm->VertexCacheAlloc(vertexFormat.get(), material, RK_TRIANGLES, 6));
 
         vert(pos.x,             pos.y,          0, 0, -1, colour);
         vert(pos.x,             pos.y + size.y, 0, 0, -1, colour);
@@ -1264,7 +1288,7 @@ namespace RenderingKit
 
     void RKUIPainter::DrawFilledRectangle(const Short2 pos, const Short2 size, const Byte4 colours[4])
     {
-        UIVertex_t* p_vertices = reinterpret_cast<UIVertex_t*>(rm->VertexCacheAlloc(vertexFormat.get(), material.get(), RK_TRIANGLES, 6));
+        UIVertex_t* p_vertices = reinterpret_cast<UIVertex_t*>(rm->VertexCacheAlloc(vertexFormat.get(), material, RK_TRIANGLES, 6));
 
         vert(pos.x,             pos.y,          0, 0, -1, colours[0]);
         vert(pos.x,             pos.y + size.y, 0, 0, -1, colours[2]);
@@ -1276,7 +1300,7 @@ namespace RenderingKit
 
     void RKUIPainter::DrawFilledTriangle(const Short2 abc[3], const Byte4 colours[3])
     {
-        UIVertex_t* p_vertices = reinterpret_cast<UIVertex_t*>(rm->VertexCacheAlloc(vertexFormat.get(), material.get(), RK_TRIANGLES, 3));
+        UIVertex_t* p_vertices = reinterpret_cast<UIVertex_t*>(rm->VertexCacheAlloc(vertexFormat.get(), material, RK_TRIANGLES, 3));
 
         vert(abc[0].x,  abc[0].y,   0, 0, -1, colours[0]);
         vert(abc[1].x,  abc[1].y,   0, 0, -1, colours[2]);
@@ -1364,7 +1388,7 @@ namespace RenderingKit
     {
         static const int TexIndex = 0;
 
-        UIVertex_t* p_vertices = reinterpret_cast<UIVertex_t*>(rm->VertexCacheAlloc(vertexFormat.get(), material.get(), RK_TRIANGLES, 6));
+        UIVertex_t* p_vertices = reinterpret_cast<UIVertex_t*>(rm->VertexCacheAlloc(vertexFormat.get(), material, RK_TRIANGLES, 6));
 
         vert(pos.x,             pos.y,          uv[0].x * 32768, uv[0].y * 32768, TexIndex, colour);
         vert(pos.x,             pos.y + size.y, uv[0].x * 32768, uv[1].y * 32768, TexIndex, colour);
@@ -1400,7 +1424,19 @@ namespace RenderingKit
         this->res = res;
 
         painter.reset(new RKUIPainter(rm, res));
-        zombie_assert(painter->AcquireResources());
+    }
+
+    bool RKUIThemer::Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager2* res)
+    {
+        SetEssentials(sys->GetEssentials());
+
+        this->eb = GetErrorBuffer();
+        this->sys = sys;
+        this->rk = rk;
+        this->rm = rk->GetRenderingManager();
+
+        painter.reset(new RKUIPainter(rm, res));
+        return true;
     }
 
     bool RKUIThemer::AcquireFontResources(FontEntry& entry)
@@ -1425,8 +1461,13 @@ namespace RenderingKit
 
     bool RKUIThemer::AcquireResources()
     {
-        //if (!painter->AcquireResources())
-        //    return false;
+        if (!painter->AcquireResources())
+            return false;
+
+        for (auto& entry : fonts)
+        {
+            ErrorCheck(AcquireFontResources(entry));
+        }
 
         /*iterate2 (i, fonts)
         {
@@ -1549,8 +1590,6 @@ namespace RenderingKit
 
         entry.name = name;
         entry.font = nullptr;
-
-        ZFW_ASSERT(AcquireFontResources(entry))
 
         return fonts.add(entry);
     }
