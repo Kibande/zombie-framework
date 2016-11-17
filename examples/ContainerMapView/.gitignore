@@ -1,0 +1,6 @@
+/.idea/
+/vcxproj/
+/emscripten/
+/dist/
+/web-dist/
+/web_build/
