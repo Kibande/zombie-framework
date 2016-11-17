@@ -350,6 +350,7 @@ namespace RenderingKit
             virtual IShader* GetShader() = 0;
 
             virtual void SetTexture(const char* name, shared_ptr<ITexture>&& texture) = 0;
+            virtual void SetTexture(const char* name, ITexture* texture) = 0;
     };
 
     class IGeomChunk

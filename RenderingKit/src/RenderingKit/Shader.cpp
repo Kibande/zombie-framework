@@ -107,7 +107,7 @@ namespace RenderingKit
         rm->CheckErrors(li_functionName);
 
 #ifdef RENDERING_KIT_USING_OPENGL_ES
-		zombie_assert(outputNames == nullptr);
+		zombie_assert(numOutputNames == 0);
 #endif
 
         auto shaderPreprocessor = rk->GetShaderPreprocessor();

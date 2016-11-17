@@ -22,6 +22,7 @@ namespace RenderingKit
 
             virtual IShader* GetShader() override { return program; }
             virtual void SetTexture(const char* name, shared_ptr<ITexture>&& texture) override;
+            virtual void SetTexture(const char* name, ITexture* texture) override;
 
             virtual void GLSetup(const MaterialSetupOptions& options, const glm::mat4x4& projection, const glm::mat4x4& modelView) override;
 
@@ -47,7 +48,8 @@ namespace RenderingKit
 
             struct Texture_t
             {
-                shared_ptr<IGLTexture> texture;
+                IGLTexture* texture;
+                shared_ptr<IGLTexture> textureHandle;
                 intptr_t samplerUniformIndex;
             };
 
@@ -164,7 +166,20 @@ namespace RenderingKit
         if (index >= 0)
         {
             auto& entry = textures[numTextures++];
-            entry.texture = std::static_pointer_cast<IGLTexture>(texture);
+            entry.textureHandle = std::static_pointer_cast<IGLTexture>(texture);
+            entry.texture = entry.textureHandle.get();
+            entry.samplerUniformIndex = index;
+        }
+    }
+
+    void GLMaterial::SetTexture(const char* name, ITexture* texture)
+    {
+        intptr_t index = program->GetUniformLocation(name);
+
+        if (index >= 0)
+        {
+            auto& entry = textures[numTextures++];
+            entry.texture = static_cast<IGLTexture*>(texture);
             entry.samplerUniformIndex = index;
         }
     }

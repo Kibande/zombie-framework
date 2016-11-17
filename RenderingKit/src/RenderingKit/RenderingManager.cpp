@@ -512,23 +512,39 @@ namespace RenderingKit
     {
         if (resourceClass == typeid(IMaterial))
         {
-            std::string shader;
+            std::string shaderRecipe;
+            std::vector<std::pair<std::string, std::string>> textures;
 
             const char *key, *value;
 
             while (Params::Next(recipe, key, value))
             {
                 if (strcmp(key, "shader") == 0)
-                    shader = value;
+                    shaderRecipe = value;
+                else if (strncmp(key, "texture:", 8) == 0)
+                    textures.emplace_back(key + 8, value);
             }
 
+            zombie_assert(!shaderRecipe.empty());
+
             // TODO: this should be done by GLMaterial::BindDependencies
-            auto program = res->GetResource<IGLShaderProgram>(shader.c_str(), flags);
+            auto program = res->GetResource<IGLShaderProgram>(shaderRecipe.c_str(), flags);
 
             if (!program)
                 return nullptr;
 
             auto material = p_CreateMaterialUniquePtr(eb, rk, this, recipe, program);
+
+            // TODO: this should be done by GLMaterial::BindDependencies
+            for (const auto& textureAssignment : textures)
+            {
+                auto texture = res->GetResource<IGLTexture>(textureAssignment.second.c_str(), flags);
+                
+                if (!texture)
+                    return nullptr;
+
+                material->SetTexture(textureAssignment.first.c_str(), texture);
+            }
 
             return material.release();
         }
@@ -579,7 +595,7 @@ namespace RenderingKit
 
             return program.release();
         }
-        else if (resourceClass == typeid(ITexture))
+        else if (resourceClass == typeid(IGLTexture) || resourceClass == typeid(ITexture))
         {
             std::string path;
             RKTextureWrap_t wrapx = kTextureWrapClamp, wrapy = kTextureWrapClamp;
@@ -857,7 +873,7 @@ namespace RenderingKit
     {
         static const std::type_index resourceClasses[] = {
             typeid(IMaterial), typeid(IShader), typeid(ITexture),
-            typeid(IGLShaderProgram),
+            typeid(IGLShaderProgram), typeid(IGLTexture),
         };
 
         res->RegisterResourceProvider(resourceClasses, lengthof(resourceClasses), this);
