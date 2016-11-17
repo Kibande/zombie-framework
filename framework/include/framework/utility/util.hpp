@@ -3,6 +3,7 @@
 #include <framework/datamodel.hpp>
 
 #include <algorithm>
+#include <ctime>
 
 #define sprintf_15      (const char*) zfw::sprintf_t<15>
 #define sprintf_63      (const char*) zfw::sprintf_t<63>

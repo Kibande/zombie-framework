@@ -125,6 +125,7 @@ namespace zfw
 		public:
 			T* operator* () { return res; }
             T* operator-> () { return res; }
+            operator T* () { return res; }
 
             bool ByPath(const char* path, int flags = IResourceManager2::kResourceRequired)
 			{

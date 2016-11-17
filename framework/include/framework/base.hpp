@@ -103,6 +103,7 @@ namespace zfw
     class IDecoder;
     class IEncoder;
     class IEntityHandler;
+    class IEntityVisitor;
     class IEssentials;
     class IFileSystem;
     class IFSObject;

@@ -134,7 +134,8 @@ namespace zfw
             return nullptr;
 
         if (!p_MakeResourceCorrectState(res.get()))
-            sys->PrintError(g_essentials->GetErrorBuffer(), kLogError);
+            //sys->PrintError(g_essentials->GetErrorBuffer(), kLogError);
+            return nullptr;
 
         if (!(flags & kResourcePrivate))
             return (storages[storage].resources[key] = res.release());

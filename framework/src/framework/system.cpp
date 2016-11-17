@@ -259,7 +259,9 @@ namespace zfw
             double p_Update();
             void ExecLine1(const String& line);
 
+#ifdef ZOMBIE_EMSCRIPTEN
 			static void p_EmscriptenFrame();
+#endif
 
             bool interactive;
 
@@ -924,10 +926,13 @@ namespace zfw
         log.clear();
     }
 
+#ifdef ZOMBIE_EMSCRIPTEN
 	void System::p_EmscriptenFrame()
 	{
-		s_sys->p_Frame();
+        if (!s_sys->p_Frame())
+            emscripten_cancel_main_loop();
 	}
+#endif
 
 	bool System::p_Frame()
 	{

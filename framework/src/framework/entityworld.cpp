@@ -172,4 +172,10 @@ namespace zfw
 
         return true;
     }
+
+    void EntityWorld::WalkEntities(IEntityVisitor* visitor)
+    {
+        for (auto ent : entities)
+            visitor->Visit(ent.get());
+    }
 }

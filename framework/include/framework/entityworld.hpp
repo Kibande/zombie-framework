@@ -25,6 +25,7 @@ namespace zfw
             void RemoveEntityFilter(IEntityFilter* filter);
 			bool Serialize(OutputStream* output, int flags);
 			bool Unserialize(InputStream* input, int flags);
+            void WalkEntities(IEntityVisitor* visitor);
 
 #if ZOMBIE_API_VERSION < 201601
             // When this is removed, also remove li::List dependency
@@ -39,5 +40,10 @@ namespace zfw
 
         private:
             EntityWorld(const EntityWorld&) = delete;
+    };
+
+    class IEntityVisitor {
+        public:
+            virtual void Visit(IEntity* ent) = 0;
     };
 }
