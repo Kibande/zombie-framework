@@ -134,7 +134,7 @@ namespace example {
         char params[2048];
         zombie_assert(Params::BuildIntoBuffer(params, sizeof(params), 2,
                 "path",         map,
-                "worldShader", "path=ContainerMapView/singlePass"
+                "worldShader", "path=MapView/singlePass"
         ));
 
         this->world->AddEntity(std::make_shared<Ent_WorldGeometry>(params));
