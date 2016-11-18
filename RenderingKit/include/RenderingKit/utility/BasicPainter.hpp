@@ -4,7 +4,7 @@
 #include "../TypeReflection.hpp"
 
 #include <framework/errorcheck.hpp>
-#include <framework/resourcemanager.hpp>
+#include <framework/resourcemanager2.hpp>
 
 #include <cstddef>
 
@@ -93,13 +93,10 @@ namespace RenderingKit
     {
         this->rm = rm;
 
-        auto shader = rm->GetSharedResourceManager()->GetResource<IShader>("path=RenderingKit/basic", zfw::RESOURCE_REQUIRED, 0);
-        zombie_ErrorCheck(shader);
+        material = rm->GetSharedResourceManager2()->GetResource<IMaterial>("shader=path=RenderingKit/basic", zfw::IResourceManager2::kResourceRequired);
+        zombie_ErrorCheck(material);
 
-        vertexFormat = rm->CompileVertexFormat(shader.get(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
-
-        materialReference = rm->CreateMaterial("BasicPainter/material", shader);
-        material = materialReference.get();
+        vertexFormat = rm->CompileVertexFormat(material->GetShader(), sizeof(VertexType), VertexType::GetVertexAttribs(), false);
 
         return true;
     }

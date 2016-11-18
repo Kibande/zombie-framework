@@ -146,7 +146,7 @@ namespace example {
         cam->SetVFov(45.0f * f_pi / 180.0f);
         //cam->SetView(Float3(0.0f, 128.0f, 128.0f), Float3(), glm::normalize(Float3(0.0f, -1.0f, 1.0f)));
         //cam->SetView(Float3(0.0f, 0.0f, 28.0f), Float3(0.0f, -1.0f, 28.0f), Float3(0.0f, 0.0f, 1.0f));
-        cam->SetViewWithCenterDistanceYawPitch(Float3(0.0f, 0.0f, 1.6f), -1.0f, 0.0f, 0.0f);
+        cam->SetViewWithCenterDistanceYawPitch(Float3(0.0f, 0.0f, 1.5f), -1.0f, 0.0f, 0.0f);
 
         SetWorldCamera(shared_ptr<ICamera>(cam));
 

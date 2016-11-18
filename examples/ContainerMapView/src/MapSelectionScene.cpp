@@ -23,7 +23,7 @@ namespace example
     class MapSelectionScene : public Container::ContainerScene
     {
         public:
-            MapSelectionScene(Container::ContainerApp* app) : Container::ContainerScene(app, kUseUI | kUseWorld) {}
+            MapSelectionScene(Container::ContainerApp* app) : Container::ContainerScene(app, kUseUI) {}
             virtual ~MapSelectionScene() {}
 
             virtual bool PreBindDependencies() override;

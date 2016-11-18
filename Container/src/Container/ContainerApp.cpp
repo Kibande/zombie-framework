@@ -81,6 +81,8 @@ namespace Container {
         if (!sys->Init(eb, 0))
             return false;
 
+        sys->ParseArgs1(argc, argv);
+
         auto var = sys->GetVarSystem();
         var->SetVariable("appName", appName, 0);
 

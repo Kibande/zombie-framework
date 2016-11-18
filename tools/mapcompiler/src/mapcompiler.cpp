@@ -10,7 +10,9 @@
 #include <framework/varsystem.hpp>
 #include <framework/utility/params.hpp>
 
+#include <littl/Directory.hpp>
 #include <littl/File.hpp>
+#include <littl/FileName.hpp>
 
 #include <fstream>
 #include <unordered_set>
@@ -28,7 +30,7 @@ namespace mapcompiler
 
     struct Options
     {
-        std::string input, outputContainer, outputName, outputPath = ".", listResources;
+        std::string input, outputContainer, outputName, outputPath = ".", listResources, runGame;
         bool includeResources = false;
         bool waitforkey = false;
         float scale = 1.0f;
@@ -228,7 +230,9 @@ namespace mapcompiler
 
     static bool Set(Options& options, const char* key, const char* value)
     {
-        if (strcmp(key, "includeResources") == 0)
+        if (strcmp(key, "runGame") == 0)
+            options.runGame = value;
+        else if (strcmp(key, "includeResources") == 0)
             options.includeResources = Util::ParseBool(value);
         else if (strcmp(key, "input") == 0)
             options.input = value;
@@ -285,6 +289,16 @@ namespace mapcompiler
         return true;
     }
 
+    static void RunGame(const Options& options)
+    {
+        li::FileName fileName(options.runGame.c_str());
+
+        li::Directory::setCurrent(fileName.getDirectory());
+
+        printf("\n\n==== EXECUTING %s ====\n\n", fileName.getFileName().c_str());
+        system(fileName.getFileName() + " +map " + options.outputName.c_str());
+    }
+
     extern "C" int main(int argc, char** argv)
     {
         Options options;
@@ -294,7 +308,9 @@ namespace mapcompiler
 
         if (options.input.empty() || options.outputContainer.empty() || options.outputName.empty())
         {
-            fprintf(stderr, "usage: mapcompiler [+config1 +config2 ...] input=... outputContainer=... outputName=... [includeResources=1] [listResources=...] [outputPath=...] [scale=...] [waitforkey=1]\n");
+            fprintf(stderr, "usage: mapcompiler [+config ...] input=... outputContainer=... outputName=...\n"
+                            "       [includeResources=1] [listResources=...] [outputPath=...] [runGame=...]\n"
+                            "       [scale=...] [waitforkey=1]\n\n");
             return -1;
         }
 
@@ -308,6 +324,9 @@ namespace mapcompiler
 
         if (options.waitforkey)
             getchar();
+
+        if (rc == 0 && !options.runGame.empty())
+            RunGame(options);
 
         return rc;
     }

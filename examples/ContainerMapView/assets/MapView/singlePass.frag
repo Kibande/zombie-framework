@@ -13,5 +13,6 @@ void main()
 {
     vec3 lightDir = -normalize(vec3(0.3, -0.2, -1));
 
-    gl_FragColor = texture2D(tex, ex_UV) * ex_Color * mix(0.9, 1.0, dot(ex_Normal, lightDir));
+	float light = mix(0.9, 1.0, dot(ex_Normal, lightDir));
+    gl_FragColor = texture2D(tex, ex_UV) * ex_Color * vec4(light, light, light, 1.0);
 }

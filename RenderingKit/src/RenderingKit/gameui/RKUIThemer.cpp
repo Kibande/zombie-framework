@@ -1259,6 +1259,9 @@ namespace RenderingKit
         zombie_assert(res2 != nullptr);
 
         material = res2->GetResource<IMaterial>("shader=path=RenderingKit/ui", IResourceManager2::kResourceRequired);
+        
+        if (material == nullptr)
+            return false;
 #endif
 
         fontAtlas = rm->CreateTextureAtlas2D("RKUIPainter::fontAtlas", kFontAtlasInitSize);
