@@ -784,6 +784,7 @@ namespace RenderingKit
         //frameNumber++;
     }
 
+#if ZOMBIE_API_VERSION < 201701
     zfw::IResourceManager* RenderingManager::GetSharedResourceManager()
     {
         if (!sharedResourceManager)
@@ -794,6 +795,7 @@ namespace RenderingKit
 
         return sharedResourceManager.get();
     }
+#endif
 
     void RenderingManager::GetViewportPosAndSize(Int2* viewportPos_out, Int2* viewportSize_out)
     {
@@ -887,6 +889,7 @@ namespace RenderingKit
         return true;
     }
 
+#if ZOMBIE_API_VERSION < 201701
     void RenderingManager::RegisterResourceProviders(zfw::IResourceManager* res)
     {
         static const std::type_index resourceClasses[] = {
@@ -896,6 +899,7 @@ namespace RenderingKit
 
         res->RegisterResourceProvider(resourceClasses, li_lengthof(resourceClasses), this, 0);
     }
+#endif
 
     void RenderingManager::RegisterResourceProviders(zfw::IResourceManager2* res)
     {

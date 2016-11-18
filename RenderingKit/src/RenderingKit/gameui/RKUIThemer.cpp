@@ -6,11 +6,12 @@
 #include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/graphics.hpp>
-#include <framework/resourcemanager2.hpp>
 #include <framework/system.hpp>
 
 #if ZOMBIE_API_VERSION < 201701
 #include <framework/resourcemanager.hpp>
+#else
+#include <framework/resourcemanager2.hpp>
 #endif
 
 namespace RenderingKit
@@ -125,8 +126,12 @@ namespace RenderingKit
     class RKUIPainter : public RenderingKit::IFontQuadSink
     {
         IRenderingManager* rm;
+
+#if ZOMBIE_API_VERSION < 201701
         IResourceManager* res = nullptr;
+#else
         IResourceManager2* res2 = nullptr;
+#endif
 
         shared_ptr<ITextureAtlas> fontAtlas;
         shared_ptr<IVertexFormat> vertexFormat;
@@ -135,8 +140,11 @@ namespace RenderingKit
         shared_ptr<IMaterial> materialReference;
 
         public:
+#if ZOMBIE_API_VERSION < 201701
             RKUIPainter(IRenderingManager* rm, IResourceManager* res);
+#else
             RKUIPainter(IRenderingManager* rm, IResourceManager2* res2);
+#endif
             ~RKUIPainter() { DropResources(); }
 
             bool AcquireResources();
@@ -512,9 +520,9 @@ namespace RenderingKit
 
 #if ZOMBIE_API_VERSION < 201701
             virtual void Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* resRef) override;
-#endif
-
+#else
             virtual bool Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager2* res) override;
+#endif
 
             virtual bool AcquireResources() override;
             virtual void DropResources() override;
@@ -1042,6 +1050,7 @@ namespace RenderingKit
             "type", "image",
             "src", path.c_str());
 
+#if ZOMBIE_API_VERSION < 201701
         g = themer->GetResourceManager()->GetResource<IGraphics>(params, RESOURCE_REQUIRED, 0);
 
         if (g == nullptr)
@@ -1049,6 +1058,9 @@ namespace RenderingKit
             auto sys = themer->GetSys();
             sys->PrintError(GetErrorBuffer(), kLogWarning);
         }
+#else
+        zombie_assert(!"Not implemented");
+#endif
 
         return true;
     }
@@ -1219,38 +1231,38 @@ namespace RenderingKit
         item->labelTxt.LayoutCentered(font, label, fontid);
     }
 
+#if ZOMBIE_API_VERSION < 201701
     RKUIPainter::RKUIPainter(IRenderingManager* rm, IResourceManager* res)
             : rm(rm), res(res)
     {
     }
-
+#else
     RKUIPainter::RKUIPainter(IRenderingManager* rm, IResourceManager2* res2)
             : rm(rm), res2(res2)
     {
     }
+#endif
 
     bool RKUIPainter::AcquireResources()
     {
-        zombie_assert(res != nullptr || res2 != nullptr);
+#if ZOMBIE_API_VERSION < 201701
+        zombie_assert(res != nullptr);
+
+        shared_ptr<IShader> program = res->GetResource<IShader>("path=RenderingKit/ui", RESOURCE_REQUIRED, 0);
+
+        if (program == nullptr)
+            return false;
+
+        materialReference = rm->CreateMaterial("ui_material", program);
+        this->material = materialReference.get();
+#else
+        zombie_assert(res2 != nullptr);
+
+        material = res2->GetResource<IMaterial>("shader=path=RenderingKit/ui", IResourceManager2::kResourceRequired);
+#endif
 
         fontAtlas = rm->CreateTextureAtlas2D("RKUIPainter::fontAtlas", kFontAtlasInitSize);
-
-        if (res2)
-        {
-            material = res2->GetResource<IMaterial>("shader=path=RenderingKit/ui", IResourceManager2::kResourceRequired);
-        }
-        else
-        {
-            shared_ptr<IShader> program = res->GetResource<IShader>("path=RenderingKit/ui", RESOURCE_REQUIRED, 0);
-
-            if (program == nullptr)
-                return false;
-
-            materialReference = rm->CreateMaterial("ui_material", program);
-            this->material = materialReference.get();
-        }
-
-        material->SetTexture("tex", fontAtlas->GetTexture());
+        material->SetTexture("tex", fontAtlas->GetTexture().get());
 
         vertexFormat = rm->CompileVertexFormat(material->GetShader(), 16, uiVertexAttribs, false);
 
@@ -1413,6 +1425,7 @@ namespace RenderingKit
         DropResources();
     }
 
+#if ZOMBIE_API_VERSION < 201701
     void RKUIThemer::Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* res)
     {
         SetEssentials(sys->GetEssentials());
@@ -1425,7 +1438,7 @@ namespace RenderingKit
 
         painter.reset(new RKUIPainter(rm, res));
     }
-
+#else
     bool RKUIThemer::Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager2* res)
     {
         SetEssentials(sys->GetEssentials());
@@ -1438,6 +1451,7 @@ namespace RenderingKit
         painter.reset(new RKUIPainter(rm, res));
         return true;
     }
+#endif
 
     bool RKUIThemer::AcquireFontResources(FontEntry& entry)
     {

@@ -4,7 +4,7 @@
 
 #include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
-#include <framework/resourcemanager.hpp>
+#include <framework/resourcemanager2.hpp>
 
 #include <ztype/ztype.hpp>
 
@@ -131,7 +131,7 @@ namespace RenderingKit
 
         shared_ptr<IGLTexture> texture;
         shared_ptr<IGLTextureAtlas> atlas;
-        shared_ptr<IGLMaterial> material;
+        unique_ptr<IGLMaterial> material;
         shared_ptr<IVertexFormat> vertexFormat;
 
         // ztype resources
@@ -252,13 +252,14 @@ namespace RenderingKit
         else
             texture = atlas->GLGetTexture();
 
-        auto shader = rm->GetSharedResourceManager()->GetResource<IGLShaderProgram>("path=RenderingKit/basicTextured", zfw::RESOURCE_REQUIRED, 0);
+        auto shader = rm->GetSharedResourceManager2()->GetResource<IGLShaderProgram>("path=RenderingKit/basicTextured", IResourceManager2::kResourceRequired);
         zombie_ErrorCheck(shader);
 
-        vertexFormat = rm->CompileVertexFormat(shader.get(), FONT_VERTEX_SIZE, fontVertexAttribs, false);
+        vertexFormat = rm->CompileVertexFormat(shader, FONT_VERTEX_SIZE, fontVertexAttribs, false);
 
-        material = p_CreateMaterial(eb, rk, rm, sprintf_255("%s/material", name.c_str()), shader);
-        material->SetTexture("tex", texture);
+        // TODO: use Resource Manager to get material
+        material = p_CreateMaterialUniquePtr(eb, rk, rm, sprintf_255("%s/material", name.c_str()), shader);
+        material->SetTexture("tex", texture.get());
 
         //ztype::FaceDesc desc = {filename, nullptr, size, 0, 0, 0};
 
