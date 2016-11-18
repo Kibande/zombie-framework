@@ -27,6 +27,7 @@ namespace StudioKit
             virtual void SetMetadata(const char* key, const char* value) override;
 
             virtual void AddEntity(const char* entityCfx2) override;
+            virtual void AddResource(const char* path, zfw::InputStream* file) override;
 
             virtual bool GetOutputStreams1(OutputStream** materials, OutputStream** vertices) override;
 
@@ -37,7 +38,8 @@ namespace StudioKit
             ISystem* sys;
 
             std::string outputName;
-            unsigned int numEntitiesWritten = 0;
+            int numEntitiesWritten = 0;
+            int numResourcesWritten = 0;
 
             IOStream* outputContainerFile;
             li::StreamByteIO bio;
@@ -79,6 +81,8 @@ namespace StudioKit
         this->sys = sys;
 
         bio.set(outputContainerFile);
+
+        repo.setAllocationGranularity(4096);
         
         if (!repo.open(true))
             return ErrorBuffer::SetError3(EX_ASSET_OPEN_ERR, 2,
@@ -105,12 +109,24 @@ namespace StudioKit
         entities->writeString(entityCfx2);
     }
 
+    void MapWriter::AddResource(const char* path, zfw::InputStream* file)
+    {
+        auto output_ = repo.openStream(path, bleb::kStreamCreate | bleb::kStreamTruncate);
+        zombie_assert(output_);
+        li::ByteIOStream output(output_.get());
+
+        output.copyFrom(file);
+
+        numResourcesWritten++;
+    }
+
     bool MapWriter::Finish()
     {
         /*sys->Printf(kLogInfo, "%8i material groups",    (int) matGrps.getLength());
         sys->Printf(kLogInfo, "%8i faces",              (int) totalVerts / 3);
         sys->Printf(kLogInfo, "%8i total vertices",     (int) totalVerts);*/
         sys->Printf(kLogInfo, "%8u entities", numEntitiesWritten);
+        sys->Printf(kLogInfo, "%8u embedded resources", numResourcesWritten);
 
         return true;
     }

@@ -16,6 +16,7 @@ namespace StudioKit
             virtual void SetMetadata(const char* key, const char* value) = 0;
 
             virtual void AddEntity(const char* entityCfx2) = 0;
+            virtual void AddResource(const char* path, zfw::InputStream* file) = 0;
 
             virtual bool GetOutputStreams1(zfw::OutputStream** materials, zfw::OutputStream** vertices) = 0;
 
