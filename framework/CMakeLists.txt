@@ -5,7 +5,9 @@ set(WITH_BLEB ON CACHE BOOL "Enable Bleb support")
 set(WITH_JPEG ON CACHE BOOL "Enable JPEG support (requires libjpeg)")
 set(WITH_LODEPNG ON CACHE BOOL "Enable PNG support via LodePNG")
 set(WITH_ZTYPE ON CACHE BOOL "Enable ztype (depends on freetype2)")
+set(ZOMBIE_WITH_LUA OFF CACHE BOOL "Enable experimental Lua support")
 
+set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 14)
 set(library ${PROJECT_NAME})
 
@@ -43,6 +45,11 @@ endif()
 
 if (WITH_BLEB)
     file(GLOB add_sources src/framework/bleb/*.cpp)
+    list(APPEND sources ${add_sources})
+endif()
+
+if (ZOMBIE_WITH_LUA)
+    file(GLOB add_sources src/framework/lua/*.cpp)
     list(APPEND sources ${add_sources})
 endif()
 
@@ -123,6 +130,26 @@ target_link_libraries(${library} littl)
 # lodepng
 if (WITH_LODEPNG)
     target_compile_definitions(${library} PRIVATE -DZOMBIE_WITH_LODEPNG=1)
+endif()
+
+# Lua
+if (ZOMBIE_WITH_LUA)
+    find_package(Lua)
+
+    # Lua's include directories need to be public, because we expose lua_State* for template-based binding
+    if (LUA_FOUND)
+        target_include_directories(${PROJECT_NAME} PUBLIC SYSTEM ${LUA_INCLUDE_DIR})
+        target_link_libraries(${PROJECT_NAME} ${LUA_LIBRARIES})
+    else()
+        add_subdirectory(dependencies/lua ${CMAKE_CURRENT_BINARY_DIR}/build-lua)
+        target_include_directories(${PROJECT_NAME} PUBLIC
+                ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/lua/src
+                ${CMAKE_CURRENT_BINARY_DIR}/build-lua
+                )
+        target_link_libraries(${PROJECT_NAME} liblua)
+    endif()
+
+    target_compile_definitions(${library} PUBLIC -DZOMBIE_WITH_LUA=1)
 endif()
 
 if (UNIX)
