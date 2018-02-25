@@ -1,6 +1,7 @@
 #pragma once
 
 #include <framework/utility/essentials.hpp>
+#include <framework/utility/util.hpp>
 
 #pragma warning( push )
 
