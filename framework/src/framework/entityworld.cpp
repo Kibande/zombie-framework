@@ -7,8 +7,6 @@
 
 namespace zfw
 {
-    using namespace li;
-
     bool EntityWorld::AddEntity(shared_ptr<IEntity> ent)
     {
         for (const auto& filter : entityFilters)
@@ -139,7 +137,7 @@ namespace zfw
 
         for (;;)
         {
-            String entName = input->readString();
+            li::String entName = input->readString();
 
             if (entName.isEmpty())
                 break;

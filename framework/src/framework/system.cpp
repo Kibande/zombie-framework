@@ -56,7 +56,10 @@
 
 namespace zfw
 {
-    using namespace li;
+    using li::Directory;
+    using li::FileName;
+    using li::PerfTimer;
+    using li::UnicodeChar;
 
     // keep in sync with 'ExceptionType' in framework.hpp
     static const char* exceptionNames[] = {
@@ -137,15 +140,13 @@ namespace zfw
     static bool breakLoop, changeScene;
     static shared_ptr<IScene> scene, newScene;
 
-    static Array<char> printfbuf;
-
     //static Var_t* dev_errorbreak;
     
     static PerfTimer timer;
     static PerfTimer::Counter clock0;
     static time_t time0;
 
-    static List<LogEntry> log;
+    static li::List<LogEntry> log;
 
     static ProfilingSection_t profDrawScene = {"IScene::DrawFrame"};
     static ProfilingSection_t profOnFrame = {"IScene::OnFrame"};
@@ -257,7 +258,7 @@ namespace zfw
 			bool p_Frame();
             void p_SetTickRate(int tickrate);
             double p_Update();
-            void ExecLine1(const String& line);
+            void ExecLine1(const li::String& line);
 
 #ifdef ZOMBIE_EMSCRIPTEN
 			static void p_EmscriptenFrame();
@@ -347,7 +348,7 @@ namespace zfw
         time(&time0);
 
         Printf(kLogAlways, "Zombie Framework " ZOMBIE_BUILDNAME " " ZOMBIE_PLATFORM "-" ZOMBIE_BUILDTYPENAME);
-        Printf(kLogAlways, "Copyright (c) 2012, 2013, 2014, 2016 Minexew Games; some rights reserved");
+        Printf(kLogAlways, "Copyright (c) 2012, 2013, 2014, 2016, 2018 Minexew Games; some rights reserved");
         Printf(kLogAlways, "Compiled using " li_compiled_using);
 
 #if ZOMBIE_API_VERSION >= 201601
@@ -490,7 +491,7 @@ namespace zfw
 
     shared_ptr<IFileSystem> System::CreateStdFileSystem(const char* basePath_in, int access)
     {
-        String basePath = FileName::getAbsolutePath(basePath_in);
+        auto basePath = FileName::getAbsolutePath(basePath_in);
 
         if (!basePath.endsWith('/') && !basePath.endsWith('\\'))
             basePath += UnicodeChar('/');
@@ -516,18 +517,18 @@ namespace zfw
     {
         const char* appName = varSystem->GetVariableOrEmptyString("appName");
 
-        String occuredWhere = (appName != nullptr) ? (String) "in " + appName : (String)Localize("in the application");
+        auto occuredWhere = (appName != nullptr) ? (li::String) "in " + appName : (li::String)Localize("in the application");
 
 #ifdef ZOMBIE_WINNT
         char tempPath[MAX_PATH + 1];
         GetTempPathA(sizeof(tempPath), tempPath);
 
-        String errorReportFilename = (String)tempPath + "ErrorReport.txt";
+        li::String errorReportFilename = (li::String)tempPath + "ErrorReport.txt";
 #else
-        String errorReportFilename = "/tmp/ErrorReport.txt";
+        li::String errorReportFilename = "/tmp/ErrorReport.txt";
 #endif
 
-        File errorReport(errorReportFilename, true);
+        li::File errorReport(errorReportFilename, true);
 
         if (errorReport)
         {
@@ -583,7 +584,7 @@ namespace zfw
             errorReport.close();
         }
 
-        String message = (fatal ? "A fatal error occurred " : "An error occured ") + occuredWhere + ":\n\n";
+        auto message = (fatal ? "A fatal error occurred " : "An error occured ") + occuredWhere + ":\n\n";
         message += description;
         message += "\n";
 
@@ -630,7 +631,7 @@ namespace zfw
 
     void System::DisplayError( const ErrorBuffer_t* eb, bool fatal )
     {
-        String description, solution, additionalParameters;
+        li::String description, solution, additionalParameters;
 
         const char* params = eb->params;
 
@@ -735,10 +736,10 @@ namespace zfw
         exit(-1);
     }
 
-    void System::ExecLine1(const String& line)
+    void System::ExecLine1(const li::String& line)
     {
-        List<String> tokens;
-        String buffer;
+        std::vector<li::String> tokens;
+        li::String buffer;
         size_t index = 0;
         unsigned numTokens = 0;
         bool enclosed = false, escaped = false;
@@ -749,7 +750,7 @@ namespace zfw
         {
             const UnicodeChar next = line.getChar(index);
 
-            if (next == Unicode::invalidChar)
+            if (next == li::Unicode::invalidChar)
                 break;
             else if (next == '\\' && !escaped)
                 escaped = true;
@@ -759,7 +760,7 @@ namespace zfw
             {
                 if (!buffer.isEmpty())
                 {
-                    tokens.add(buffer);
+                    tokens.push_back(buffer);
                     buffer.clear();
                     numTokens++;
                 }
@@ -772,7 +773,7 @@ namespace zfw
         }
 
         if (!buffer.isEmpty())
-            tokens.add(buffer);
+            tokens.push_back(buffer);
 
         if (tokens[0] == "fs_fullaccess")
         {
@@ -790,9 +791,9 @@ namespace zfw
 
         auto var = GetVarSystem();
 
-        if (tokens.getLength() == 1)
+        if (tokens.size() == 1)
             var->SetVariable(tokens[0], "1", 0);
-        else if (tokens.getLength() > 1)
+        else if (tokens.size() > 1)
             var->SetVariable(tokens[0], tokens[1], 0);
     }
 
@@ -1060,7 +1061,7 @@ namespace zfw
     void System::ParseArgs1(int argc, char **argv)
     {
 #ifndef ZOMBIE_CTR
-        String line;
+        li::String line;
 
         for (int i = 1; i < argc; i++)
         {

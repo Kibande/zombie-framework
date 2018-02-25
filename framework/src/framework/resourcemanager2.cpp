@@ -9,7 +9,9 @@
 
 namespace zfw
 {
-    using namespace li;
+    using li::Allocator;
+    using li::List;
+    using li::String;
 
 	static thread_local IResourceManager2* tls_scopedResourceManager = nullptr;
 
@@ -77,7 +79,7 @@ namespace zfw
 
             ResourceSection_t* currentSection;
 
-            List<ResourceSectionStorage_t, size_t, Allocator<ResourceSectionStorage_t>, ArrayOptions::noBoundsChecking> storages;
+            List<ResourceSectionStorage_t, size_t, Allocator<ResourceSectionStorage_t>, li::ArrayOptions::noBoundsChecking> storages;
             std::unordered_map<TypeID, IResourceProvider2*> providers;
     };
 
