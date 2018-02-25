@@ -478,13 +478,12 @@ namespace ntile
             DrawBlocks(true, Int2(INT_MIN, INT_MIN));
 
             // pick for entities
-            iterate2 (i, world->GetEntityList())
-            {
-                const uint32_t pickingColour = 0xFF800000 | (i->GetID());
+            world->IterateEntities([](IEntity* ent) {
+                const uint32_t pickingColour = 0xFF800000 | (ent->GetID());
                 ir->SetColourv((const uint8_t*) &pickingColour);
 
-                i->Draw(&DRAW_ENT_PICKING);
-            }
+                ent->Draw(&DRAW_ENT_PICKING);
+            });
 
             auto sample = ir->EndPicking(goodMousePos);
 

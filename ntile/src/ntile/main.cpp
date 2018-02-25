@@ -13,9 +13,10 @@
 #endif
 
 #include <framework/app.hpp>
-#include <framework/framework.hpp>
 #include <framework/filesystem.hpp>
 #include <framework/resourcemanager2.hpp>
+#include <framework/system.hpp>
+#include <framework/varsystem.hpp>
 
 #ifdef _3DS
 #include <framework/ctr/ctr.hpp>

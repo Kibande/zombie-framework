@@ -155,8 +155,7 @@ namespace ntile
             const Float3 worldOffset(copyOffset.x * 256.0f, copyOffset.y * 256.0f, 0.0f);
             camPos += worldOffset;
 
-            iterate2 (i, world->GetEntityList())
-                (*i)->SetPos((*i)->GetPos() + worldOffset);
+            world->IterateEntities([&worldOffset](IEntity* ent) { ent->SetPos(ent->GetPos() + worldOffset); });
         }
     }
 
