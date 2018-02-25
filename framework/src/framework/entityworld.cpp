@@ -50,11 +50,13 @@ namespace zfw
 		return true;
 	}
 
+#if ZOMBIE_API_VERSION >= 201601
     void EntityWorld::IterateEntities(std::function<void(IEntity* ent)> visit)
     {
         for (auto ent : entities)
             visit(ent.get());
     }
+#endif
 
     void EntityWorld::OnFrame(double delta)
     {
