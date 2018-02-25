@@ -12,8 +12,8 @@ namespace gameui
 
     UIContainer::~UIContainer()
     {
-        iterate2 (i, modalStack)
-            delete i;
+        for (const auto& modal : modalStack)
+            delete modal;
     }
 
     void UIContainer::CenterWidget(Widget* widget)
@@ -304,11 +304,11 @@ namespace gameui
         if (output == nullptr)
             return false;
 
-        iterate2 (i, widgets)
+        for (const auto& widget : widgets)
         {
-            if (dynamic_cast<Window*>(*i) != nullptr)
+            if (dynamic_cast<Window*>(widget) != nullptr)
             {
-                auto wnd = static_cast<Window*>(*i);
+                auto wnd = static_cast<Window*>(widget);
 
                 if (Util::StrEmpty(wnd->GetName()))
                     continue;

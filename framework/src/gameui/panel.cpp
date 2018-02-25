@@ -69,9 +69,11 @@ namespace gameui
         {
             minSize = Int2();
 
-            iterate2 (widget, widgets)
+            for (const auto& widget : widgets)
+            {
                 if (!widget->GetFreeFloat())
                     minSize = glm::max(minSize, widget->GetMinSize());
+            }
 
             minSize += padding * 2;
             minSizeValid = true;

@@ -16,8 +16,6 @@
 
 namespace gameui
 {
-    using li::UnicodeChar;
-
     enum
     {
         FONT_BOLD,

@@ -23,7 +23,7 @@ namespace gameui
 
     // Typedefs
 
-    typedef char32_t UnicodeChar;
+    using li::UnicodeChar;
 
     enum ImageMapping {
         IMAGEMAP_NORMAL,

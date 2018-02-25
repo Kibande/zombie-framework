@@ -11,9 +11,11 @@ namespace zfw
 
     bool EntityWorld::AddEntity(shared_ptr<IEntity> ent)
     {
-        iterate2 (i, entityFilters)
-            if (!i->OnAddEntity(this, ent.get()))
+        for (const auto& filter : entityFilters)
+        {
+            if (!filter->OnAddEntity(this, ent.get()))
                 return false;
+        }
 
         ent->SetID((int) entities.getLength());
         entities.add(move(ent));
@@ -27,15 +29,17 @@ namespace zfw
     
     void EntityWorld::Draw(const UUID_t* modeOrNull)
     {
-        iterate2 (i, entities)
-            i->Draw(modeOrNull);
+        for (const auto& ent : entities)
+            ent->Draw(modeOrNull);
     }
     
     IEntity* EntityWorld::GetEntityByID(int entID)
     {
-        iterate2 (i, entities)
-            if (i->GetID() == entID)
-                return (*i).get();
+        for (const auto& ent : entities)
+        {
+            if (ent->GetID() == entID)
+                return ent.get();
+        }
 
         return nullptr;
     }
@@ -60,14 +64,14 @@ namespace zfw
 
     void EntityWorld::OnFrame(double delta)
     {
-        iterate2 (i, entities)
-            i->OnFrame(delta);
+        for (const auto& ent : entities)
+            ent->OnFrame(delta);
     }
 
     void EntityWorld::OnTick()
     {
-        iterate2 (i, entities)
-            i->OnTick();
+        for (const auto& ent : entities)
+            ent->OnTick();
     }
 
     void EntityWorld::RemoveAllEntities(bool destroy)
@@ -83,8 +87,8 @@ namespace zfw
             {
                 entities.remove(i);
 
-                iterate2 (i, entityFilters)
-                    i->OnRemoveEntity(this, ent);
+                for (const auto& filter : entityFilters)
+                    filter->OnRemoveEntity(this, ent);
 
                 break;
             }
@@ -100,15 +104,15 @@ namespace zfw
     {
         output->writeLE<uint8_t>(0x10);
 
-        iterate2 (i, entities)
+        for (const auto& ent : entities)
         {
-            int r = i->FullSerialize(this, output, flags);
+            int r = ent->FullSerialize(this, output, flags);
             
             if (r == 0)
             {
                 // FIXME: better reporting when possible
                 return ErrorBuffer::SetError3(EX_SERIALIZATION_ERR, 2,
-                    "desc", sprintf_255("Failed to serialize entity #%i ('%s')", i->GetID(), i->GetName()),
+                    "desc", sprintf_255("Failed to serialize entity #%i ('%s')", ent->GetID(), ent->GetName()),
                     "function", li_functionName
                     ), false;
             }
@@ -167,13 +171,13 @@ namespace zfw
         }
         
         // Link the entities now
-        iterate2 (i, entities)
+        for (const auto& ent : entities)
         {
-            int r = i->Unserialize(this, nullptr, flags);
+            int r = ent->Unserialize(this, nullptr, flags);
             
             if (r == 0)
                 return ErrorBuffer::SetError3(EX_SERIALIZATION_ERR, 2,
-                "desc", sprintf_255("Failed to link entity #%i.", i->GetID()),
+                "desc", sprintf_255("Failed to link entity #%i.", ent->GetID()),
                 "function", li_functionName
                 ), false;
         }
