@@ -3,6 +3,7 @@
 #include "../RenderingKit.hpp"
 
 #include <framework/errorcheck.hpp>
+#include <framework/resourcemanager.hpp>
 
 namespace RenderingKit
 {

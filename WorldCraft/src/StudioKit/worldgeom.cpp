@@ -62,7 +62,7 @@ namespace StudioKit
         return new WorldGeomTree();
     }
 
-    WorldGeomTree::WorldGeomTree() : repo(&bio, false)
+    WorldGeomTree::WorldGeomTree() : repo(&bio)
     {
     }
 

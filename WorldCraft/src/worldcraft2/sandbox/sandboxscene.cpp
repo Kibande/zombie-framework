@@ -413,7 +413,7 @@ namespace sandbox
         unique_ptr<InputStream> is(is_);
 
         InputStreamByteIO bio(is.get());
-        bleb::Repository repo(&bio, false);
+        bleb::Repository repo(&bio);
 
         if (!repo.open(false))
         {
