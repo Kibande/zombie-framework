@@ -49,7 +49,13 @@ namespace zfw
 
 		return true;
 	}
-    
+
+    void EntityWorld::IterateEntities(std::function<void(IEntity* ent)> visit)
+    {
+        for (auto ent : entities)
+            visit(ent.get());
+    }
+
     void EntityWorld::OnFrame(double delta)
     {
         iterate2 (i, entities)

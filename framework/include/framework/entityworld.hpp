@@ -4,6 +4,10 @@
 
 #include <littl/List.hpp>
 
+#if ZOMBIE_API_VERSION >= 201601
+#include <functional>
+#endif
+
 namespace zfw
 {
     class EntityWorld
@@ -25,7 +29,13 @@ namespace zfw
             void RemoveEntityFilter(IEntityFilter* filter);
 			bool Serialize(OutputStream* output, int flags);
 			bool Unserialize(InputStream* input, int flags);
+
             void WalkEntities(IEntityVisitor* visitor);
+
+#if ZOMBIE_API_VERSION >= 201601
+            // Identical in function to WalkEntities, but this name seems better
+            void IterateEntities(std::function<void(IEntity* ent)> visit);
+#endif
 
 #if ZOMBIE_API_VERSION < 201601
             // When this is removed, also remove li::List dependency
