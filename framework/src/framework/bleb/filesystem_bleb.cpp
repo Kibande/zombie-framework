@@ -161,6 +161,19 @@ namespace zfw
 
     bool FileSystemBleb::Stat(const char* normalizedPath, FSStat_t* stat_out)
     {
-        return ErrorBuffer::SetError3(EX_NOT_FOUND, 0), false;
+        // FIXME: what a hack!
+
+        const char* fullPath = normalizedPath;
+
+        if (auto stream = repo.openStream(fullPath, 0))
+        {
+            stat_out->isDirectory = false;
+            stat_out->sizeInBytes = stream->getSize();
+            return true;
+        }
+        else
+        {
+            return ErrorBuffer::SetError3(EX_NOT_FOUND, 0), false;
+        }
     }
 };
