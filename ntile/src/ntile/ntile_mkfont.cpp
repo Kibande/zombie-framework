@@ -42,7 +42,7 @@ namespace ntile
         zombie_assert(f);
 
         bleb::StdioFileByteIO bio(f, true);
-        bleb::Repository repo(&bio, false);
+        bleb::Repository repo(&bio);
 
         zombie_assert(repo.open(true));
         repo.setAllocationGranularity(512);                             // only do this after contentdir is created

@@ -63,7 +63,7 @@ namespace zfw
     }
 
     FileSystemBleb::FileSystemBleb(ISystem* sys, const char* path, int access)
-            : sys(sys), path(path), bio(nullptr, true), repo(&bio, false)
+            : sys(sys), path(path), bio(nullptr, true), repo(&bio)
     {
         sys->Printf(kLogInfo, "FileSystemBleb: mounting '%s'", path);
         bio.file = fopen(path, "rb");

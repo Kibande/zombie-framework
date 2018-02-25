@@ -74,7 +74,7 @@ namespace zfw
         }
 
         bleb::StdioFileByteIO bio(f, true);
-        bleb::Repository repo(&bio, false);
+        bleb::Repository repo(&bio);
 
         if (!repo.open(false))
         {
