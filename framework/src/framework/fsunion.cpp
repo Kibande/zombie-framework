@@ -233,7 +233,10 @@ namespace zfw
 
         for (auto& fs : fileSystems)
         {
-            if (fs.fs->Stat(normalizedPath, stat_out))
+            if (strncmp(fs.mountPoint.c_str(), normalizedPath, fs.mountPoint.length()) != 0)
+                continue;
+
+            if (fs.fs->Stat(normalizedPath + fs.mountPoint.length(), stat_out))
                 return true;
             else if (breakOnError && eb->errorCode != EX_NOT_FOUND)
                 break;
