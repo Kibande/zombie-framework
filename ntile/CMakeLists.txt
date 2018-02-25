@@ -42,10 +42,10 @@ if (LUA_FOUND)
     target_include_directories(${PROJECT_NAME} PRIVATE SYSTEM ${LUA_INCLUDE_DIR})
     target_link_libraries(${PROJECT_NAME} ${LUA_LIBRARIES})
 else()
-    add_subdirectory(dependencies/lua ${CMAKE_BUILD_DIR}/build-lua)
+    add_subdirectory(dependencies/lua ${CMAKE_BINARY_DIR}/build-lua)
     target_include_directories(${PROJECT_NAME} PRIVATE
             ${CMAKE_SOURCE_DIR}/dependencies/lua/src
-            ${CMAKE_BUILD_DIR}/build-lua
+            ${CMAKE_BINARY_DIR}/build-lua
             )
     target_link_libraries(${PROJECT_NAME} liblua_static)
 endif()
