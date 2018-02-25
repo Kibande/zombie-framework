@@ -154,7 +154,9 @@ namespace ntile
         s_sdlplat->SetSwapControl(SwapControl);
 
         ir = s_sdlplat->SetGLVideoMode(r_pixelRes.x, r_pixelRes.y, FullScreen ? VIDEO_FULLSCREEN : 0);
-        ZFW_ASSERT(ir != nullptr)
+
+        if (!ir)
+            return false;
 
         ir->RegisterResourceProviders(g_res.get());
         resourceProvider.RegisterResourceProviders(g_res.get());

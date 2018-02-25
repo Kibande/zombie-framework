@@ -331,7 +331,11 @@ namespace n3d
                 w, h, SDL_WINDOW_OPENGL | (flags & VIDEO_FULLSCREEN ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 
         if (displayWindow == nullptr)
+        {
+            ErrorBuffer::SetError3(EX_OPERATION_FAILED, 1,
+                                   "desc", sprintf_4095("SDL_CreateWindow failed: %s", SDL_GetError()));
             return nullptr;
+        }
 
         // TODO: proper error handling
 
