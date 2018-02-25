@@ -21,3 +21,11 @@ compiler:
 os:
   - linux
   - osx
+
+matrix:
+  allow_failures:
+    # GCC+ASAN on Travis is broken beyond repair
+    - compiler: gcc
+
+    # OS X port hasn't been touched in years
+    - os: osx
