@@ -22,15 +22,17 @@ compiler:
   - gcc
 os:
   - linux
-  - osx
+  #- osx
 env:
   - COMPONENT=examples/minimal TARGET=minimal
-  - COMPONENT=ntile TARGET=minimal
+  - COMPONENT=examples/ContainerHelloWorld TARGET=ContainerHelloWorld
+  - COMPONENT=ntile TARGET=ntile
+  - COMPONENT=tools/mapcompiler TARGET=mapcompiler
 
 matrix:
   allow_failures:
     # GCC+ASAN on Travis is broken beyond repair
-    - compiler: gcc
+    #- compiler: gcc
 
     # OS X port hasn't been touched in years
     - os: osx
