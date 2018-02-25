@@ -1,6 +1,10 @@
 
-#include "entities/entities.hpp"
-#include "ntile.hpp"
+#include "n3d_gl_blockmodel.hpp"
+#include "n3d_gl_internal.hpp"
+
+#include <littl/List.hpp>
+#include <littl/Stream.hpp>
+#include <littl/String.hpp>
 
 #include <framework/colorconstants.hpp>
 #include <framework/errorbuffer.hpp>
@@ -9,8 +13,32 @@
 
 #include <glm/gtc/quaternion.hpp>
 
-namespace ntile
+namespace n3d
 {
+    using li::ArrayIOStream;
+    using li::List;
+    using li::String;
+
+#ifdef ZOMBIE_CTR
+    struct ModelVertex
+    {
+        float x, y, z;
+        float u, v;
+        int16_t n[4];
+        uint8_t rgba[4];
+    };
+#else
+    struct ModelVertex
+    {
+        float x, y, z;
+        float u, v;
+        int16_t n[4];
+        uint8_t rgba[4];
+    };
+#endif
+
+    static_assert(sizeof(ModelVertex) == 32,        "ModelVertex size");
+
     static const int ANIM_SLOWDOWN = 1;
     static const size_t VERTEX_SIZE = sizeof(ModelVertex);
 
@@ -107,10 +135,9 @@ namespace ntile
     static bool ParseJoint(cfx2::Node jointNode, Float3& pos)
     {
         if (Util::ParseVec(jointNode.getAttrib("pos"), &pos[0], 0, 3) <= 0)
-            return ErrorBuffer::SetError(g_eb, EX_DOCUMENT_MALFORMED,
+            return ErrorBuffer::SetError3(EX_DOCUMENT_MALFORMED, 2,
                     "desc", "Attribute 'pos' is mandatory for a Joint node",
-                    "function", li_functionName,
-                    nullptr),
+                    "function", li_functionName),
                     false;
 
         return true;
@@ -120,10 +147,9 @@ namespace ntile
     {
         if (Util::ParseVec(cuboidNode.getAttrib("pos"), &pos[0], 0, 3) <= 0
                 || Util::ParseVec(cuboidNode.getAttrib("size"), &size[0], 0, 3) <= 0)
-            return ErrorBuffer::SetError(g_eb, EX_DOCUMENT_MALFORMED,
+            return ErrorBuffer::SetError3(EX_DOCUMENT_MALFORMED, 2,
                     "desc", "Attributes 'pos', 'size' are mandatory for a Cuboid node",
-                    "function", li_functionName,
-                    nullptr),
+                    "function", li_functionName),
                     false;
 
         if (!Util::ParseColour(cuboidNode.getAttrib("colour"), colour))
@@ -334,7 +360,7 @@ namespace ntile
 
         Animation* anim = new Animation;
         anim->numBoneAnims = 0;
-        anim->boneAnims = Allocator<BoneAnim_t>::allocate(animNode.getNumChildren());
+        anim->boneAnims = li::Allocator<BoneAnim_t>::allocate(animNode.getNumChildren());
         anim->duration = animNode.getAttribInt("duration", 0);
         anim->tick = -1;
 
@@ -526,8 +552,8 @@ namespace ntile
 
     bool CharacterModel::BuildMesh(cfx2::Node meshNode, Mesh*& mesh)
     {
-        vb = ir->CreateVertexBuffer();
-        vf = g_modelVertexFormat.get();
+        vb = glr->CreateVertexBuffer();
+        vf = glr->GetModelVertexFormat();
 
         MeshBuildContext_t ctx;
         ctx.primitiveType = PRIMITIVE_TRIANGLES;
@@ -583,6 +609,11 @@ namespace ntile
         return Float3(joint->boneToModelSpace * Float4(0.0f, 0.0f, 0.0f, 1.0f));
     }
 
+    Mesh* CharacterModel::GetMeshByIndex(unsigned int index)
+    {
+        zombie_assert(false);
+    };
+
     bool CharacterModel::Preload(IResourceManager2* resMgr)
     {
         return true;
@@ -599,10 +630,9 @@ namespace ntile
         unique_ptr<InputStream> is(g_sys->OpenInput(filename));
         
         if (is == nullptr)
-            return ErrorBuffer::SetError(g_eb, EX_ASSET_OPEN_ERR,
+            return ErrorBuffer::SetError3(EX_ASSET_OPEN_ERR, 2,
                     "desc", (const char*) sprintf_t<255>("Failed to load model '%s'", path.c_str()),
-                    "function", li_functionName,
-                    nullptr),
+                    "function", li_functionName),
                     false;
 
         String contents = is->readWhole();
@@ -613,10 +643,9 @@ namespace ntile
         int rc = cfx2_read_from_string(&docNode, contents, nullptr);
 
         if (rc < 0)
-            return ErrorBuffer::SetError(g_eb, EX_ASSET_CORRUPTED,
+            return ErrorBuffer::SetError3(EX_ASSET_CORRUPTED, 2,
                     "desc", (const char*) sprintf_t<255>("Failed to parse model '%s': %s", path.c_str(), cfx2_get_error_desc(rc)),
-                    "function", li_functionName,
-                    nullptr),
+                    "function", li_functionName),
                     false;
 
         cfx2::Document doc(docNode);
@@ -644,7 +673,7 @@ namespace ntile
             return false;
         }
 
-        model.reset(ir->CreateModelFromMeshes(&mesh, 1));
+        model.reset(glr->CreateModelFromMeshes(&mesh, 1));
 
         if (!model)
         {

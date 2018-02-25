@@ -19,7 +19,7 @@
 
 #define APP_TITLE       "nanotile: Quest of Kyria"
 #define APP_VENDOR      "Minexew Games"
-#define APP_VERSION     "alpha (build 201)"
+#define APP_VERSION     "alpha (build 301)"
 
 #undef DrawText
 
@@ -44,7 +44,7 @@ namespace ntile
 
     extern Int2 r_pixelRes, r_mousePos;
 
-    extern unique_ptr<IVertexFormat> g_modelVertexFormat, g_worldVertexFormat;
+    extern unique_ptr<IVertexFormat> g_worldVertexFormat;
 
     extern Int2 worldSize;
     extern WorldBlock* blocks;
@@ -80,14 +80,6 @@ namespace ntile
         int16_t n[4];
         uint8_t rgba[4];
     };
-
-    struct ModelVertex
-    {
-        float x, y, z;
-        float u, v;
-        int16_t n[4];
-        uint8_t rgba[4];
-    };
 #else
     struct WorldVertex
     {
@@ -96,17 +88,8 @@ namespace ntile
         uint8_t rgba[4];
         float u, v;
     };
-
-    struct ModelVertex
-    {
-        float x, y, z;
-        float u, v;
-        int16_t n[4];
-        uint8_t rgba[4];
-    };
 #endif
-    
-    static_assert(sizeof(ModelVertex) == 32,        "ModelVertex size");
+
     static_assert(sizeof(WorldTile) == 8,           "WorldTile size must be 8");
     static_assert(sizeof(WorldVertex) == 32,        "WorldVertex size");
 

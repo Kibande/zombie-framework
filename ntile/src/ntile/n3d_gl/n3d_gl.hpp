@@ -143,6 +143,8 @@ namespace n3d
             GLModel(String&& path);
             virtual ~GLModel();
 
+            static bool IsPathLoadable(const String& path);
+
             virtual void Draw() final override;
             virtual Mesh* GetMeshByIndex(unsigned int index) final override;
 
@@ -388,8 +390,9 @@ namespace n3d
             // Shaders
             unique_ptr<ShaderPreprocessor> shaderPreprocessor;
 
-            // Fonts
+            // Global resources
             unique_ptr<IVertexFormat> fontVertexFormat;
+            unique_ptr<IVertexFormat> modelVertexFormat;
 
             // SMAA
             unique_ptr<SMAA> smaa;
@@ -450,6 +453,7 @@ namespace n3d
             void SetSMAA(bool active) { if (smaa != nullptr) smaa->SetActive(active); }
 
             IVertexFormat* GetFontVertexFormat();
+            IVertexFormat* GetModelVertexFormat();
             bool LoadShader(const char* path, char** source_out);
             void InitSMAA();
     };

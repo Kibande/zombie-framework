@@ -1,5 +1,6 @@
 
 #include "n3d_gl_internal.hpp"
+#include "n3d_gl_blockmodel.hpp"
 
 #include "SMAA/AreaTex.h"
 #include "SMAA/SearchTex.h"
@@ -15,7 +16,7 @@ namespace n3d
     unique_ptr<GLVertexCache> vertexCache;
 
     // FIXME: Replace all ZFW_ASSERT(false)
-    
+
     static void GetOpenGLDataType(AttribDataType datatype, GLenum& type, int& count)
     {
         switch (datatype)
@@ -109,6 +110,7 @@ namespace n3d
         shaderPreprocessor.reset();
         vertexCache.reset();
         fontVertexFormat.reset();
+        modelVertexFormat.reset();
     }
 
     void GLRenderer::Begin3DScene()
@@ -184,8 +186,13 @@ namespace n3d
     {
         unique_ptr<GLModel> model(new GLModel("kek"));
 
-        //for (size_t i = 0; i < count; i++)
-        //    model->meshes.add(meshes[i]);
+        for (size_t i = 0; i < count; i++)
+        {
+            // FIXME: jesus christ!!
+            Mesh tmp;
+            memcpy(&tmp, meshes[i], sizeof(Mesh));
+            model->meshes.push_back(std::move(tmp));
+        }
 
         return model.release();
     }
@@ -232,9 +239,14 @@ namespace n3d
 
             zombie_assert(!path.isEmpty());
 
-            auto mdl = new GLModel(std::move(path));
-            zombie_assert(mdl);
-            return mdl;
+            if (GLModel::IsPathLoadable(path))
+            {
+                return new GLModel(std::move(path));
+            }
+            else
+            {
+                return new CharacterModel(std::move(path));
+            }
         }
         else if (resourceClass == typeID<IShaderProgram>())
         {
@@ -478,6 +490,23 @@ namespace n3d
             fontVertexFormat.reset(glr->CompileVertexFormat(nullptr, 24, fontVertexAttribs));
 
         return fontVertexFormat.get();
+    }
+
+    IVertexFormat* GLRenderer::GetModelVertexFormat()
+    {
+        static const VertexAttrib modelVertexAttribs[] =
+        {
+            {0,     "pos",      ATTRIB_FLOAT_3},
+            {12,    "uv0",      ATTRIB_FLOAT_2},
+            {20,    "normal",   ATTRIB_SHORT_4},
+            {28,    "colour",   ATTRIB_UBYTE_4},
+            {}
+        };
+
+        if (modelVertexFormat == nullptr)
+            modelVertexFormat.reset(glr->CompileVertexFormat(nullptr, 32, modelVertexAttribs));
+
+        return modelVertexFormat.get();
     }
 
     void GLRenderer::GetModelView(glm::mat4x4& modelView)

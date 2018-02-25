@@ -16,6 +16,8 @@ namespace n3d
     class IVertexBuffer;
     class IVertexFormat;
 
+    struct Joint_t;
+
     enum AttribDataType
     {
         ATTRIB_UBYTE,

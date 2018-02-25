@@ -28,7 +28,7 @@
 
 namespace ntile
 {
-    unique_ptr<IVertexFormat> g_modelVertexFormat, g_worldVertexFormat;
+    unique_ptr<IVertexFormat> g_worldVertexFormat;
     
 #ifndef ZOMBIE_CTR
     static bool smaa = false;
@@ -63,15 +63,6 @@ namespace ntile
         HOUR_TICKS * 7 + MINUTE_TICKS * 0,  {SUN_EVENING, 0.3f},
         HOUR_TICKS * 7 + MINUTE_TICKS * 15, {SUN_HALFSET, 0.2f},
         HOUR_TICKS * 7 + MINUTE_TICKS * 30, {SUN_NIGHT, 0.3f}
-    };
-
-    static const VertexAttrib modelVertexAttribs[] =
-    {
-        {0,     "pos",      ATTRIB_FLOAT_3},
-        {12,    "uv0",      ATTRIB_FLOAT_2},
-        {20,    "normal",   ATTRIB_SHORT_4},
-        {28,    "colour",   ATTRIB_UBYTE_4},
-        {}
     };
 
     static const VertexAttrib worldVertexAttribs[] =
@@ -193,7 +184,6 @@ namespace ntile
 
         worldShader = nullptr;
         uiShader = nullptr;
-        g_modelVertexFormat = nullptr;
         g_worldVertexFormat = nullptr;
     }
 
@@ -232,7 +222,6 @@ namespace ntile
         g_res->EnterResourceSection(&sectPrivate);
 
 #ifndef ZOMBIE_CTR
-        g_modelVertexFormat.reset(ir->CompileVertexFormat(worldShader, 32, modelVertexAttribs));
         g_worldVertexFormat.reset(ir->CompileVertexFormat(worldShader, 32, worldVertexAttribs));
 
         g_res->Resource(&font_title,   "path=ntile/font/fat,size=8");
@@ -440,7 +429,6 @@ namespace ntile
 
         g_res->ClearResourceSection(&sectPrivate);
 
-        g_modelVertexFormat.reset();
         g_worldVertexFormat.reset();
     }
 

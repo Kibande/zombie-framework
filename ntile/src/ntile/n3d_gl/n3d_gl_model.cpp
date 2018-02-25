@@ -3,17 +3,11 @@
 
 #include "../modelloader.hpp"
 
+#include <framework/filesystem.hpp>
 #include <framework/system.hpp>
-
-namespace ntile
-{
-    extern unique_ptr<IVertexFormat> g_modelVertexFormat;
-}
 
 namespace n3d
 {
-    using ntile::g_modelVertexFormat;
-
     GLModel::GLModel(String&& path) : state(CREATED), path(std::forward<String>(path))
     {
     }
@@ -42,6 +36,13 @@ namespace n3d
         return nullptr;
     }
 
+    bool GLModel::IsPathLoadable(const String& path)
+    {
+        // Only check that path is a file
+        FSStat_t stat;
+        return g_sys->GetFileSystem()->Stat(path + "/mdl1", &stat) && !stat.isDirectory;
+    }
+
     bool GLModel::Preload(IResourceManager2* resMgr)
     {
         if (this->mdl1.size())
@@ -66,7 +67,9 @@ namespace n3d
         if (meshes.size())
             return true;
 
-        const size_t vertexSize = g_modelVertexFormat->GetVertexSize();
+        auto vf = glr->GetModelVertexFormat();
+
+        const size_t vertexSize = vf->GetVertexSize();
 		const size_t numVertices = mdl1.size() / vertexSize;
 
         meshes.emplace_back();
@@ -77,7 +80,7 @@ namespace n3d
         mdl1.clear();
 
 		mesh.primitiveType = PRIMITIVE_TRIANGLES;
-		mesh.format = g_modelVertexFormat.get();
+		mesh.format = vf;
 		mesh.offset = 0;
 		mesh.count = numVertices;
 

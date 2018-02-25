@@ -18,96 +18,7 @@ namespace ntile
     extern UUID_t DRAW_ENT_PICKING;
     extern UUID_t DRAW_EDITOR_MODE;
 
-    struct Joint_t;
-    struct MeshBuildContext_t;
-    struct ModelVertex;
     struct WorldVertex;
-
-    struct AABB_t
-    {
-        Float3 min, max;
-        Joint_t* joint;
-    };
-
-    struct JointRange_t
-    {
-        uint32_t first, count;
-        Joint_t* joint;
-    };
-
-    class CharacterModel : public IResource2
-    {
-        friend class IResource2;
-
-        public:
-            struct Animation;
-
-            CharacterModel(String&& path);
-            ~CharacterModel();
-
-            bool BindDependencies(IResourceManager2* resMgr) { return true; }
-            bool Preload(IResourceManager2* resMgr);
-            void Unload();
-            bool Realize(IResourceManager2* resMgr);
-            void Unrealize();
-
-            // IResource2*
-            virtual void* Cast(const std::type_index& resourceClass) final override { return DefaultCast(this, resourceClass); }
-            virtual State_t GetState() const final override { return state; }
-            virtual bool StateTransitionTo(State_t targetState, IResourceManager2* resMgr) final override
-            {
-                return DefaultStateTransitionTo(this, targetState, resMgr);
-            }
-
-            // Basic
-            void Draw();
-
-            // Collision
-            Float3& GetAABBMin() { return aabbMinMax[0]; }
-            Float3& GetAABBMax() { return aabbMinMax[1]; }
-
-            // Skeleton, animations
-            void AnimationTick();
-            Joint_t* FindJoint(const char* name);
-            Animation* GetAnimationByName(const char* name);
-            Float3 GetJointPos(Joint_t* joint);
-            void StartAnimation(Animation* anim);
-
-        protected:
-            void AddAnimation(cfx2::Node animNode);
-            bool AddCuboid(MeshBuildContext_t* ctx, cfx2::Node cuboidNode);
-            bool BuildMesh(cfx2::Node meshNode, Mesh*& mesh);
-
-            void UpdateAnyRunningAnimations();
-            void UpdateCollisions();
-            void UpdateJoint(Joint_t* joint, Joint_t* parent, bool force);
-            void UpdateJointRange(const JointRange_t& range);
-            void UpdateVertices();
-
-            State_t state;
-            String path;
-
-            // Base Mesh
-            unique_ptr<IModel> model;
-
-            // Collisons
-            List<AABB_t> collisions;
-
-            // Skeleton, animations
-            unique_ptr<Joint_t> skeleton;
-            HashMap<String, Animation*> animations;
-
-            List<Animation*> activeAnims;
-            bool anyRunningAnimations, forceSingleRefresh;
-
-            // Skinning
-            IVertexBuffer* vb;
-            IVertexFormat* vf;
-            ModelVertex* vertices;
-            List<JointRange_t> jointRanges;
-
-            Float3 aabbMinMax[2];
-    };
 
     class IEntityMovementListener
     {
@@ -166,7 +77,7 @@ namespace entities
             Int2 motionVec;
             int t, lastAnim;
 
-            Joint_t* sword_tip;
+            n3d::Joint_t* sword_tip;
 
         public:
             char_player(Int3 pos, float angle);

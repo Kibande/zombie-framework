@@ -8,6 +8,8 @@
 
 #include <cstddef>
 
+// TODO: should it be possible to register multiple providers for one resource type?
+
 namespace zfw
 {
     struct ResourceSection_t
