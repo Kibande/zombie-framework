@@ -52,7 +52,7 @@ namespace n3d
         
         if (!mdl1)
             return ErrorBuffer::SetError3(EX_ASSET_OPEN_ERR, 2,
-                    "desc", (const char*) sprintf_t<255>("Failed to load model '%s'.", path),
+                    "desc", (const char*) sprintf_t<255>("Failed to load model '%s'.", path.c_str()),
                     "function", li_functionName
                     ), false;
 

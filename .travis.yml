@@ -16,14 +16,16 @@ before_install:
   - if [ $TRAVIS_OS_NAME == linux ] && [ "$CXX" = "g++" ]; then export CC=gcc-6; fi
   - if [ $TRAVIS_OS_NAME == linux ] && [ "$CXX" = "g++" ]; then export CXX=g++-6; fi
 script:
-  - cmake -DBUILD_SHARED_LIBS=0 . && make VERBOSE=1 minimal
-  - mkdir build_ntile && cd build_ntile && cmake ../ntile && make ntile && cd ..
+  - cmake $COMPONENT && make $TARGET
 compiler:
   - clang
   - gcc
 os:
   - linux
   - osx
+env:
+  - COMPONENT=examples/minimal TARGET=minimal
+  - COMPONENT=ntile TARGET=minimal
 
 matrix:
   allow_failures:
