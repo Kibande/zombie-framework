@@ -126,13 +126,14 @@ namespace ntile
 
     static bool VideoInit()
     {
+        // FIXME: find out why this is commented out and uncomment it
         /*String displayRes =         Var::GetStr( "r_setdisplayres", true );
         int FullScreen =            Var::GetInt( "r_setfullscreen", false, 0 );
         int MultiSample =           Var::GetInt( "r_setmultisample", false, 0 );
         int SwapControl =           Var::GetInt( "r_setswapcontrol", false, 0 );*/
 
         String displayRes = "1280x720";
-        int MultiSample = 4;
+        int MultiSample = 0;
         int SwapControl = 0;
 
         int FullScreen = 0;
