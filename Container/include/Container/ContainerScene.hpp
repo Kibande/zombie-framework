@@ -87,7 +87,7 @@ namespace Container {
 
         // Frame-to-frame operations
 
-        virtual int HandleEvent(zfw::MessageHeader* msg, int h) { return false; }
+        virtual int HandleEvent(zfw::MessageHeader* msg, int h) { return h; }
 
     private:
 

@@ -178,6 +178,9 @@ namespace Container {
     void ContainerScene::OnFrame(double delta) {
         zfw::MessageHeader* msg;
 
+        if (sceneLayerUI)
+            sceneLayerUI->GetUIContainer()->OnFrame(delta);
+
         auto eventQueue = app->GetEventQueue();
 
         while ((msg = eventQueue->Retrieve(li::Timeout(0))) != nullptr) {

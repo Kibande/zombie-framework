@@ -37,7 +37,7 @@ if (NOT EMSCRIPTEN)
     list(APPEND sources ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c)
 endif()
 
-add_library(${library} ${sources})
+add_library(${library} STATIC ${sources})
 add_dependencies(${library} zombie_framework)
 target_link_libraries(${library} zombie_framework)
 

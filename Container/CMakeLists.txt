@@ -3,6 +3,7 @@ project(Container)
 set(CMAKE_CXX_STANDARD 14)
 set(DIST_DIR ${CMAKE_BINARY_DIR})
 set(ZOMBIE_API_VERSION 201701)
+set(ZOMBIE_WITH_LUA 1)
 
 file(GLOB_RECURSE sources
     ${PROJECT_SOURCE_DIR}/src/Container/*.cpp
@@ -14,7 +15,7 @@ file(GLOB_RECURSE sources
 add_subdirectory(../framework ${CMAKE_BINARY_DIR}/build-framework)
 add_subdirectory(../RenderingKit ${CMAKE_BINARY_DIR}/build-RenderingKit)
 
-add_library(${PROJECT_NAME} ${sources})
+add_library(${PROJECT_NAME} STATIC ${sources})
 
 add_dependencies(${PROJECT_NAME} zombie_framework)
 target_link_libraries(${PROJECT_NAME} zombie_framework)
