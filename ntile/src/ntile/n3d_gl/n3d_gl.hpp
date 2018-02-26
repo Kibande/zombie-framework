@@ -11,12 +11,12 @@
 
 #include <GL/glew.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #undef main
 
 // To prevent redefinition errors
 #define GL_SGIX_fragment_lighting
-#include <SDL2/SDL_opengl.h>
+#include <SDL_opengl.h>
 
 #include <littl/Array.hpp>
 
