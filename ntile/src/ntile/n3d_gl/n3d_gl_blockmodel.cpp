@@ -108,20 +108,20 @@ namespace n3d
         Interpolator<float, glm::quat, GlmMixInterpolationMode<float, glm::quat>> rotation;
     };
 
-    struct MeshBuildContext_t
-    {
-        PrimitiveType primitiveType;
-
-        ArrayIOStream vertexData;
-    };
-
-    struct CharacterModel::Animation
+    struct Animation
     {
         unsigned int numBoneAnims;
         BoneAnim_t* boneAnims;
 
         float timeScale;
         int duration, tick;
+    };
+
+    struct MeshBuildContext_t
+    {
+        PrimitiveType primitiveType;
+
+        ArrayIOStream vertexData;
     };
 
     static Float3 glmPitchYawRoll(const Float3& pitchYawRoll)
@@ -599,7 +599,7 @@ namespace n3d
         return (skeleton != nullptr) ? skeleton->Find(name) : nullptr;
     }
 
-    CharacterModel::Animation* CharacterModel::GetAnimationByName(const char* name)
+    Animation* CharacterModel::GetAnimationByName(const char* name)
     {
         return animations.get(name);
     }

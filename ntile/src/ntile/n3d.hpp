@@ -16,6 +16,7 @@ namespace n3d
     class IVertexBuffer;
     class IVertexFormat;
 
+    struct Animation;
     struct Joint_t;
 
     enum AttribDataType
@@ -125,6 +126,14 @@ namespace n3d
         
             virtual void Draw() = 0;
             virtual Mesh* GetMeshByIndex(unsigned int index) = 0;
+
+            // Skeleton, animations
+            // TODO: keep/change/discard?
+            virtual void AnimationTick() {}
+            virtual Joint_t* FindJoint(const char* name) { return nullptr; }
+            virtual Animation* GetAnimationByName(const char* name) { return nullptr; }
+            virtual Float3 GetJointPos(Joint_t* joint) { return Float3(); }
+            virtual void StartAnimation(Animation* anim) {}
     };
     
     class IProjectionBuffer

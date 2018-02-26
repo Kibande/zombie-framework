@@ -4,6 +4,8 @@
 
 #include <framework/resourcemanager2.hpp>
 
+#define ENABLE_ANIMATION
+
 namespace ntile
 {
 namespace entities
@@ -15,39 +17,49 @@ namespace entities
 
         g_res->ResourceByPath(&model, "ntile/models/player");
 
-        /*auto anim = model->GetAnimationByName("standing");
+#ifdef ENABLE_ANIMATION
+        auto anim = model->GetAnimationByName("standing");
 
         if (anim != nullptr)
             model->StartAnimation(anim);
 
-        sword_tip = model->FindJoint("sword_tip");*/
+        sword_tip = model->FindJoint("sword_tip");
+#endif
     }
 
     Float3 char_player::Hack_GetTorchLightPos()
     {
-        //return model->GetJointPos(sword_tip);
+#ifdef ENABLE_ANIMATION
+        return model->GetJointPos(sword_tip);
+#else
         return Float3();
+#endif
     }
 
     void char_player::Hack_ShieldAnim()
     {
-        /*auto anim = model->GetAnimationByName("raise_shield");
+#ifdef ENABLE_ANIMATION
+        auto anim = model->GetAnimationByName("raise_shield");
 
         if (anim != nullptr)
-            model->StartAnimation(anim);*/
+            model->StartAnimation(anim);
+#endif
     }
 
     void char_player::Hack_SlashAnim()
     {
-        /*auto anim = model->GetAnimationByName("slash");
+#ifdef ENABLE_ANIMATION
+        auto anim = model->GetAnimationByName("slash");
 
         if (anim != nullptr)
-            model->StartAnimation(anim);*/
+            model->StartAnimation(anim);
+#endif
     }
 
     void char_player::OnTick()
     {
-        /*model->AnimationTick();
+#ifdef ENABLE_ANIMATION
+        model->AnimationTick();
 
         if (t != 0)
         {
@@ -102,7 +114,8 @@ namespace entities
                     lastAnim = 1 - lastAnim;
                 }
             }
-        }*/
+        }
+#endif
     }
 }
 }

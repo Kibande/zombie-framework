@@ -32,8 +32,6 @@ namespace n3d
         friend class IResource2;
 
     public:
-        struct Animation;
-
         CharacterModel(li::String&& path);
         ~CharacterModel();
 
@@ -55,16 +53,15 @@ namespace n3d
         void Draw() override;
         Mesh* GetMeshByIndex(unsigned int index) override;
 
+        void AnimationTick() override;
+        Joint_t* FindJoint(const char* name) override;
+        Animation* GetAnimationByName(const char* name) override;
+        Float3 GetJointPos(Joint_t* joint) override;
+        void StartAnimation(Animation* anim) override;
+
         // Collision
         Float3& GetAABBMin() { return aabbMinMax[0]; }
         Float3& GetAABBMax() { return aabbMinMax[1]; }
-
-        // Skeleton, animations
-        void AnimationTick();
-        Joint_t* FindJoint(const char* name);
-        Animation* GetAnimationByName(const char* name);
-        Float3 GetJointPos(Joint_t* joint);
-        void StartAnimation(Animation* anim);
 
     protected:
         void AddAnimation(cfx2::Node animNode);

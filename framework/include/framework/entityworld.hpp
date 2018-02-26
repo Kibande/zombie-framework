@@ -34,6 +34,7 @@ namespace zfw
 
 #if ZOMBIE_API_VERSION >= 201601
             // Identical in function to WalkEntities, but this name seems better
+            // Iterates over every single entity in the world, think twice or thrice whether this is what you want
             void IterateEntities(std::function<void(IEntity* ent)> visit);
 #endif
 
