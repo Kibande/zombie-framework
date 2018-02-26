@@ -64,7 +64,7 @@ namespace StudioKit
         return new MapWriter();
     }
 
-    MapWriter::MapWriter() : repo(&bio, false)
+    MapWriter::MapWriter() : repo(&bio)
     {
     }
 
