@@ -52,6 +52,10 @@ namespace gameui
     void Button::OnFrame(double delta)
     {
         //painter.Update(delta);
+
+        // OnFrame runs too late, so we need 2 variables
+        wasClicked = wasClickedThisFrame;
+        wasClickedThisFrame = false;
     }
 
     int Button::OnMouseMove(int h, int x, int y)
@@ -73,8 +77,10 @@ namespace gameui
         {
             if (pressed)
                 FireMouseDownEvent(MOUSEBTN_LEFT, x, y);
-            else
+            else {
                 FireClickEvent(x, y);
+                wasClickedThisFrame = true;
+            }
 
             return 1;
         }

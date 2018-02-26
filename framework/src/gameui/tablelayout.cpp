@@ -107,9 +107,11 @@ namespace gameui
                 OnlineUpdateForWidget(widget);
             }
         }
-        else
+        else {
             // Online update not allowed; assume worst case
             minSizeValid = false;
+            layoutValid = false;
+        }
 
 #undef row
 #undef column
@@ -374,9 +376,11 @@ namespace gameui
             if (minSizeValid)
                 OnlineUpdateForWidget(widget);
         }
-        else
+        else {
             // Online update not allowed; assume worst case
             minSizeValid = false;
+            layoutValid = false;
+        }
     }
 
     void TableLayout::RemoveAll()
@@ -436,12 +440,15 @@ namespace gameui
             if (minSizeValid)
             {
                 minSizeValid = false;
+                layoutValid = false;
 
                 if (parentContainer != nullptr)
                     parentContainer->OnWidgetMinSizeChange(this);
             }
         }
-        else
+        else {
             minSizeValid = false;
+            layoutValid = false;
+        }
     }
 }

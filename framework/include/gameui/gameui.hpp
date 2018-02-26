@@ -198,6 +198,11 @@ namespace gameui
             //void SetColour(const Float4& colour) { painter.SetColour(colour); }
             void SetFont(intptr_t fontid) { thm->SetFont(fontid); }
             void SetLabel(const char* label);
+            bool WasClicked() const { return wasClicked; }
+
+        private:
+            bool wasClicked = false;
+            bool wasClickedThisFrame = false;
     };
 
     class CheckBox : public Widget
