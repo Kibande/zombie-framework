@@ -191,10 +191,10 @@ namespace ntile
     {
         g_sys->Printf(kLogInfo, "GameScreen: Initialization");
 
-        /*unique_ptr<LuaScript> scr(new LuaScript("ntile/scripts/startup"));
+        unique_ptr<LuaScript> scr(new LuaScript("ntile/scripts/startup"));
         if (!scr->Preload() || !scr->Realize())
             g_sys->DisplayError(g_eb, false);
-        scr.reset();*/
+        scr.reset();
 
         auto var = g_sys->GetVarSystem();
 
@@ -1079,17 +1079,17 @@ namespace ntile
             for (int by = std::max(newBucket.y - 1, 0); by < newBucket.y + 1 && by < worldSize.y; by++)
                 for (int bx = std::max(newBucket.x - 1, 0); bx < newBucket.x + 1 && bx < worldSize.x; bx++)
                 {
-                    iterate2 (i, blocks[by * worldSize.x + bx].entities)
+                    for (const auto& ent : blocks[by * worldSize.x + bx].entities)
                     {
-                        if (i == pe)
+                        if (ent == pe)
                             continue;
 
-                        const float dist = glm::length(newPos - i->GetEntity()->GetPos());
+                        const float dist = glm::length(newPos - ent->GetEntity()->GetPos());
 
                         if (dist < nearestEntityDist && dist < MAX_DIST)
                         {
                             nearestEntityDist = dist;
-                            nearestEntity = i;
+                            nearestEntity = ent;
                         }
                     }
                 }
