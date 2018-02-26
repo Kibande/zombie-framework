@@ -60,7 +60,7 @@ namespace zfw
         unique_ptr<InputStream> input(sys->OpenInput(path));
         zombie_assert(input);   // FIXME
 
-        std::string text = input->readWhole();
+        std::string text = input->readWhole().c_str();
 
         int status = luaL_loadbuffer(L, text.data(), text.size(), path);
         text.clear();
