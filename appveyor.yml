@@ -32,7 +32,7 @@ before_build:
     mkdir build
     cd build
     cmake --version
-    cmake ../examples/minimal -G %generator%
+    cmake -G %generator% -DBUILD_STATIC=ON ../examples/minimal
 
 build:
   project: build\minimal.sln
