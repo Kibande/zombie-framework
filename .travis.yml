@@ -28,6 +28,7 @@ env:
   - COMPONENT=examples/ContainerHelloWorld TARGET=ContainerHelloWorld
   - COMPONENT=ntile TARGET=ntile
   - COMPONENT=tools/mapcompiler TARGET=mapcompiler
+  - COMPONENT=WorldCraft TARGET=worldcraft2
 
 matrix:
   allow_failures:
