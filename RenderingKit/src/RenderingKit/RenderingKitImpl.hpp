@@ -28,7 +28,7 @@
 #define GL_SGIX_fragment_lighting
 #endif
 
-#include <SDL2/SDL_opengl.h>
+#include <SDL_opengl.h>
 
 // FIXME: Implement OpenGL sanity checking
 

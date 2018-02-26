@@ -7,12 +7,12 @@
 #include <framework/system.hpp>
 #include <framework/varsystem.hpp>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
+#include <SDL.h>
+#include <SDL_opengl.h>
 
 #ifdef ZOMBIE_WINNT
 #include <windows.h>
-#include <SDL2/SDL_syswm.h>
+#include <SDL_syswm.h>
 #endif
 
 namespace RenderingKit
