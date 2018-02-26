@@ -518,8 +518,8 @@ namespace zfw
     {
 #if defined(_MSC_VER)
         if (force || IsDebuggerPresent())
-            //_CrtDbgBreak();
-            __asm { int 3 };
+            _CrtDbgBreak();
+            //__asm { int 3 };
 #else
         if (force /*|| VAR_INT(dev_errorbreak) > 0*/)
             __builtin_trap();
