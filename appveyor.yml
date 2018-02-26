@@ -30,6 +30,8 @@ init:
 before_build:
 - cmd: |-
     git submodule update --init --recursive
+    cd RenderingKit/dependencies
+    7z x SDL2-devel-2.0.5-VC.zip
     mkdir build
     cd build
     cmake --version
