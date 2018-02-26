@@ -19,6 +19,10 @@
 
 #include <framework/utility/params.hpp>
 
+#ifdef ZOMBIE_WITH_LUA
+#include "lua/private.hpp"
+#endif
+
 #ifdef ZOMBIE_CTR
 #include <framework/ctr/ctr.hpp>
 #endif
@@ -193,6 +197,10 @@ namespace zfw
 
 #ifdef ZOMBIE_WITH_BLEB
             virtual shared_ptr<IFileSystem> CreateBlebFileSystem(const char* path, int access) override;
+#endif
+
+#ifdef ZOMBIE_WITH_LUA
+            virtual shared_ptr<ILuaScriptContext> CreateLuaScriptContext() override;
 #endif
 
             // Main loop
@@ -486,6 +494,13 @@ namespace zfw
     shared_ptr<IFileSystem> System::CreateBlebFileSystem(const char* path, int access)
     {
         return p_CreateBlebFileSystem(this, path, access);
+    }
+#endif
+
+#ifdef ZOMBIE_WITH_LUA
+    shared_ptr<ILuaScriptContext> System::CreateLuaScriptContext()
+    {
+        return p_CreateLuaScriptContext(this);
     }
 #endif
 

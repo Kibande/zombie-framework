@@ -110,6 +110,7 @@ namespace zfw
     class IFSUnion;
     class IGeneric;
     class IGraphics;
+    class ILuaScriptContext;
     class IMediaCodecHandler;
     class IModuleHandler;
     class IPixmapDecoder;

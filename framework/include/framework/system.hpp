@@ -57,6 +57,10 @@ namespace zfw
             virtual shared_ptr<IFileSystem> CreateBlebFileSystem(const char* path, int access) = 0;
 #endif
 
+#ifdef ZOMBIE_WITH_LUA
+            virtual shared_ptr<ILuaScriptContext> CreateLuaScriptContext() = 0;
+#endif
+
             // Main loop
             virtual void ChangeScene(shared_ptr<IScene> scene) = 0;
             virtual void RunMainLoop() = 0;
