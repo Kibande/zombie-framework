@@ -612,7 +612,9 @@ namespace n3d
     Mesh* CharacterModel::GetMeshByIndex(unsigned int index)
     {
         zombie_assert(false);
-    };
+
+        return nullptr;
+    }
 
     bool CharacterModel::Preload(IResourceManager2* resMgr)
     {

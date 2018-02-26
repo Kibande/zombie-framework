@@ -17,8 +17,8 @@ namespace ntile
 
     void ResourceProvider::RegisterResourceProviders(IResourceManager2* res)
     {
-        static const std::type_index resourceClasses[] = {
-        };
+        //static const std::type_index resourceClasses[] = {
+        //};
 
         //res->RegisterResourceProvider(resourceClasses, li_lengthof(resourceClasses), this);
     }
