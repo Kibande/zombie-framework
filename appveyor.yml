@@ -5,8 +5,8 @@ branches:
 image:
 - Visual Studio 2017
 configuration:
-- Release
 - Debug
+- Release
 platform:
 - x64
 environment:
@@ -26,13 +26,14 @@ init:
 - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2013" ( set generator="Visual Studio 12 2013%arch%" )
 - echo %generator%
 
+# -DBUILD_STATIC=ON is needed for libjpeg
 before_build:
 - cmd: |-
     git submodule update --init --recursive
     mkdir build
     cd build
     cmake --version
-    cmake -G %generator% -DBUILD_STATIC=ON ../examples/minimal
+    cmake -G %generator% -DBUILD_STATIC=ON ../examples/ContainerHelloWorld
 
 build:
   project: build\minimal.sln
@@ -44,3 +45,6 @@ only_commits:
     - appveyor.yml
     - source/
     - cmake/
+
+# for now
+test: off
