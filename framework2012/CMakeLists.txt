@@ -11,31 +11,31 @@ add_subdirectory(dependencies/littl)
 
 # Also add headers so that they're included in generated projects
 file(GLOB sources
-    ${PROJECT_SOURCE_DIR}/src/contentkit/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/framework/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/framework/studio/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/framework/utility/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/gameui/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/gameui/dialogs/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/gameui/utility/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/render_opengl/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/zshared/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/contentkit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/framework/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/framework/studio/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/framework/utility/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gameui/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gameui/dialogs/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gameui/utility/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/render_opengl/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/zshared/*.cpp
 
-    ${PROJECT_SOURCE_DIR}/dependencies/lodepng/lodepng.cpp
-    ${PROJECT_SOURCE_DIR}/dependencies/superscanf/superscanf.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/lodepng/lodepng.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/superscanf/superscanf.c
 
-    ${PROJECT_SOURCE_DIR}/src/*.h
-    ${PROJECT_SOURCE_DIR}/src/contentkit/*.hpp
-    ${PROJECT_SOURCE_DIR}/src/framework/*.hpp
-    ${PROJECT_SOURCE_DIR}/src/gameui/*.hpp
-    ${PROJECT_SOURCE_DIR}/src/render_opengl/*.hpp
-    ${PROJECT_SOURCE_DIR}/src/ztype/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/contentkit/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/framework/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gameui/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/render_opengl/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ztype/*.hpp
 )
 
-list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/render_opengl/video_slave.cpp)
+list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/render_opengl/video_slave.cpp)
 
 if (NOT EMSCRIPTEN)
-    list(APPEND sources ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c)
+    list(APPEND sources ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c)
 endif()
 
 if (WITH_ZTYPE)
@@ -55,7 +55,7 @@ if (WITH_ZTYPE AND NOT EMSCRIPTEN)
         target_include_directories(${library} PRIVATE ${FREETYPE_INCLUDE_DIRS})
         target_link_libraries(${library} ${FREETYPE_LIBRARIES})
     else()
-        add_subdirectory(dependencies/freetype2)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/freetype2)
         add_dependencies(${library} freetype)
 
         target_include_directories(${library} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/freetype2/include)
@@ -70,7 +70,7 @@ if (JPEG_FOUND)
     target_include_directories(${library} PRIVATE ${JPEG_INCLUDE_DIR})
     target_link_libraries(${library} ${JPEG_LIBRARIES})
 else()
-    add_subdirectory(dependencies/libjpeg ${CMAKE_CURRENT_BINARY_DIR}/build-libjpeg)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libjpeg ${CMAKE_CURRENT_BINARY_DIR}/build-libjpeg)
     add_dependencies(${library} jpeg)
 
     target_include_directories(${library} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libjpeg)
@@ -103,10 +103,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 if (NOT EMSCRIPTEN)
-    target_include_directories(${PROJECT_NAME} PRIVATE dependencies/glew-2.0.0/include)
+    # exposed through render.hpp, so must be public
+    target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glew-2.0.0/include)
 endif()
 
-target_include_directories(${PROJECT_NAME} PRIVATE dependencies/lodepng)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/lodepng)
 
 # OpenGL
 if (WIN32)
@@ -118,9 +119,14 @@ endif()
 # SDL
 if (NOT EMSCRIPTEN)
     if (MSVC)
-        set(SDL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/include)
-        set(SDL_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x86/SDL.lib)
-        set(SDL_DLL ${PROJECT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x86/SDL.dll PARENT_SCOPE)
+        set(SDL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL-1.2.15/include)
+        if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+            set(SDL_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x86/SDL.lib)
+            set(SDL_DLL ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x86/SDL.dll PARENT_SCOPE)
+        else()
+            set(SDL_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x64/SDL.lib)
+            set(SDL_DLL ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/x64/SDL.dll PARENT_SCOPE)
+        endif()
     endif()
 
     find_package(SDL REQUIRED)
@@ -130,4 +136,4 @@ if (NOT EMSCRIPTEN)
 endif()
 
 # Export Assets
-set(FRAMEWORK_ASSETS_DIR ${PROJECT_SOURCE_DIR}/assets PARENT_SCOPE)
+set(FRAMEWORK_ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets PARENT_SCOPE)
