@@ -196,8 +196,8 @@ namespace ntile_model
         joint->boneRotation = glm::quat();
 
         if (recursive)
-            iterate2 (i, joint->children)
-                ResetRotation(i, true);
+            for (auto child : joint->children)
+                ResetRotation(child, true);
     }
 
     static void setUpCuboidSide(ModelVertex*& p_vertices, const Float3 corners[8], const Float3& normal,
@@ -297,17 +297,17 @@ namespace ntile_model
     {
         free(vertices);
 
-        iterate2 (i, meshes)
+        for (auto mesh : meshes)
         {
             //(*i)->formatRef->Release();
             //(*i)->gc->Release();
-            delete i;
+            delete mesh;
         }
 
-        iterate2 (i, studioMeshes)
+        for (auto mesh : studioMeshes)
         {
-            (*i)->primitives.deleteAllItems();
-            delete i;
+            mesh->primitives.deleteAllItems();
+            delete mesh;
         }
 
         /*zfw::Release(skeletonMesh);
@@ -316,10 +316,8 @@ namespace ntile_model
         zfw::Release(vfRef);
         zfw::Release(vbRef);*/
 
-        iterate2 (i, animations)
+        for (auto anim : animations)
         {
-            Animation* anim = (*i);
-
             for (unsigned int j = 0; j < anim->numBoneAnims; j++)
             {
                 BoneAnim_t* boneAnim = &anim->boneAnims[j];
@@ -607,8 +605,8 @@ namespace ntile_model
 
     void CharacterModel::Draw()
     {
-        iterate2 (i, meshes)
-            client::irm->DrawPrimitives(materialRef.get(), (*i)->primitiveType, (*i)->gc);
+        for (auto mesh : meshes)
+            client::irm->DrawPrimitives(materialRef.get(), mesh->primitiveType, mesh->gc);
     }
 
     Joint_t* CharacterModel::FindJoint(const char* name)
@@ -618,9 +616,9 @@ namespace ntile_model
 
     CharacterModel::Animation* CharacterModel::GetAnimationByName(const char* name)
     {
-        iterate2 (i, animations)
-            if (i->name == name)
-                return i;
+        for (auto anim : animations)
+            if (anim->name == name)
+                return anim;
 
         return nullptr;
     }
@@ -725,20 +723,16 @@ namespace ntile_model
     {
         unique_ptr<IOStream> modelMeshes(modelFile->OpenOrCreateSection("ntile.ModelMeshes"));
 
-        iterate2 (i, studioMeshes)
+        for (auto sm : studioMeshes)
         {
-            auto sm = *i;
-
             modelMeshes->writeString(sm->name);
             modelMeshes->writeLE<uint32_t>(sm->primitives.getLength());
 
-            iterate2 (j, sm->primitives)
+            for (auto prim : sm->primitives)
             {
-                auto prim = *j;
+                modelMeshes->writeLE<int>(prim->type);
 
-                modelMeshes->writeLE<int>(j->type);
-
-                if (j->type == StudioPrimitive_t::CUBOID)
+                if (prim->type == StudioPrimitive_t::CUBOID)
                 {
                     modelMeshes->write(&prim->a, sizeof(prim->a));
                     modelMeshes->write(&prim->b, sizeof(prim->b));;
@@ -758,10 +752,8 @@ namespace ntile_model
 
         unique_ptr<IOStream> modelAnimations(modelFile->OpenOrCreateSection("ntile.ModelAnimations"));
 
-        iterate2 (i, animations)
+        for (auto anim : animations)
         {
-            auto anim = *i;
-
             modelAnimations->writeString(anim->name);
             modelAnimations->write(&anim->duration, sizeof(anim->duration));
             modelAnimations->writeLE<uint32_t>(anim->numBoneAnims);
@@ -774,10 +766,10 @@ namespace ntile_model
 
                 modelAnimations->writeLE<uint32_t>(studioBoneAnim.keyframes.getLength());
 
-                iterate2 (k, studioBoneAnim.keyframes)
+                for (auto& keyframe : studioBoneAnim.keyframes)
                 {
-                    modelAnimations->write(&(*k).time, sizeof((*k).time));
-                    modelAnimations->write(&(*k).pitchYawRoll, sizeof((*k).pitchYawRoll));
+                    modelAnimations->write(&keyframe.time, sizeof(keyframe.time));
+                    modelAnimations->write(&keyframe.pitchYawRoll, sizeof(keyframe.pitchYawRoll));
                 }
             }
         }
@@ -806,10 +798,8 @@ namespace ntile_model
 
     void CharacterModel::StopAllAnimations()
     {
-        iterate2 (i, activeAnims)
+        for (auto anim : activeAnims)
         {
-            Animation* anim = i;
-
             for (unsigned int j = 0; j < anim->numBoneAnims; j++)
             {
                 BoneAnim_t* boneAnim = &anim->boneAnims[j];
@@ -968,7 +958,7 @@ namespace ntile_model
         return &sa->keyframes[index];
     }
 
-    int CharacterModel::StudioGetKeyframeIndexNear(StudioBoneAnim_t* sa, float time, int direction)
+    intptr_t CharacterModel::StudioGetKeyframeIndexNear(StudioBoneAnim_t* sa, float time, int direction)
     {
         size_t i;
 
@@ -1116,12 +1106,12 @@ namespace ntile_model
 
     void CharacterModel::UpdateAnyRunningAnimations()
     {
-        anyRunningAnimations = false;
+        this->anyRunningAnimations = false;
 
-        iterate2 (i, activeAnims)
-            if (i->duration > 0)
+        for (auto anim : activeAnims)
+            if (anim->duration > 0)
             {
-                anyRunningAnimations = true;
+                this->anyRunningAnimations = true;
                 break;
             }
     }
@@ -1184,8 +1174,8 @@ namespace ntile_model
             skeletonMesh->UpdateVertices(joint->skeletonMeshFirst, (const uint8_t*) line, sizeof(ModelVertex) * 2);
         }
 
-        iterate2 (i, joint->children)
-            UpdateJoint(i, joint, dirty);
+        for (auto child : joint->children)
+            UpdateJoint(child, joint, dirty);
 
         joint->wasDirty = dirty;
         joint->dirty = false;
@@ -1228,9 +1218,9 @@ namespace ntile_model
 
     void CharacterModel::UpdateVertices()
     {
-        iterate2 (i, jointRanges)
-            if ((*i).joint->wasDirty)
-                UpdateJointRange(i);
+        for (auto& range : jointRanges)
+            if (range.joint->wasDirty)
+                UpdateJointRange(range);
     }
 
     void CharacterModel::WriteJoint(OutputStream* os, Joint_t* joint)
@@ -1240,7 +1230,7 @@ namespace ntile_model
 
         os->writeLE<uint32_t>(joint->children.getLength());
 
-        iterate2 (i, joint->children)
-            WriteJoint(os, i);
+        for (auto child : joint->children)
+            WriteJoint(os, child);
     }
 }

@@ -43,8 +43,6 @@ namespace client
         selBoneAnimKeyframe = nullptr;
         timeScale = 1.0f;
 
-        geomBuffer = nullptr;
-        cam2D = nullptr;
         cam3D = nullptr;
     }
 
@@ -83,17 +81,12 @@ namespace client
         // Scene
         irm->SetClearColour(COLOUR_GREY(0.15f));
 
-        cam2D = irm->CreateCamera("cam2D");
-        cam2D->SetOrthoScreenSpace();
-        
         cam3D = irm->CreateCamera("cam3D");
         cam3D->SetClippingDist(4.0f, 512.0f);
         cam3D->SetPerspective();
         cam3D->SetVFov(45.0f * f_pi / 180.0f);
         cam3D->SetView(Float3(0.0f, 64.0f, 64.0f), Float3(0.0f, 0.0f, 0.0f), Float3(0.0f, -0.707f, 0.707f));
         cam.SetCamera(cam3D.get());
-
-        geomBuffer = irm->CreateGeomBuffer("RenderingKitDemoScene/geomBuffer");
 
         g_world->AddEntity(make_shared<editor_grid>(this, Float3(0.0f, 0.0f, 0.0f), Float2(1.0f, 1.0f), Int2(16, 16)));
 
@@ -160,9 +153,7 @@ namespace client
 
         uiThemer.reset();
 
-        geomBuffer.reset();
         cam3D.reset();
-        cam2D.reset();
     }
 
     void RenderingKitDemoScene::DrawScene()
@@ -182,7 +173,6 @@ namespace client
         }
 
         irm->SetRenderState(RK_DEPTH_TEST, 0);
-        //irm->SetCamera(cam2D.get());
         irm->SetProjectionOrthoScreenSpace(-1.0f, 1.0f);
         ui->Draw();
     }
@@ -358,21 +348,21 @@ namespace client
                 {
                     auto payload = msg->Data<gameui::EventControlUsed>();
 
-                    if (selBoneAnimKeyframe != nullptr && payload->widget->GetName() == "delKey")
+                    if (selBoneAnimKeyframe != nullptr && !strcmp(payload->widget->GetName(), "delKey"))
                     {
                         mdl->StudioRemoveKeyframe(edAnimation, selBoneAnim, selBoneAnimKeyframeIndex);
 
                         p_UpdateSelectedKeyframe();
                     }
-                    else if (selAnimation != nullptr && payload->widget->GetName() == "editAnim")
+                    else if (selAnimation != nullptr && !strcmp(payload->widget->GetName(), "editAnim"))
                     {
                         p_SelectAnimation(selAnimation);
                     }
-                    else if (selBoneAnim != nullptr && payload->widget->GetName() == "nextKey")
+                    else if (selBoneAnim != nullptr && !strcmp(payload->widget->GetName(), "nextKey"))
                     {
                         p_JumpToKeyframe(1);
                     }
-                    else if (payload->widget->GetName() == "newAnim")
+                    else if (!strcmp(payload->widget->GetName(), "newAnim"))
                     {
                         auto dlg = new gameui::MessageDlg(uiThemer.get(), "New Animation", "Animation Name:",
                                 gameui::DLG_BTN_OK | gameui::DLG_BTN_CANCEL | gameui::DLG_TEXT_BOX | gameui::DLG_CUSTOM_CONTROLS);
@@ -391,22 +381,22 @@ namespace client
                         //ui->CenterWidget(dlg);
                         ui->PushModal(dlg);
                     }
-                    else if (selAnimation != nullptr && payload->widget->GetName() == "playAnim")
+                    else if (selAnimation != nullptr && !strcmp(payload->widget->GetName(), "playAnim"))
                     {
                         if (edAnimation == selAnimation)
                             p_SelectAnimation(nullptr);
 
                         mdl->StartAnimation(selAnimation);
                     }
-                    else if (selBoneAnim != nullptr && payload->widget->GetName() == "prevKey")
+                    else if (selBoneAnim != nullptr && !strcmp(payload->widget->GetName(), "prevKey"))
                     {
                         p_JumpToKeyframe(-1);
                     }
-                    else if (mdl != nullptr && payload->widget->GetName() == "resetAnims")
+                    else if (mdl != nullptr && !strcmp(payload->widget->GetName(), "resetAnims"))
                     {
                         mdl->StopAllAnimations();
                     }
-                    else if (selBoneAnim != nullptr && payload->widget->GetName() == "setKey")
+                    else if (selBoneAnim != nullptr && !strcmp(payload->widget->GetName(), "setKey"))
                     {
                         if (selBoneAnimKeyframe == nullptr)
                         {
@@ -466,7 +456,7 @@ namespace client
                 {
                     auto payload = msg->Data<gameui::EventMessageDlgClosed>();
 
-                    if (mdl != nullptr && payload->dialog->GetName() == "newAnimDlg" && payload->btnCode == gameui::DLG_BTN_OK)
+                    if (mdl != nullptr && !strcmp(payload->dialog->GetName(), "newAnimDlg") && payload->btnCode == gameui::DLG_BTN_OK)
                     {
                         const char* animName = payload->dialog->GetText();
 
@@ -492,7 +482,7 @@ namespace client
                 {
                     auto payload = msg->Data<gameui::EventTreeItemSelected>();
 
-                    if (mdl != nullptr && payload->item != nullptr && payload->treeBox->GetName() == "joints")
+                    if (mdl != nullptr && payload->item != nullptr && !strcmp(payload->treeBox->GetName(), "joints"))
                     {
                         const char* jname = payload->treeBox->GetItemLabel(payload->item);
                         ntile_model::Joint_t* joint = mdl->FindJoint(jname);
@@ -504,7 +494,7 @@ namespace client
                             p_SelectJoint(jname, joint);
                         }
                     }
-                    else if (mdl != nullptr && payload->item != nullptr && payload->treeBox->GetName() == "animations")
+                    else if (mdl != nullptr && payload->item != nullptr && !strcmp(payload->treeBox->GetName(), "animations"))
                     {
                         const char* aname = payload->treeBox->GetItemLabel(payload->item);
                         ntile_model::CharacterModel::Animation* anim = mdl->GetAnimationByName(aname);
@@ -519,7 +509,7 @@ namespace client
                 {
                     auto payload = msg->Data<gameui::EventValueChanged>();
 
-                    if (payload->widget->GetName() == "animSpeed")
+                    if (!strcmp(payload->widget->GetName(), "animSpeed"))
                     {
                         timeScale = pow(2.0f, payload->floatValue);
 
@@ -535,7 +525,7 @@ namespace client
                                 animSpeedLabel->SetLabel(sprintf_t<63>("/ %.1f", 1.0f / timeScale));
                         }
                     }
-                    else if (edAnimation != nullptr && payload->widget->GetName() == "timeline")
+                    else if (edAnimation != nullptr && !strcmp(payload->widget->GetName(), "timeline"))
                     {
                         selAnimationTime = payload->floatValue;
                         mdl->StudioSetAnimationTime(edAnimation, selAnimationTime);
@@ -545,21 +535,21 @@ namespace client
                         p_UpdateTimelineLabel();
                         p_UpdatePitchYawRollSliders();
                     }
-                    else if (mdl != nullptr && payload->widget->GetName() == "paused")
+                    else if (mdl != nullptr && !strcmp(payload->widget->GetName(), "paused"))
                     {
                         mdl->SetAnimTimeScale((payload->value == 0) ? timeScale : 0.0f);
                     }
-                    else if (selBoneAnimKeyframe != nullptr && payload->widget->GetName() == "pitch")
+                    else if (selBoneAnimKeyframe != nullptr && !strcmp(payload->widget->GetName(), "pitch"))
                     {
                         selBoneAnimKeyframe->pitchYawRoll.x = payload->floatValue;
                         mdl->StudioUpdateKeyframe(edAnimation, selBoneAnim, selBoneAnimKeyframeIndex);
                     }
-                    else if (selBoneAnimKeyframe != nullptr && payload->widget->GetName() == "yaw")
+                    else if (selBoneAnimKeyframe != nullptr && !strcmp(payload->widget->GetName(), "yaw"))
                     {
                         selBoneAnimKeyframe->pitchYawRoll.y = payload->floatValue;
                         mdl->StudioUpdateKeyframe(edAnimation, selBoneAnim, selBoneAnimKeyframeIndex);
                     }
-                    else if (selBoneAnimKeyframe != nullptr && payload->widget->GetName() == "roll")
+                    else if (selBoneAnimKeyframe != nullptr && !strcmp(payload->widget->GetName(), "roll"))
                     {
                         selBoneAnimKeyframe->pitchYawRoll.z = payload->floatValue;
                         mdl->StudioUpdateKeyframe(edAnimation, selBoneAnim, selBoneAnimKeyframeIndex);

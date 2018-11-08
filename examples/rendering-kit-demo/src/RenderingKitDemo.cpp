@@ -8,10 +8,11 @@
 #include <framework/app.hpp>
 #include <framework/errorbuffer.hpp>
 #include <framework/filesystem.hpp>
-#include <framework/framework.hpp>
 #include <framework/modulehandler.hpp>
 #include <framework/resourcemanager.hpp>
 #include <framework/shader_preprocessor.hpp>
+#include <framework/system.hpp>
+#include <framework/varsystem.hpp>
 #include <framework/videohandler.hpp>
 //#include <framework/vp8videocapture.hpp>
 

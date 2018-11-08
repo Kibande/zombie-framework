@@ -64,8 +64,8 @@ namespace ntile_model
 
             Joint_t* joint;
 
-            iterate2 (i, children)
-                if ((joint = i->Find(name)) != nullptr)
+            for (auto child : children)
+                if ((joint = child->Find(name)) != nullptr)
                     return joint;
 
             return nullptr;
@@ -159,7 +159,7 @@ namespace ntile_model
             Joint_t* StudioGetJoint(Joint_t* parent, size_t index);
             bool StudioGetPrimitivesList(size_t meshIndex, StudioPrimitive_t**& list_out, size_t& count_out);
             StudioBoneAnimKeyframe_t* StudioGetKeyframeByIndex(StudioBoneAnim_t* sa, int index);
-            int StudioGetKeyframeIndexNear(StudioBoneAnim_t* sa, float time, int direction);
+            intptr_t StudioGetKeyframeIndexNear(StudioBoneAnim_t* sa, float time, int direction);
             void StudioRemoveKeyframe(Animation* anim, StudioBoneAnim_t* sa, int index);
             void StudioSetAnimationTime(Animation* anim, float time);
             void StudioSetHighlightedJoint(Joint_t* joint);

@@ -72,8 +72,7 @@ namespace client
     {
         protected:
             // Rendering-related
-            shared_ptr<IGeomBuffer> geomBuffer;
-            shared_ptr<ICamera> cam2D, cam3D;
+            shared_ptr<ICamera> cam3D;
             RKCameraMouseControl cam;
 
             // UI
@@ -123,8 +122,6 @@ namespace client
             virtual void DrawScene() override;
             virtual void OnFrame(double delta) override;
             virtual void OnTicks(int ticks) override;
-
-            IGeomBuffer* GetGeomBuffer() { return geomBuffer.get(); }
 
             virtual void OnAnimationEnding(ntile_model::CharacterModel* mdl, ntile_model::CharacterModel::Animation* anim) override;
     };

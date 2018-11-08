@@ -12,7 +12,7 @@ tools/mapcompiler|tool|framework / API 2017.01|active
 RenderingKit|library|framework|active
 StudioKit|library|framework / API 2017.01+|active
 ntile|game|framework / API 2017.01|on life support
-Rendering Kit Demo|application|framework / API legacy|on life support
+rendering-kit-demo|application|framework / API 2016.01|on life support
 WorldCraft|application|framework / API 2016.01|on life support
 client2012|game|framework2012|archived
 party|application|framework2012|archived
