@@ -834,7 +834,7 @@ namespace gameui
             void SetCustomLoaderCallback(UILoaderCallback callback) { customLoaderCb = callback; }
             void SetDefaultFont(intptr_t defaultFont) { this->defaultFont = defaultFont; }
 
-            Widget* Load(const char* fileName);
+            //Widget* Load(const char* fileName);
             bool Load(const char* fileName, WidgetContainer* container, bool acquireResources);
 
             intptr_t GetFontId(const char* fontOrNull);     // name (pre-defined within themer) or params

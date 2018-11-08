@@ -1,0 +1,74 @@
+Window: skeletonWindow (title: 'Skeleton', pos: '20, 60', size: '200, 200', flags: 'RESIZABLE')
+    TreeBox: 'joints'
+
+Window: animationsWindow (title: 'Animations', pos: '20, 300', size: '200, 200', flags: 'RESIZABLE')
+    Table (growableRows: '0', growableColumns: '0')
+        TreeBox: 'animations'
+        Table (numColumns: 3, growableColumns: '0, 1, 2')
+            Button: 'playAnim'(label: 'Play')
+            Button: 'stopAnim'(label: 'Stop')
+            Button: 'resetAnims' (label: 'Reset')
+            Button: 'newAnim'(label: 'New')
+            Button: 'editAnim'(label: 'Edit')
+            Button: 'delAnim'(label: 'Delete')
+
+Window: playbackWindow (title: 'Playback', pos: '20, 540')
+    Table
+        Table (numColumns: 3)
+            StaticText (label: 'Playback Speed')
+            Slider: 'animSpeed' (minMax: '-5, 5', minSize: '100, 0')
+            StaticText: 'animSpeedLabel' (label: 'x 1.0')
+        Table (align: 'HCENTER, VCENTER')
+            CheckBox: 'paused' (label: 'Paused')
+            CheckBox: 'loop' (label: 'Loop')
+
+Window: animateWindow (title: 'Animate', pos: '20, 633')
+    Table (growableColumns: '0')
+        Table (numColumns: 3, growableColumns: '1')
+            StaticText (label: 'BoneAnim:')
+            StaticText: 'animatingLabel' (label: '---')
+            Button: 'toggleBoneAnim'
+        Table (numColumns: 2, growableColumns: '0', align: 'HCENTER, VCENTER')
+            Slider: 'timeline' (enabled: 0, minMax: '-1, 1', minSize: '100, 0')
+            StaticText: 'timelineLabel' (label: '0', minSize: '40, 0')
+        Table (numColumns: 4, growabjleColumns: '0, 1, 2, 3', align: 'HCENTER, VCENTER')
+            Button: 'prevKey' (label: 'Prev key')
+            Button: 'setKey' (label: 'Set key')
+            Button: 'delKey' (label: 'Del key')
+            Button: 'nextKey' (label: 'Next key')
+        Table (numColumns: 3, growableColumns: '1', align: 'HCENTER, VCENTER')
+            StaticText (label: 'Pitch')
+            Slider: 'pitch' (minMax: '-180, 180', minSize: '360, 0')
+            StaticText: 'pitchLabel' (label: '0.0', minSize: '60, 0')
+            StaticText (label: 'Yaw')
+            Slider: 'yaw' (minMax: '-180, 180', minSize: '360, 0')
+            StaticText: 'yawLabel' (label: '0.0', minSize: '60, 0')
+            StaticText (label: 'Roll')
+            Slider: 'roll' (minMax: '-180, 180', minSize: '360, 0')
+            StaticText: 'rollLabel' (label: '0.0', minSize: '60, 0')
+
+Window: primitivesWindow (title: 'Primitives', pos: '460, 300', size: '200, 200', flags: 'RESIZABLE')
+    Table (growableRows: '0', growableColumns: '0')
+        TreeBox: 'primitives'
+        Table (numColumns: 3, growableColumns: '0, 1, 2')
+            Button: 'newPrim'(label: 'New')
+            Button: 'editPrim'(label: 'Edit')
+            Button: 'delPrim'(label: 'Delete')
+
+{ TODO: Use native menu on OS X }
+MenuBar: 'menu' (pos: '0, 0')
+    Item (label: '<c:DEF>Nanotile Model Editor')
+        Item
+        Item (label: 'Version 2.0')
+        Item (label: '© 2013, 2014 Minexew Games')
+        Item
+        Item: 'quit' (label: 'Quit')
+    Item (label: 'File')
+        Item: 'new' (label: 'New')
+        Item: 'open' (label: 'Open…')
+        Item: 'openRecent' (label: 'Open recent')
+        Item: 'save' (label: 'Save')
+        Item: 'saveAs' (label: 'Save As…')
+    {Item (label: 'Debug')
+        Item: 'dumpRes' (label: 'Print ResourceManager statistics')
+}
