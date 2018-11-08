@@ -60,10 +60,6 @@ namespace RenderingKit
             virtual shared_ptr<IVertexFormat>  CompileVertexFormat(IShader* program, uint32_t vertexSize,
                     const VertexAttrib_t* attributes, bool groupedByAttrib) override;
 
-#if ZOMBIE_API_VERSION < 201601
-			virtual shared_ptr<IFPMaterial>    CreateFPMaterial(const char* name, int flags) override;
-#endif
-
             virtual void DrawPrimitives(IMaterial* material, RKPrimitiveType_t primitiveType, IGeomChunk* gc) override;
 
             virtual Int2 GetViewportSize() override { return viewportSize; }
@@ -382,34 +378,7 @@ namespace RenderingKit
         }
         else if (resourceClass == typeid(IMaterial))
         {
-#if ZOMBIE_API_VERSION < 201601
-            String texture;
-
-            const char *key, *value;
-
-            while (Params::Next(normparams, key, value))
-            {
-                if (strcmp(key, "texture") == 0)
-                    texture = value;
-            }
-
-            auto material = p_CreateFPMaterial(eb, rk, this, "", 0);
-                
-            if (!texture.isEmpty())
-            {
-                shared_ptr<ITexture> tex = res->GetResource<ITexture>(texture, RESOURCE_REQUIRED, 0);
-
-                if (tex == nullptr)
-                    return nullptr;
-
-                material->SetNumTextures(1);
-                material->SetTexture(0, move(tex));
-            }
-
-            return material->GetMaterial();
-#else
 			zombie_assert(false);
-#endif
         }
         else if (resourceClass == typeid(IShader) || resourceClass == typeid(IGLShaderProgram))
         {
@@ -1050,15 +1019,6 @@ namespace RenderingKit
             material = materialOverride;
 
 		int fpMaterialFlags = 0;
-
-#if ZOMBIE_API_VERSION < 201601
-        IFPMaterial* fpMaterial = dynamic_cast<IFPMaterial*>(material);  // FIXME: needs to be optimized ASAP
-
-        if (fpMaterial != nullptr)
-            fpMaterialFlags = fpMaterial->GetFlags();
-
-        // kFPMaterialIgnoreVertexColour
-#endif
 
         material->GLSetup(options, *projectionCurrent, *modelViewCurrent);
         vertexFormat->Setup(vbo, fpMaterialFlags);

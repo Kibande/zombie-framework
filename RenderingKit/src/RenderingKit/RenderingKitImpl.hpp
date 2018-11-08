@@ -277,8 +277,6 @@ namespace RenderingKit
             IRenderingManagerBackend* rm, const char* name);
     shared_ptr<IGLFontFace>         p_CreateFontFace(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
             IRenderingManagerBackend* rm, const char* name);
-    shared_ptr<IFPMaterial>         p_CreateFPMaterial(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
-            IRenderingManagerBackend* rm, const char* name, int flags);
     shared_ptr<IGLGeomBuffer>       p_CreateGeomBuffer(zfw::ErrorBuffer_t* eb, RenderingKit* rk,
             IRenderingManagerBackend* rm, const char* name);
     shared_ptr<IGLGraphics>         p_CreateGLGraphics();

@@ -41,7 +41,6 @@ namespace RenderingKit
     class Paragraph;
     class IFontFace;
     class IFontQuadSink;
-    class IFPMaterial;
     class IGeomBuffer;
     class IGeomChunk;
     class IMaterial;
@@ -327,23 +326,6 @@ namespace RenderingKit
             virtual int OnFontQuad(const Float3& pos, const Float2& size, const Float2 uv[2], Byte4 colour) = 0;
     };
 
-	// Removed in API 2016.01
-#if ZOMBIE_API_VERSION < 201601
-    class IFPMaterial
-    {
-        public:
-            virtual ~IFPMaterial() {}
-
-            virtual shared_ptr<IMaterial> GetMaterial() = 0;
-
-            virtual int GetFlags() = 0;
-            virtual unsigned int GetMaxNumTextures() = 0;
-            virtual void SetColour(const Byte4& colour) = 0;
-            virtual void SetNumTextures(unsigned int numTextures) = 0;
-            virtual void SetTexture(unsigned int index, shared_ptr<ITexture>&& texture) = 0;
-    };
-#endif
-
     class IMaterial: public zfw::IResource, public zfw::IResource2
     {
         public:
@@ -501,10 +483,6 @@ namespace RenderingKit
 
             virtual shared_ptr<IVertexFormat>  CompileVertexFormat(IShader* program, uint32_t vertexSize,
                     const VertexAttrib_t* attributes, bool groupedByAttrib) = 0;
-
-#if ZOMBIE_API_VERSION < 201601
-			virtual shared_ptr<IFPMaterial>    CreateFPMaterial(const char* name, int flags) = 0;
-#endif
 
             // Frame
             virtual void BeginFrame() = 0;
