@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ambient.hpp"
 #include "ntile.hpp"
 #include "entities/entities.hpp"
 
@@ -16,30 +17,6 @@
 
 namespace ntile
 {
-    struct SunLight
-    {
-        Float3 colour;
-        float ambient;
-        
-        SunLight operator + (const SunLight& other) const
-        {
-            const SunLight sl = { colour + other.colour, ambient + other.ambient };
-            return sl;
-        }
-        
-        SunLight operator - (const SunLight& other) const
-        {
-            const SunLight sl = { colour - other.colour, ambient - other.ambient };
-            return sl;
-        }
-        
-        SunLight operator * (float f) const
-        {
-            SunLight sl = { colour * f, ambient * f };
-            return sl;
-        }
-    };
-
     enum { PT_COUNT = 1 };
 
     namespace Controls
@@ -104,7 +81,7 @@ namespace ntile
                                     // 18000 ticks (10 hours) = 1 day
             int daytimeIncr;
 
-            Interpolator<float, SunLight> sunInterpolator;
+            Ambient ambient;
         
             // Set Controls
             Vkey_t controls[Controls::max];
