@@ -1,5 +1,6 @@
 
 #include "gamescreen.hpp"
+#include "world.hpp"
 
 #include <framework/colorconstants.hpp>
 #include <framework/varsystem.hpp>

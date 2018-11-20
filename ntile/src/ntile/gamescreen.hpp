@@ -76,9 +76,6 @@ namespace ntile
             shared_ptr<entities::char_player> player;
             IPointEntity* playerNearestEntity;
 
-            int daytime;            // 30 ticks = 1 min,
-                                    // 1800 ticks = 1 hour,
-                                    // 18000 ticks (10 hours) = 1 day
             int daytimeIncr;
 
             Ambient ambient;

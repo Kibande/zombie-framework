@@ -1,5 +1,6 @@
 
 #include "gamescreen.hpp"
+#include "world.hpp"
 
 #include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
@@ -99,7 +100,7 @@ namespace ntile
 
         playerNearestEntity = nullptr;
         
-        daytime = 5 * HOUR_TICKS;
+        g_world.daytime = 5 * HOUR_TICKS;
         daytimeIncr = 1;
         
 #ifndef ZOMBIE_CTR
@@ -445,7 +446,7 @@ namespace ntile
 
 #ifndef ZOMBIE_CTR
         // temporary: hero's torch
-        if (player != nullptr && (daytime < 180 * MINUTE_TICKS || daytime > 450 * MINUTE_TICKS))
+        if (player != nullptr && (daytime < 180 * MINUTE_TICKS || g_world.daytime > 450 * MINUTE_TICKS))
         {
             const Float3 TORCH_COLOUR(0.7f, 0.4f, 0.1f);
             const float BASE_RANGE = 32.0f;
@@ -551,7 +552,7 @@ namespace ntile
             ui->Draw();
 #endif
         // temporary
-        font_h2->DrawText(sprintf_t<31>("%02i:%02i (x %i)", daytime / HOUR_TICKS, (daytime % HOUR_TICKS) / MINUTE_TICKS, daytimeIncr),
+        font_h2->DrawText(sprintf_t<31>("%02i:%02i (x %i)", g_world.daytime / HOUR_TICKS, (daytime % HOUR_TICKS) / MINUTE_TICKS, daytimeIncr),
                 Int3(r_pixelRes.x - 4, r_pixelRes.y - 4, 0), RGBA_COLOUR(48, 224, 32), ALIGN_RIGHT | ALIGN_BOTTOM);
 
         if (playerNearestEntity != nullptr)
@@ -1068,10 +1069,10 @@ namespace ntile
                 world->OnTick();
                 //nui.OnTick();
 
-                daytime += daytimeIncr;
+                g_world.daytime += daytimeIncr;
 
-                if (daytime > DAY_TICKS)
-                    daytime = 0;
+                if (g_world.daytime > DAY_TICKS)
+                    g_world.daytime = 0;
             }
 
             if (player != nullptr)
@@ -1079,7 +1080,7 @@ namespace ntile
         }
         else
         {
-            daytime = 5 * HOUR_TICKS + 0 * MINUTE_TICKS;
+            g_world.daytime = 5 * HOUR_TICKS + 0 * MINUTE_TICKS;
             camPos += Float3(10 * player->GetMotionVec(), 0.0f);
         }
 

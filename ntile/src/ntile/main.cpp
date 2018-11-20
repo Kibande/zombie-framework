@@ -28,6 +28,8 @@ namespace ntile
     unique_ptr<MessageQueue> g_msgQueue;
     unique_ptr<IResourceManager2> g_res;
 
+    World g_world;
+
     NanoUI nui;
 
     Int2 r_pixelRes, r_mousePos;

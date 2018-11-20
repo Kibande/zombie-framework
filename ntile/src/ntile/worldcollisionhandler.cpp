@@ -1,5 +1,6 @@
 
 #include "gamescreen.hpp"
+#include "world.hpp"
 
 namespace ntile
 {
