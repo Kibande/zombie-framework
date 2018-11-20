@@ -234,6 +234,9 @@ namespace RenderingKit
 
     // Resources
 
+    /**
+     * TODO: No need to be this opaque. Camera should be entirely a client-side utility.
+     */
     class ICamera
     {
         public:
@@ -346,7 +349,7 @@ namespace RenderingKit
             virtual ~IGeomChunk() {}
 
             virtual bool AllocVertices(IVertexFormat* fmt, size_t count, int flags) = 0;
-            virtual void UpdateVertices(size_t first, const uint8_t* buffer, size_t sizeInBytes) = 0;
+            virtual void UpdateVertices(size_t first, const void* buffer, size_t sizeInBytes) = 0;
     };
 
     class IGeomBuffer
@@ -481,12 +484,21 @@ namespace RenderingKit
             virtual shared_ptr<ITexture>       CreateTexture(const char* name) = 0;
             virtual shared_ptr<ITextureAtlas>  CreateTextureAtlas2D(const char* name, Int2 size) = 0;
 
+            /**
+             *
+             * @param program
+             * @param vertexSize
+             * @param attributes
+             * @param groupedByAttrib must be false
+             * @return
+             */
             virtual shared_ptr<IVertexFormat>  CompileVertexFormat(IShader* program, uint32_t vertexSize,
                     const VertexAttrib_t* attributes, bool groupedByAttrib) = 0;
 
             // Frame
             virtual void BeginFrame() = 0;
             virtual void Clear() = 0;
+            virtual void Clear(Float4 color) = 0;
             virtual void ClearBuffers(bool color, bool depth, bool stencil) = 0;
             [[deprecated]] virtual void ClearDepth() = 0;
             virtual void EndFrame(int ticksElapsed) = 0;

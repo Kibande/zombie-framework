@@ -186,10 +186,12 @@ namespace RenderingKit
 
     void GLCamera::GLSetUpMatrices(const Int2& viewportSize, glm::mat4x4*& projection_out, glm::mat4x4*& modelView_out)
     {
-        ZFW_DBGASSERT(proj != kProjectionInvalid)
-
         switch (proj)
         {
+            case kProjectionInvalid:
+                ZFW_DBGASSERT(proj != kProjectionInvalid)
+                break;
+
             case kProjectionOrtho:
                 projection = glm::ortho(left, right, bottom, top, nearZ, farZ);
                 modelView = glm::mat4x4();

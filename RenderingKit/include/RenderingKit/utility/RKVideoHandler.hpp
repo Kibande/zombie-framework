@@ -9,50 +9,62 @@ namespace RenderingKit
     class RKVideoHandler : public zfw::IVideoHandler
     {
         public:
-            RKVideoHandler(IRenderingManager* irm, IWindowManager* iwm, shared_ptr<zfw::MessageQueue> eventQueue)
-                    : irm(irm), iwm(iwm), eventQueue(move(eventQueue))
+            /**
+             * Preferred. shared_ptr only brings pain.
+             * @param irm
+             * @param iwm
+             * @param eventQueue
+             */
+            RKVideoHandler(IRenderingManager* irm, IWindowManager* iwm, zfw::MessageQueue* eventQueue)
+                    : irm(irm), iwm(iwm), eventQueue(eventQueue)
             {
             }
 
-            virtual void BeginFrame()
+            RKVideoHandler(IRenderingManager* irm, IWindowManager* iwm, shared_ptr<zfw::MessageQueue> eventQueue)
+                    : irm(irm), iwm(iwm), eventQueue(eventQueue.get()), eventQueueOwn(move(eventQueue))
+            {
+            }
+
+            void BeginFrame() override
             {
                 irm->BeginFrame();
             }
 
-            virtual void BeginDrawFrame()
+            void BeginDrawFrame() override
             {
                 //irm->BeginDrawFrame();
             }
 
-            virtual bool CaptureFrame(zfw::Pixmap_t* pm_out)
+            bool CaptureFrame(zfw::Pixmap_t* pm_out) override
             {
                 return false;
             }
 
-            virtual void EndFrame(int ticksElapsed)
+            void EndFrame(int ticksElapsed) override
             {
                 irm->EndFrame(ticksElapsed);
             }
 
-            virtual Int2 GetDefaultViewportSize()
+            Int2 GetDefaultViewportSize() override
             {
                 return iwm->GetWindowSize();
             }
 
-            virtual bool MoveWindow(Int2 vec)
+            bool MoveWindow(Int2 vec) override
             {
                 return iwm->MoveWindow(vec);
             }
 
-            virtual void ReceiveEvents()
+            void ReceiveEvents() override
             {
-                iwm->ReceiveEvents(eventQueue.get());
+                iwm->ReceiveEvents(eventQueue);
             }
 
         protected:
             IRenderingManager*  irm;
             IWindowManager*     iwm;
+            zfw::MessageQueue*  eventQueue;
 
-            shared_ptr<zfw::MessageQueue> eventQueue;
+            shared_ptr<zfw::MessageQueue> eventQueueOwn;
     };
 }

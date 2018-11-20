@@ -97,7 +97,7 @@ namespace RenderingKit
             bool AllocVertices(GLGeomChunk* gc, IVertexFormat* fmt, size_t count, int flags);
             GLuint GetChunkVbo(GLGeomChunk* gc);
             void ReleaseChunk(GLGeomChunk* gc);
-            void UpdateVertices(GLGeomChunk* gc, size_t first, const uint8_t* buffer, size_t sizeInBytes);
+            void UpdateVertices(GLGeomChunk* gc, size_t first, const void* buffer, size_t sizeInBytes);
     };
 
     class GLGeomChunk : public IGeomChunk
@@ -118,7 +118,7 @@ namespace RenderingKit
                 return owner->AllocVertices(this, fmt, count, flags);
             }
 
-            virtual void UpdateVertices(size_t first, const uint8_t* buffer, size_t sizeInBytes) override
+            virtual void UpdateVertices(size_t first, const void* buffer, size_t sizeInBytes) override
             {
                 owner->UpdateVertices(this, first, buffer, sizeInBytes);
             }
@@ -351,7 +351,7 @@ namespace RenderingKit
         // FIXME: reclaim VBO space
     }
 
-    void GLGeomBuffer::UpdateVertices(GLGeomChunk* gc, size_t first, const uint8_t* buffer, size_t sizeInBytes)
+    void GLGeomBuffer::UpdateVertices(GLGeomChunk* gc, size_t first, const void* buffer, size_t sizeInBytes)
     {
         //ZFW_DBGASSERT(cmd->gc->region->type == VERTEX_REGION)
         auto region = static_cast<VertexRegion_t*>(gc->region);
