@@ -100,6 +100,7 @@ namespace zfw
 
     // core classes
     class IBroadcastHandler;
+    class IComponent;
     class IConfig;
     class IDecoder;
     class IEncoder;

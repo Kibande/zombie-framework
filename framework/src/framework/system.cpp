@@ -2,7 +2,7 @@
 #include "private.hpp"
 
 #include <framework/broadcasthandler.hpp>
-#include <framework/entity.hpp>
+#include <framework/component.hpp>
 #include <framework/entityhandler.hpp>
 #include <framework/errorbuffer.hpp>
 #include <framework/errorcheck.hpp>
@@ -153,6 +153,7 @@ namespace zfw
 
     static li::List<LogEntry> log;
 
+    static ProfilingSection_t profComponents = {"IComponent::OnFrame"};
     static ProfilingSection_t profDrawScene = {"IScene::DrawFrame"};
     static ProfilingSection_t profOnFrame = {"IScene::OnFrame"};
     static ProfilingSection_t profOnTicks = {"IScene::OnTicks"};
@@ -204,6 +205,9 @@ namespace zfw
 #ifdef ZOMBIE_WITH_LUA
             virtual shared_ptr<ILuaScriptContext> CreateLuaScriptContext() override;
 #endif
+
+            // Components
+            void                AddComponent(unique_ptr<IComponent> component) override;
 
             // Main loop
             virtual void ChangeScene(shared_ptr<IScene> scene) override;
@@ -284,6 +288,9 @@ namespace zfw
             unique_ptr<IFSUnion> fsUnion;
             unique_ptr<IVarSystem> varSystem;
             unique_ptr<IVideoHandler> videoHandler;
+
+            // components
+            std::vector<unique_ptr<IComponent>> components;
 
             // synchronization
             li::Mutex ioMutex, logMutex, stdoutMutex;
@@ -411,6 +418,11 @@ namespace zfw
         varSystem.reset();
 
         p_ClearLog();
+    }
+
+    void System::AddComponent(unique_ptr<IComponent> component)
+    {
+        this->components.push_back(std::move(component));
     }
 
     void System::AssertionFail(const char* expr, const char* functionName, const char* file, int line,
@@ -1030,6 +1042,17 @@ namespace zfw
 		}
 
 		scene->DrawScene();
+
+        if (frameCounter == profileFrame)
+        {
+            profiler->LeaveSection();
+            profiler->EnterSection(profComponents);
+        }
+
+        for (const auto& comp : components)
+        {
+            comp->OnFrame();
+        }
 
 		if (frameCounter == profileFrame)
 		{

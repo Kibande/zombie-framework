@@ -38,6 +38,7 @@ file(GLOB sources
 
 list(APPEND sources
         ${PROJECT_SOURCE_DIR}/include/framework/broadcasthandler.hpp
+        ${PROJECT_SOURCE_DIR}/include/framework/component.hpp
 
         ${PROJECT_SOURCE_DIR}/src/framework/broadcasthandler.cpp
         ${PROJECT_SOURCE_DIR}/src/framework/codecs/bmpcodec.cpp
