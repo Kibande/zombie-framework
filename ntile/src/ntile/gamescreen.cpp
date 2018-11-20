@@ -2,6 +2,7 @@
 #include "gamescreen.hpp"
 #include "world.hpp"
 
+#include <framework/broadcasthandler.hpp>
 #include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/filesystem.hpp>
@@ -237,6 +238,12 @@ namespace ntile
             for (int bx = 0; bx < worldSize.x; bx++)
             {
                 Blocks::InitBlock(p_block, bx, by);
+
+                BlockStateChangeEvent ev;
+                ev.block = p_block;
+                ev.change = BlockStateChange::created;
+                g_sys->GetBroadcastHandler(true)->BroadcastMessage(ev.msgType, &ev);
+
                 p_block++;
             }
 
@@ -246,8 +253,6 @@ namespace ntile
 
         world.reset(new EntityWorld(g_sys));
         world->AddEntityFilter(this);
-
-        ambient.Init(daytime);
 
         for (size_t i = 0; i < li_lengthof(controlVarNames); i++)
             var->BindVariable(controlVarNames[i], reflection::ReflectedValue_t(controls[i]), IVarSystem::kReadWrite, 0);
@@ -266,10 +271,10 @@ namespace ntile
 #endif
 
         LoadKeyBindings();
-        nui.Init();
+        //nui.Init();
 
 #ifndef ZOMBIE_CTR
-        InitUI();
+        //InitUI();
 #endif
         // Scripting
         //api = new ScriptAPI(this);
@@ -302,7 +307,7 @@ namespace ntile
 
         return true;
     }
-
+/*
     void GameScreen::InitUI()
     {
         // What we're actually doing here is making sure that the default fonts will be added in the correct order
@@ -340,6 +345,7 @@ namespace ntile
         ui->SetArea(Int3(), r_pixelRes);
         ui->SetOnlineUpdate(true);
     }
+    */
 #endif
 
     void GameScreen::Shutdown()
@@ -1083,8 +1089,6 @@ namespace ntile
             g_world.daytime = 5 * HOUR_TICKS + 0 * MINUTE_TICKS;
             camPos += Float3(10 * player->GetMotionVec(), 0.0f);
         }
-
-        ambient.SetTime(daytime);
     }
 
     void GameScreen::p_LogResourceError()

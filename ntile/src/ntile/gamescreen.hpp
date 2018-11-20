@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ambient.hpp"
 #include "ntile.hpp"
 #include "entities/entities.hpp"
 
@@ -77,8 +76,6 @@ namespace ntile
             IPointEntity* playerNearestEntity;
 
             int daytimeIncr;
-
-            Ambient ambient;
         
             // Set Controls
             Vkey_t controls[Controls::max];

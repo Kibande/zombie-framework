@@ -179,7 +179,6 @@ namespace entities
             virtual bool Init() override;
             virtual void EditingModeInit() override;
 
-            virtual void Draw(const UUID_t* modeOrNull) override;
 
             // zfw.IEntityReflection
             virtual IEntity* GetEntity() override { return this; }

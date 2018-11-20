@@ -1,13 +1,17 @@
 cmake_minimum_required(VERSION 3.1)
 project(ntile)
+
+set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 14)
-set(DIST_DIR ${CMAKE_BINARY_DIR})
 set(ZOMBIE_API_VERSION 201701)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dist)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
 file(GLOB sources
-    ${PROJECT_SOURCE_DIR}/src/ntile/*.cpp
     ${PROJECT_SOURCE_DIR}/src/ntile/entities/*.cpp
     ${PROJECT_SOURCE_DIR}/src/ntile/studio/*.cpp
 
@@ -18,7 +22,30 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/ntile/studio/*.hpp
 )
 
+set(sources
+    ${sources}
+    ${PROJECT_SOURCE_DIR}/src/ntile/blocks.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/gamescreen.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/gamescreen.hpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/gamescreen_editing.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/gamescreen_map.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/luascript.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/luascript.hpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/main.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/ntile_mkfont.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/resourceprovider.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/scriptapi.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/viewsystem.hpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/worldcollisionhandler.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/world.hpp
+
+    ${PROJECT_SOURCE_DIR}/src/ntile/view/blocks.cpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/view/view.hpp
+    ${PROJECT_SOURCE_DIR}/src/ntile/view/viewsystem.cpp
+)
+
 add_subdirectory(../framework ${CMAKE_BINARY_DIR}/build-framework)
+add_subdirectory(../RenderingKit ${CMAKE_BINARY_DIR}/build-RenderingKit)
 
 add_executable(${PROJECT_NAME} ${sources})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "nanotile")
@@ -27,6 +54,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE -DZOMBIE_STUDIO=1)
 
 add_dependencies(${PROJECT_NAME} zombie_framework)
 target_link_libraries(${PROJECT_NAME} zombie_framework)
+
+add_dependencies(${PROJECT_NAME} RenderingKit)
+target_link_libraries(${PROJECT_NAME} RenderingKit)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     src
@@ -84,6 +114,10 @@ find_package(SDL2 REQUIRED)
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${SDL2_INCLUDE_DIR}")
 target_link_libraries(${PROJECT_NAME} "${SDL2_LIBRARY}")
 
+if((CMAKE_CXX_COMPILER_ID MATCHES Clang) OR (CMAKE_CXX_COMPILER_ID STREQUAL GNU))
+    target_compile_options(${PROJECT_NAME} PRIVATE "-Werror=narrowing" "-Werror=switch")
+endif()
+
 if (SDL2_DLL)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL2_DLL}" $<TARGET_FILE_DIR:${PROJECT_NAME}>)
@@ -91,4 +125,4 @@ endif()
 
 # Copy assets
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" ${DIST_DIR})
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" $<TARGET_FILE_DIR:${PROJECT_NAME}>)

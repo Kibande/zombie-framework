@@ -1,7 +1,7 @@
 #ifndef ntile_ambient_hpp
 #define ntile_ambient_hpp
 
-#include "ntile.hpp"
+#include "../ntile.hpp"
 
 namespace ntile
 {

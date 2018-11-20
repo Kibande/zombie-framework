@@ -5,6 +5,7 @@
 
 #include "gamescreen.hpp"
 #include "resourceprovider.hpp"
+#include "viewsystem.hpp"
 
 #include <framework/app.hpp>
 #include <framework/filesystem.hpp>
@@ -25,6 +26,7 @@ namespace ntile
     ErrorBuffer_t* g_eb;
     ISystem* g_sys;
 
+    static IViewSystem* ivs = nullptr;
     unique_ptr<MessageQueue> g_msgQueue;
     unique_ptr<IResourceManager2> g_res;
 
@@ -94,7 +96,7 @@ namespace ntile
 
         ErrorBuffer::Release(g_eb);
     }
-
+/*
     static bool PlatformInit()
     {
         s_sdlplat = new SDLPlatform(g_sys, g_msgQueue.get());
@@ -103,19 +105,20 @@ namespace ntile
 
         return true;
     }
-
+*/
     static void PlatformShutdown()
     {
         // These need to be released before Renderer as they might hold OpenGL resources
         g_res.reset();
 
-        if (iplat != nullptr)
+        /*if (iplat != nullptr)
         {
             iplat->Shutdown();
             iplat.reset();
-        }
+        }*/
     }
 
+#if 0
     static bool VideoInit()
     {
         // FIXME: find out why this is commented out and uncomment it
@@ -156,6 +159,19 @@ namespace ntile
 
         return true;
     }
+#endif
+
+    static bool ViewInit()
+    {
+        unique_ptr<IViewSystem> ivs_(IViewSystem::Create(g_world));
+        ivs = ivs_.get();
+
+        if (!ivs->Startup(g_sys, g_eb, g_msgQueue.get()))
+            return false;
+
+        g_sys->AddComponent(std::move(ivs_));
+        return true;
+    }
 
     static bool GameInit()
     {
@@ -168,7 +184,7 @@ namespace ntile
 
     static void GameMain(int argc, char** argv)
     {
-        if (!SysInit(argc, argv) || !PlatformInit() || !VideoInit() || !GameInit())
+        if (!SysInit(argc, argv) || !ViewInit() || !GameInit())
             g_sys->DisplayError(g_eb, true);
         else
         {
