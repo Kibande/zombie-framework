@@ -42,6 +42,8 @@ namespace RenderingKit
             virtual bool GLCompile(const char* path, const char** outputNames, size_t numOutputNames) override;
             virtual int GLGetAttribLocation(const char* name) override;
             virtual void GLSetup() override;
+
+            //virtual void SetGlobalUniformByIndex(int index, const ShaderValueVariant& value) override { zombie_assert(false); }
             virtual void SetOutputNames(const char** outputNames, size_t numOutputNames) override;
 
             // IResource2
@@ -61,11 +63,16 @@ namespace RenderingKit
             }
 
         private:
+            void p_SetUniformByLocation(intptr_t location, const ShaderValueVariant& value);
+            void p_UpdateGlobalUniformLocations();
+
             State_t state = CREATED;
             std::string path;
 
             std::string outputNames[MAX_SHADER_OUTPUTS];
             size_t numOutputNames = 0;
+
+            std::vector<intptr_t> globalUniforms;
 
         friend class IResource2;
     };
@@ -199,6 +206,8 @@ namespace RenderingKit
             glGetProgramBinary(handle, 0, &length, );
         }*/
 
+        p_UpdateGlobalUniformLocations();
+
         // TODO: this can be removed once GLCompile isn't called externally
         this->state = REALIZED;
         return true;
@@ -217,6 +226,17 @@ namespace RenderingKit
 
         GLStateTracker::UseProgram(handle);
         rm->CheckErrors(li_functionName);
+
+        // Update globals
+        if (globalUniforms.size() < rm->GetNumGlobalUniforms()) {
+            p_UpdateGlobalUniformLocations();
+        }
+
+        for (size_t i = 0; i < globalUniforms.size(); i++) {
+            if (globalUniforms[i] >= 0) {
+                p_SetUniformByLocation(globalUniforms[i], rm->GetGlobalUniformValueByIndex(i));
+            }
+        }
     }
 
     /*int GLShader::GetUniform(const char* name)
@@ -258,6 +278,46 @@ namespace RenderingKit
         }
 
         return shader;
+    }
+
+    void GLShader::p_SetUniformByLocation(intptr_t location, const ShaderValueVariant& value)
+    {
+        struct Visitor
+        {
+            void operator()(float value) {
+                this_->SetUniformFloat(location, value);
+            }
+
+            void operator()(const Float3& value) {
+                this_->SetUniformFloat3(location, value);
+            }
+
+            void operator()(const Float4& value) {
+                this_->SetUniformFloat4(location, value);
+            }
+
+            void operator()(const glm::mat4x4& value) {
+                this_->SetUniformMat4x4(location, value);
+            }
+
+            GLShader* this_;
+            intptr_t location;
+        };
+
+        stx::visit(Visitor { this, location }, value);
+    }
+
+    void GLShader::p_UpdateGlobalUniformLocations()
+    {
+        size_t count = rm->GetNumGlobalUniforms();
+        globalUniforms.clear();
+        globalUniforms.empty();
+        globalUniforms.reserve(count);
+
+        for (size_t i = 0; i < count; i++) {
+            auto name = rm->GetGlobalUniformNameByIndex(i);
+            globalUniforms.push_back(this->GetUniformLocation(name));
+        }
     }
 
     bool GLShader::Realize(IResourceManager2* resMgr)

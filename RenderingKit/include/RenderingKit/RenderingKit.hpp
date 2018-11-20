@@ -560,6 +560,11 @@ namespace RenderingKit
             virtual void DrawLines(IGeomChunk* gc) = 0;
             virtual void DrawQuads(IGeomChunk* gc) = 0;
             virtual void DrawTriangles(IGeomChunk* gc) = 0;*/
+
+            // Shader Globals
+            virtual intptr_t RegisterShaderGlobal(const char* name) = 0;
+            virtual void SetShaderGlobal(intptr_t handle, Float3 value) = 0;
+            virtual void SetShaderGlobal(intptr_t handle, Float4 value) = 0;
     };
 
     class IWindowManager

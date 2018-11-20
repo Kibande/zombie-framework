@@ -24,6 +24,13 @@ namespace RenderingKit
     //  class declaration(s)
     // ====================================================================== //
 
+    struct ShaderUniform
+    {
+        std::string name;
+
+        ShaderValueVariant value;
+    };
+
     class RenderingManager : public IRenderingManagerBackend, public IVertexCacheOwner,
                              public zfw::IResourceProvider, public zfw::IResourceProvider2
     {
@@ -84,6 +91,11 @@ namespace RenderingKit
                     const MaterialSetupOptions& options, RKPrimitiveType_t primitiveType, size_t numVertices) override;
             virtual void VertexCacheFlush() override;
 
+            // Shader Globals
+            intptr_t RegisterShaderGlobal(const char* name) override;
+            void SetShaderGlobal(intptr_t handle, Float3 value) override;
+            void SetShaderGlobal(intptr_t handle, Float4 value) override;
+
             // RenderingKit::IRenderingManagerBackend
             virtual bool Startup() override;
             virtual bool CheckErrors(const char* caller) override;
@@ -92,6 +104,10 @@ namespace RenderingKit
             virtual void OnWindowResized(Int2 newSize) override;
             virtual void SetupMaterialAndVertexFormat(IGLMaterial* material, const MaterialSetupOptions& options,
                 GLVertexFormat* vertexFormat, GLuint vbo) override;
+
+            size_t GetNumGlobalUniforms() override { return globalUniforms.size(); }
+            const char* GetGlobalUniformNameByIndex(size_t index) override { return globalUniforms[index].name.c_str(); }
+            const ShaderValueVariant& GetGlobalUniformValueByIndex(size_t index) override { return globalUniforms[index].value; }
 
             // RenderingKit::IVertexCacheOwner
             virtual void            OnVertexCacheFlush(IGLVertexCache* vc, size_t bytesUsed) override;
@@ -148,6 +164,9 @@ namespace RenderingKit
 
             // Material Override
             IGLMaterial* materialOverride;
+
+            //
+            std::vector<ShaderUniform> globalUniforms;
     };
 
     // ====================================================================== //
@@ -888,6 +907,24 @@ namespace RenderingKit
         res->RegisterResourceProvider(resourceClasses, li_lengthof(resourceClasses), this);
     }
 
+    intptr_t RenderingManager::RegisterShaderGlobal(const char* name)
+    {
+        for (size_t i = 0; i < globalUniforms.size(); i++) {
+            if (globalUniforms[i].name == name) {
+                return i;
+            }
+        }
+
+        auto handle = globalUniforms.size();
+        zombie_assert(handle < INT_MAX);
+
+        globalUniforms.emplace_back();
+        auto& uniform = globalUniforms.back();
+        uniform.name = name;
+
+        return handle;
+    }
+
     void RenderingManager::SetCamera(ICamera* camera)
     {
         VertexCacheFlush();
@@ -941,6 +978,26 @@ namespace RenderingKit
         {
             case RK_DEPTH_TEST: GLStateTracker::SetState(ST_GL_DEPTH_TEST, value != 0); break;
         }
+    }
+
+    void RenderingManager::SetShaderGlobal(intptr_t handle, Float3 value)
+    {
+        auto& uniform = globalUniforms[handle];
+        uniform.value = value;
+
+//        if (currentShaderProgram) {
+//            p_UpdateGlobalUniformInProgram(currentShaderProgram, handle, uniform->value);
+//        }
+    }
+
+    void RenderingManager::SetShaderGlobal(intptr_t handle, Float4 value)
+    {
+        auto& uniform = globalUniforms[handle];
+        uniform.value = value;
+
+//        if (currentShaderProgram) {
+//            p_UpdateGlobalUniformInProgram(currentShaderProgram, handle, uniform->value);
+//        }
     }
 
     void RenderingManager::SetViewportPosAndSize(Int2 viewportPos, Int2 viewportSize)

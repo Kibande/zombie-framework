@@ -30,6 +30,8 @@
 
 #include <SDL_opengl.h>
 
+#include <stx/variant.hpp>
+
 // FIXME: Implement OpenGL sanity checking
 
 namespace RenderingKit
@@ -67,6 +69,8 @@ namespace RenderingKit
         GLenum type;
         int flags;
     };
+
+    typedef stx::variant<float, Float3, Float4, glm::mat4x4> ShaderValueVariant;
 
     class GLStateTracker
     {
@@ -201,6 +205,8 @@ namespace RenderingKit
             virtual bool GLCompile(const char* path, const char** outputNames, size_t numOutputNames) = 0;
             virtual int GLGetAttribLocation(const char* name) = 0;
             virtual void GLSetup() = 0;
+
+            //virtual void SetGlobalUniformByIndex(int index, const ShaderValueVariant& value) = 0;
             virtual void SetOutputNames(const char** outputNames, size_t numOutputNames) = 0;
     };
 
@@ -233,6 +239,11 @@ namespace RenderingKit
             virtual void OnWindowResized(Int2 newSize) = 0;
             virtual void SetupMaterialAndVertexFormat(IGLMaterial* material, const MaterialSetupOptions& options,
                     GLVertexFormat* vertexFormat, GLuint vbo) = 0;
+
+            // Uniform globals
+            virtual size_t GetNumGlobalUniforms() = 0;
+            virtual const char* GetGlobalUniformNameByIndex(size_t index) = 0;
+            virtual const ShaderValueVariant& GetGlobalUniformValueByIndex(size_t index) = 0;
     };
 
     class IWindowManagerBackend : public IWindowManager

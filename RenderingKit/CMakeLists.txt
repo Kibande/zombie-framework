@@ -23,6 +23,7 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/RenderingKit/gameui/*.cpp
 
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/*.hpp
+    ${PROJECT_SOURCE_DIR}/include/RenderingKit/ShaderGlobal.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/gameui/*.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/utility/*.hpp
 )
