@@ -76,7 +76,7 @@ namespace ntile
                 p_block++;
             }
 
-        p_block = &blocks[0];
+        /*p_block = &blocks[0];
 
         for (int by = 0; by < worldSize.y; by++)
             for (int bx = 0; bx < worldSize.x; bx++)
@@ -85,7 +85,7 @@ namespace ntile
                 p_block->vertexBuf->Alloc(TILES_IN_BLOCK_V * TILES_IN_BLOCK_H * 3 * 6 * sizeof(WorldVertex));
                 Blocks::ResetBlock(p_block, bx, by);
                 p_block++;
-            }
+            }*/
 
         mapBlocks.reset();
 

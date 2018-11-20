@@ -2,7 +2,6 @@
 
 #include "nbase.hpp"
 #include "nanoui.hpp"
-#include "n3d.hpp"
 
 #include <framework/entity.hpp>
 #include <framework/event.hpp>
@@ -35,16 +34,12 @@ namespace ntile
     extern ISystem* g_sys;
     extern ErrorBuffer_t* g_eb;
 
-    extern unique_ptr<IPlatform> iplat;
-    extern IRenderer* ir;
     extern unique_ptr<MessageQueue> g_msgQueue;
     extern unique_ptr<IResourceManager2> g_res;
 
     extern NanoUI nui;
 
     extern Int2 r_pixelRes, r_mousePos;
-
-    extern unique_ptr<IVertexFormat> g_worldVertexFormat;
 
     extern Int2 worldSize;
     extern WorldBlock* blocks;
@@ -72,23 +67,7 @@ namespace ntile
 
     typedef int16_t Normal_t;
 
-#ifdef ZOMBIE_CTR
-    struct WorldVertex
-    {
-        float x, y, z;
-        float u, v;
-        int16_t n[4];
-        uint8_t rgba[4];
     };
-#else
-    struct WorldVertex
-    {
-        int32_t x, y, z;
-        int16_t n[4];
-        uint8_t rgba[4];
-        float u, v;
-    };
-#endif
 
     static_assert(sizeof(WorldTile) == 8,           "WorldTile size must be 8");
     static_assert(sizeof(WorldVertex) == 32,        "WorldVertex size");
@@ -178,8 +157,8 @@ namespace ntile
             virtual void                    ShowError() = 0;
 
 #ifndef ZOMBIE_CTR
-            virtual gameui::UIContainer*    GetUI() = 0;
-            virtual gameui::UIThemer*       GetUIThemer() = 0;
+            //virtual gameui::UIContainer*    GetUI() = 0;
+            //virtual gameui::UIThemer*       GetUIThemer() = 0;
 #endif
 
         protected:

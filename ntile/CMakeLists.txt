@@ -9,16 +9,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/ntile/*.cpp
     ${PROJECT_SOURCE_DIR}/src/ntile/entities/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/n3d_gl/n3d_gl_blockmodel.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/n3d_gl/n3d_gl_blockmodel.hpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/n3d_gl/*.cpp
     ${PROJECT_SOURCE_DIR}/src/ntile/studio/*.cpp
 
     ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c
 
     ${PROJECT_SOURCE_DIR}/src/ntile/*.hpp
     ${PROJECT_SOURCE_DIR}/src/ntile/entities/*.hpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/n3d_gl/*.hpp
     ${PROJECT_SOURCE_DIR}/src/ntile/studio/*.hpp
 )
 

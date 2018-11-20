@@ -37,9 +37,9 @@ namespace entities
         waveHeightmap.resize((tiles.x + 1) * (tiles.y + 1));
         RandomizeHeightmap();
 
-        vertexBuf.reset(ir->CreateVertexBuffer());
-        vertexBuf->Alloc(numVertices * sizeof(WorldVertex));
-        ResetGeometry();
+        //vertexBuf.reset(ir->CreateVertexBuffer());
+        //vertexBuf->Alloc(numVertices * sizeof(WorldVertex));
+        //ResetGeometry();
 
         return true;
     }
@@ -48,12 +48,12 @@ namespace entities
     {
     }
 
-    void water_body::Draw(const UUID_t* uuidOrNull)
+    /*void water_body::Draw(const UUID_t* uuidOrNull)
     {
         ir->DrawPrimitives(vertexBuf.get(), PRIMITIVE_TRIANGLES, g_worldVertexFormat.get(), 0, numVertices);
-    }
+    }*/
 
-    void water_body::InitializeVertices(WorldVertex* p_vertices)
+    /*void water_body::InitializeVertices(WorldVertex* p_vertices)
     {
         // size of one subdivision
         static const float tile_x = 16.0f;
@@ -127,12 +127,12 @@ namespace entities
 
             v = 1.0f - v;
         }
-    }
+    }*/
 
     void water_body::OnTick()
     {
         UpdateHeightmap();
-        UpdateGeometry();       // FIXME FIXME FIXME this mustn't be called all over
+        //UpdateGeometry();       // FIXME FIXME FIXME this mustn't be called all over
     }
 
     void water_body::RandomizeHeightmap()
@@ -145,7 +145,7 @@ namespace entities
         }
     }
 
-    void water_body::ResetGeometry()
+    /*void water_body::ResetGeometry()
     {
         auto vertices = static_cast<WorldVertex*>(vertexBuf->Map(false, true));
 
@@ -154,9 +154,9 @@ namespace entities
         vertexBuf->Unmap();
 
         UpdateGeometry();// GOD PLEASE FIXME
-    }
+    }*/
 
-    void water_body::UpdateGeometry()
+    /*void water_body::UpdateGeometry()
     {
         auto p_vertices = static_cast<WorldVertex*>(vertexBuf->Map(true, true));
 
@@ -193,7 +193,7 @@ namespace entities
 
                 Float3 b1 = Float3(*(Int3*)(&p_vertices[3].x));
                 Float3 b2 = Float3(*(Int3*)(&p_vertices[4].x));
-                Float3 b3 = Float3(*(Int3*)(&p_vertices[5].x)) + Float3(0.0f, 0.0f, 2.0f);  // make stuff less uniform*/
+                Float3 b3 = Float3(*(Int3*)(&p_vertices[5].x)) + Float3(0.0f, 0.0f, 2.0f);  // make stuff less uniform
                 Short3& nb1 = *(Short3*)(p_vertices[3].n);
                 Short3& nb2 = *(Short3*)(p_vertices[4].n);
                 Short3& nb3 = *(Short3*)(p_vertices[5].n);
@@ -207,7 +207,7 @@ namespace entities
         }
 
         vertexBuf->Unmap();
-    }
+    }*/
 
     void water_body::UpdateHeightmap()
     {

@@ -13,12 +13,6 @@
 #include <framework/videohandler.hpp>
 #include <framework/utility/pixmap.hpp>
 
-#ifdef ZOMBIE_CTR
-#include "n3d_ctr/n3d_ctr.hpp"
-#else
-#include "n3d_gl/n3d_gl.hpp"
-#endif
-
 #include "luascript.hpp"
 
 // TODO: Fix all that depends on this, EVEN IMPLICITLY
@@ -28,7 +22,6 @@
 
 namespace ntile
 {
-    unique_ptr<IVertexFormat> g_worldVertexFormat;
     
 #ifndef ZOMBIE_CTR
     static bool smaa = false;
@@ -37,15 +30,6 @@ namespace ntile
     static GameScreen* s_gameScreen;
 
     static const char bindingsFileName[] = "ntile.bindings";
-
-    static const VertexAttrib worldVertexAttribs[] =
-    {
-        {0,     "pos",      ATTRIB_INT_3},
-        {12,    "normal",   ATTRIB_SHORT_3},
-        {20,    "colour",   ATTRIB_UBYTE_4},
-        {24,    "uv0",      ATTRIB_FLOAT_2},
-        {}
-    };
 
     const char* controlNames[] =
     {
@@ -150,14 +134,14 @@ namespace ntile
         editing_toolbar = nullptr;
 #endif
 
-        font_title = nullptr;
-        font_h2 = nullptr;
-        worldTex = nullptr;
-        headsUp = nullptr;
+        //font_title = nullptr;
+        //font_h2 = nullptr;
+        //worldTex = nullptr;
+        //headsUp = nullptr;
 
-        worldShader = nullptr;
-        uiShader = nullptr;
-        g_worldVertexFormat = nullptr;
+        //worldShader = nullptr;
+        //uiShader = nullptr;
+        //g_worldVertexFormat = nullptr;
     }
 
     bool GameScreen::Init()
@@ -195,30 +179,23 @@ namespace ntile
         g_res->EnterResourceSection(&sectPrivate);
 
 #ifndef ZOMBIE_CTR
-        g_worldVertexFormat.reset(ir->CompileVertexFormat(worldShader, 32, worldVertexAttribs));
+        /*g_worldVertexFormat.reset(ir->CompileVertexFormat(worldShader, 32, worldVertexAttribs));
 
         g_res->Resource(&font_title,   "path=ntile/font/fat,size=8");
         g_res->Resource(&font_h2,      "path=ntile/font/thin,size=2");
-        g_res->Resource(&worldTex,     "path=ntile/worldtex_%i.png,numMipmaps=7,lodBias=-1.0");
+        g_res->Resource(&worldTex,     "path=ntile/worldtex_%i.png,numMipmaps=7,lodBias=-1.0");*/
 
         //headsUp =           ir->LoadTexture("ntile/headsup.png", 0);
-#else
-        g_res->Resource(&font_title,   "path=ntile/font/fat,size=4");
-        g_res->Resource(&font_h2,      "path=ntile/font/thin,size=2");
 #endif
 
-        g_res->Resource(&worldShader,   "path=ntile/shaders/world");
-
-#ifdef ZOMBIE_CTR
-        g_res->Resource(&uiShader,      "path=ntile/shaders/2d");
-#endif
+        //g_res->Resource(&worldShader,   "path=ntile/shaders/world");
 
         g_res->LeaveResourceSection();
-        
+
         g_sys->Printf(kLogInfo, "Preloading resources...");
         g_res->SetTargetState(IResource2::PRELOADED);
         g_res->MakeAllResourcesTargetState(false);
-        
+
         g_sys->Printf(kLogInfo, "Realizing resources...");
         g_res->SetTargetState(IResource2::REALIZED);
         g_res->MakeAllResourcesTargetState(false);
@@ -226,7 +203,7 @@ namespace ntile
         g_sys->Printf(kLogInfo, "Loading complete.");
 
 #ifndef ZOMBIE_CTR
-        blend_colour =      worldShader->GetUniform("blend_colour");
+        /*blend_colour =      worldShader->GetUniform("blend_colour");
 
         sun_dir =           worldShader->GetUniform("sun_dir");
         sun_amb =           worldShader->GetUniform("sun_amb");
@@ -236,7 +213,7 @@ namespace ntile
         pt_pos[0] =         worldShader->GetUniform("pt_pos[0]");
         pt_amb[0] =         worldShader->GetUniform("pt_amb[0]");
         pt_diff[0] =        worldShader->GetUniform("pt_diff[0]");
-        pt_spec[0] =        worldShader->GetUniform("pt_spec[0]");
+        pt_spec[0] =        worldShader->GetUniform("pt_spec[0]");*/
 #endif
         //Blocks::AllocBlocks(Int2(6, 3));
         Blocks::AllocBlocks(Int2(4, 3));
@@ -300,29 +277,6 @@ namespace ntile
         //g_scr->AddScriptAPI(CreateNtileSquirrelAPI());
         //g.scr->AddScriptAPI(zfw::AddRef(api));
 
-#ifdef ZOMBIE_CTR
-        ir->SetShaderProgram(worldShader);
-        blend_colour =      -1;
-
-        sun_dir =           worldShader->GetUniform("sunDirection");
-        sun_amb =           worldShader->GetUniform("sunAmbient");
-        sun_diff =          worldShader->GetUniform("sunDiffuse");
-
-        auto texture = new n3d::CTRTexture("ntile/worldtex.png", 0);
-        if (!texture->Preload(nullptr) || !texture->Realize(nullptr))
-        {
-            g_sys->DisplayError(g_eb, true);
-            return false;
-        }
-        //texture->Init(PixmapFormat_t::RGBA8, Int2(32, 32), texture_bin);
-        worldTex = texture;
-
-        glVertexFormatCTR(4, sizeof(WorldVertex));
-        glVertexAttribCTR(0, 3, GL_FLOAT);
-        glVertexAttribCTR(1, 2, GL_FLOAT);
-        glVertexAttribCTR(2, 4, GL_SHORT);
-        glVertexAttribCTR(3, 4, GL_UNSIGNED_BYTE);
-#endif
         const char* map;
         if (var->GetVariable("map", &map, 0))
             StartGame();
@@ -390,8 +344,8 @@ namespace ntile
     void GameScreen::Shutdown()
     {
 #ifndef ZOMBIE_CTR
-        ui.reset();
-        uiThemer.DropResources();
+        //ui.reset();
+        //uiThemer.DropResources();
 #endif
 
         world.reset();
@@ -400,11 +354,11 @@ namespace ntile
 
         g_res->ClearResourceSection(&sectPrivate);
 
-        g_worldVertexFormat.reset();
     }
 
     void GameScreen::DrawScene()
     {
+#if 0
         /*if (firstFrame)
             firstFrame = 0;
         else
@@ -622,8 +576,10 @@ namespace ntile
 #endif
         if (profiler)
             profiler->LeaveSection();
+#endif
     }
 
+#if 0
     void GameScreen::DrawBlocks(bool picking, Int2 highlight)
     {
         /*
@@ -712,6 +668,7 @@ namespace ntile
                 }
             }
     }
+#endif
 
     bool GameScreen::OnAddEntity(EntityWorld* world, IEntity* ent)
     {
@@ -739,11 +696,11 @@ namespace ntile
 
         while ((msg = g_msgQueue->Retrieve(Timeout(0))) != nullptr)
         {
-            if (nui.HandleMessage(h_new, msg) > h_direct)
+            /*if (nui.HandleMessage(h_new, msg) > h_direct)
             {
                 msg->Release();
                 continue;
-            }
+            }*/
 
             switch (msg->type)
             {
@@ -764,8 +721,8 @@ namespace ntile
 
                     r_mousePos = Int2(ev->x, ev->y);
 
-                    if (ui->OnMouseMove(gameui::h_new, ev->x, ev->y) <= gameui::h_indirect)
-                        goodMousePos = r_mousePos;
+                    //if (ui->OnMouseMove(gameui::h_new, ev->x, ev->y) <= gameui::h_indirect)
+                    //    goodMousePos = r_mousePos;
                     break;
                 }
 #endif
@@ -784,7 +741,7 @@ namespace ntile
 
                         int h = gameui::h_new;
 
-                        h = ui->OnMouseButton(h, button, pressed, r_mousePos.x, r_mousePos.y);
+                        //h = ui->OnMouseButton(h, button, pressed, r_mousePos.x, r_mousePos.y);
 
                         if (button == MOUSEBTN_LEFT)
                         {
@@ -802,7 +759,7 @@ namespace ntile
                                     ent->OnClicked(this, MOUSEBTN_LEFT);
                             }
                         }
-                        else if (button == MOUSEBTN_RIGHT && pressed)
+                        /*else if (button == MOUSEBTN_RIGHT && pressed)
                         {
                             if (editingMode)
                             {
@@ -834,7 +791,7 @@ namespace ntile
                                     Edit_ToolEdit(mouseWorldPos);
                                 }
                             }
-                        }
+                        }*/
                         else if (button == MOUSEBTN_WHEEL_UP)
                             camEye *= 1.0f / 1.02f;
                         else if (button == MOUSEBTN_WHEEL_DOWN)
@@ -856,7 +813,7 @@ namespace ntile
                             setControlsControl->SetLabel(controlNames[setControlsIndex]);
                         else
                         {
-                            ui->PopModal(true);
+                            //ui->PopModal(true);
                             setControlsIndex = -1;
 
                             SaveKeyBindings();
@@ -922,11 +879,11 @@ namespace ntile
                     }
 
 #ifndef ZOMBIE_CTR
-                    if (ev->input.vkey.type == VKEY_KEY && ev->input.vkey.key == 27 && (ev->input.flags & VKEY_PRESSED))
+                    /*if (ev->input.vkey.type == VKEY_KEY && ev->input.vkey.key == 27 && (ev->input.flags & VKEY_PRESSED))
                     {
                         smaa = !smaa;
                         static_cast<n3d::GLRenderer*>(ir)->SetSMAA(smaa);
-                    }
+                    }*/
 #endif
 
                     break;
@@ -942,8 +899,8 @@ namespace ntile
 
                     r_pixelRes = Int2(payload->width, payload->height);
                     
-                    ui->SetArea(Int3(), r_pixelRes);
-                    ui->Layout();
+                    //ui->SetArea(Int3(), r_pixelRes);
+                    //ui->Layout();
                     break;
                 }
 
@@ -964,7 +921,7 @@ namespace ntile
                 case gameui::EVENT_LOOP_EVENT:
                 {
                     auto payload = msg->Data<gameui::EventLoopEvent>();
-                    ui->OnLoopEvent(payload);
+                    //ui->OnLoopEvent(payload);
                     break;
                 }
 
@@ -1018,7 +975,7 @@ namespace ntile
         }
 
 #ifndef ZOMBIE_CTR
-        ui->OnFrame(delta);
+        //ui->OnFrame(delta);
 #endif
     }
 
@@ -1109,7 +1066,7 @@ namespace ntile
             while (ticks--)
             {
                 world->OnTick();
-                nui.OnTick();
+                //nui.OnTick();
 
                 daytime += daytimeIncr;
 
@@ -1139,7 +1096,7 @@ namespace ntile
         }
     }
 
-    void GameScreen::SetupWorldLighting(const glm::mat4x4& modelView, Float3& backgroundColour)
+    /*void GameScreen::SetupWorldLighting(const glm::mat4x4& modelView, Float3& backgroundColour)
     {
         Float3 sun_ambient;
         Float3 sun_diffuse;
@@ -1154,7 +1111,7 @@ namespace ntile
         worldShader->SetUniformVec3(sun_amb, sun_ambient);
         worldShader->SetUniformVec3(sun_diff, sun_diffuse);
         worldShader->SetUniformVec3(sun_dir, sun_direction);
-    }
+    }*/
 
     bool GameScreen::StartGame()
     {
@@ -1201,10 +1158,10 @@ namespace ntile
 
 #ifndef ZOMBIE_CTR
         // Set up UI
-        ui->RemoveAll();
+        //ui->RemoveAll();
 
         InitGameUI();
-        Edit_InitEditingUI();
+        //Edit_InitEditingUI();
 #endif
 
         return true;

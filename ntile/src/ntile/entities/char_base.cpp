@@ -11,7 +11,7 @@ namespace entities
         this->pos = pos;
     }
 
-    void char_base::Draw(const UUID_t* uuidOrNull)
+    /*void char_base::Draw(const UUID_t* uuidOrNull)
     {
         if (uuidOrNull != nullptr && uuidOrNull != &DRAW_ENT_PICKING)
             return;
@@ -22,13 +22,13 @@ namespace entities
         ir->PushTransform(modelView);
         model->Draw();
         ir->PopTransform();
-    }
+    }*/
 
     bool char_base::GetAABB(Float3& min, Float3& max)
     {
-        ZFW_ASSERT(model != nullptr)
+        /*ZFW_ASSERT(model != nullptr)
 
-        /*min = pos + model->GetAABBMin();
+        min = pos + model->GetAABBMin();
         max = pos + model->GetAABBMax();
         return true;*/
         return false;
@@ -36,9 +36,9 @@ namespace entities
 
     bool char_base::GetAABBForPos(const Float3& newPos, Float3& min, Float3& max)
     {
-        ZFW_ASSERT(model != nullptr)
+        /*ZFW_ASSERT(model != nullptr)
 
-        /*min = newPos + model->GetAABBMin();
+        min = newPos + model->GetAABBMin();
         max = newPos + model->GetAABBMax();
         return true;*/
         return false;

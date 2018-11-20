@@ -4,7 +4,7 @@
 
 #include <framework/resourcemanager2.hpp>
 
-#define ENABLE_ANIMATION
+//#define ENABLE_ANIMATION
 
 namespace ntile
 {
@@ -15,7 +15,7 @@ namespace entities
         t = 0;
         lastAnim = 0;
 
-        g_res->ResourceByPath(&model, "ntile/models/player");
+        //g_res->ResourceByPath(&model, "ntile/models/player");
 
 #ifdef ENABLE_ANIMATION
         auto anim = model->GetAnimationByName("standing");

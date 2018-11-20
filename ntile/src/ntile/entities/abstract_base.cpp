@@ -12,7 +12,7 @@ namespace entities
     {
         this->name = "abstract_base";
 
-        editorImage = nullptr;
+        //editorImage = nullptr;
     }
 
     int abstract_base::ApplyProperties(cfx2_Node* properties_in)
@@ -45,13 +45,13 @@ namespace entities
             p_editorImagePath = "ntile/ui_gfx/editor_abstract_base.png";
 
         // FIXME: Error severity management
-        g_res->ResourceByPath(&editorImage, p_editorImagePath);
+        //g_res->ResourceByPath(&editorImage, p_editorImagePath);
 
         //if ((editorImage = ir->LoadTexture(p_editorImagePath, TEXTURE_DEFAULT_FLAGS, 0)) == nullptr)
         //    g_sys->Printf(kLogError,"abstract_base: failed to load editor graphics '%s'", p_editorImagePath);
     }
 
-    void abstract_base::Draw(const UUID_t* uuidOrNull)
+    /*void abstract_base::Draw(const UUID_t* uuidOrNull)
     {
         if (uuidOrNull != &DRAW_ENT_PICKING && uuidOrNull != &DRAW_EDITOR_MODE)
             return;
@@ -62,7 +62,7 @@ namespace entities
             ir->DrawTextureBillboard(editorImage, Float3(), Float2(16.0f, 16.0f));
             ir->PopTransform();
         }
-    }
+    }*/
 
     size_t abstract_base::GetNumProperties()
     {

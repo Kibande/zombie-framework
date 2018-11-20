@@ -26,10 +26,10 @@ namespace
         g_sys->Printf(kLogInfo, "%s", text.c_str());
     }
 
-    void ShowMessage(const char* message, int flags)
+    /*void ShowMessage(const char* message, int flags)
     {
         nui.ShowMessage(message, flags);
-    }
+    }*/
 }
 
 #define function(func_)\
@@ -39,7 +39,7 @@ namespace
     bool installScriptApi(lua_State* L)
     {
         function(Print);
-        function(ShowMessage);
+        //function(ShowMessage);
 
         return true;
     }

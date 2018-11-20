@@ -2,7 +2,6 @@
 
 #include "../items.hpp"
 #include "../nbase.hpp"
-#include "../n3d.hpp"
 #include "../stats.hpp"
 
 #include <framework/abstractentity.hpp>
@@ -44,7 +43,6 @@ namespace entities
     class char_base : public PointEntityBase, public ICommonEntity
     {
         protected:
-            IModel* model;
             Float3 aabbMin, aabbMax;
             float angle;
 
@@ -57,10 +55,9 @@ namespace entities
 
             char_base(Int3& pos, float angle);
 
-            virtual void Draw(const UUID_t* modeOrNull) override;
         
         public:
-            char_base() { model = nullptr; movementListener = nullptr; }
+            char_base() { /*model = nullptr;*/ movementListener = nullptr; }
 
             virtual bool GetAABB(Float3& min, Float3& max) override;
             virtual bool GetAABBForPos(const Float3& newPos, Float3& min, Float3& max) override;
@@ -77,7 +74,7 @@ namespace entities
             Int2 motionVec;
             int t, lastAnim;
 
-            n3d::Joint_t* sword_tip;
+            //n3d::Joint_t* sword_tip;
 
         public:
             char_player(Int3 pos, float angle);
@@ -100,9 +97,7 @@ namespace entities
             String modelPath;
 
             String name_buffer;
-            IModel* model;
 
-            ITexture* editorImage;
 
             IEntityMovementListener* movementListener;
 
@@ -115,7 +110,6 @@ namespace entities
             virtual bool Init() override;
             virtual void EditingModeInit() override;
 
-            virtual void Draw(const UUID_t* modeOrNull) override;
 
             virtual bool GetAABB(Float3& min, Float3& max) override;
             virtual bool GetAABBForPos(const Float3& newPos, Float3& min, Float3& max) override;
@@ -154,14 +148,13 @@ namespace entities
 
             virtual bool Init() override;
 
-            virtual void Draw(const UUID_t* uuidOrNull) override;
             virtual void OnTick() override;
 
         private:
-            void InitializeVertices(WorldVertex* p_vertices);
+            //void InitializeVertices(WorldVertex* p_vertices);
             void RandomizeHeightmap();
-            void ResetGeometry();
-            void UpdateGeometry();
+            //void ResetGeometry();
+            //void UpdateGeometry();
             void UpdateHeightmap();
 
             Int2 tiles;
@@ -169,7 +162,6 @@ namespace entities
 
             std::vector<int16_t> waveHeightmap, randomHeightmap;
 
-            unique_ptr<n3d::IVertexBuffer> vertexBuf;
     };
 
     class abstract_base : public AbstractEntityBase, public IEntityReflection, public ICommonEntity
@@ -177,7 +169,6 @@ namespace entities
         String editorImagePath;
 
         String name_buffer;
-        ITexture* editorImage;
 
         public:
             abstract_base();

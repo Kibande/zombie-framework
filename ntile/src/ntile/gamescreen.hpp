@@ -123,8 +123,8 @@ namespace ntile
 
             // UI
 #ifndef ZOMBIE_CTR
-            NUIThemer uiThemer;
-            unique_ptr<gameui::UIContainer> ui;
+            //NUIThemer uiThemer;
+            //unique_ptr<gameui::UIContainer> ui;
             gameui::Panel* editing_panel;
             gameui::TableLayout* editing_entity_properties;
             gameui::StaticText* editing_selected_block, * editing_selected_entity;
@@ -135,18 +135,18 @@ namespace ntile
             // Scripting
 
             // Resources
-            IFont* font_h2, * font_title;
-            ITexture* worldTex, * headsUp;
+            //IFont* font_h2, * font_title;
+            //ITexture* worldTex, * headsUp;
 
             // Shaders
-            IShaderProgram* worldShader;
+            /*IShaderProgram* worldShader;
             IShaderProgram* uiShader;
             int blend_colour;
             int sun_dir, sun_amb, sun_diff, sun_spec;
-            int pt_pos[PT_COUNT], pt_amb[PT_COUNT], pt_diff[PT_COUNT], pt_spec[PT_COUNT];
+            int pt_pos[PT_COUNT], pt_amb[PT_COUNT], pt_diff[PT_COUNT], pt_spec[PT_COUNT];*/
 
             ///////////////////////////////////////
-            void InitUI();
+            //void InitUI();
             bool InitGameUI();
             int LoadMap(const char* map);
             bool StartGame();
@@ -154,8 +154,8 @@ namespace ntile
             void p_LogResourceError();
 
             ///////////////////////////////////////
-            void DrawBlocks(bool picking, Int2 highlight);
-            void SetupWorldLighting(const glm::mat4x4& modelView, Float3& backgroundColour);
+            //void DrawBlocks(bool picking, Int2 highlight);
+            //void SetupWorldLighting(const glm::mat4x4& modelView, Float3& backgroundColour);
 
             ///////////////////////////////////////
             bool LoadKeyBindings();
@@ -166,7 +166,7 @@ namespace ntile
 #ifndef ZOMBIE_CTR
             int Edit_CreateMap();
             int Edit_SaveMap();
-            void Edit_InitEditingUI();
+            //void Edit_InitEditingUI();
             void Edit_InsertBlock(Short2 pos, int type);
             void Edit_SelectBlock(Short2 blockXY);
             void Edit_SelectEntity(IEntity* entity);
@@ -209,8 +209,8 @@ namespace ntile
             virtual void ShowError() override { g_sys->DisplayError(g_eb, false); }
 
 #ifndef ZOMBIE_CTR
-            virtual gameui::UIContainer* GetUI() override { return ui.get(); }
-            virtual gameui::UIThemer* GetUIThemer() override { return &uiThemer; }
+            //virtual gameui::UIContainer* GetUI() override { return ui.get(); }
+            //virtual gameui::UIThemer* GetUIThemer() override { return &uiThemer; }
 #endif
     };
 }

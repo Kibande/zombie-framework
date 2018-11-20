@@ -54,7 +54,7 @@ namespace ntile
         
         return 0;
     }
-
+/*
     void GameScreen::Edit_InitEditingUI()
     {
         // this is called on map startup! (the widgets are invisible by default)
@@ -101,7 +101,7 @@ namespace ntile
         ui->Layout();
         ui->SetOnlineUpdate(true);
     }
-
+*/
     void GameScreen::Edit_InsertBlock(Short2 pos, int type)
     {
         const Int2 oldWorldSize = worldSize;
@@ -272,7 +272,7 @@ namespace ntile
 
             editing_entity_properties->RemoveAll();
 
-            for (size_t i = 0; i < numProperties; i++)
+            /*for (size_t i = 0; i < numProperties; i++)
             {
                 auto label = new gameui::StaticText(&uiThemer, entityProperties[i].desc.name);
                 label->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
@@ -285,7 +285,7 @@ namespace ntile
 
                 editing_entity_properties->Add(label);
                 editing_entity_properties->Add(value);
-            }
+            }*/
         }
         else
         {
@@ -365,7 +365,7 @@ namespace ntile
             }
         }
 
-        const int minBlockX = std::max<int>((tileXY.x - radius) / TILES_IN_BLOCK_H, 0);
+        /*const int minBlockX = std::max<int>((tileXY.x - radius) / TILES_IN_BLOCK_H, 0);
         const int maxBlockX = std::min<int>((tileXY.x + radius) / TILES_IN_BLOCK_H, worldSize.x - 1);
 
         const int minBlockY = std::max<int>((tileXY.y - radius) / TILES_IN_BLOCK_V, 0);
@@ -385,7 +385,7 @@ namespace ntile
                 p_block->vertexBuf->Unmap();
                 p_block++;
             }
-        }
+        }*/
     }
 
     void GameScreen::Edit_ToolEdit(Int3 worldPos)
@@ -415,7 +415,7 @@ namespace ntile
 
     int GameScreen::OnEntityClass(const char* className)
     {
-        editing_entity_class->Add(new gameui::StaticText(&uiThemer, className));
+        //editing_entity_class->Add(new gameui::StaticText(&uiThemer, className));
         return 1;
     }
 
@@ -432,7 +432,7 @@ namespace ntile
         }
         else if (payload->widget->GetNameString() == "set_controls")
         {
-            gameui::Panel* panel = new gameui::Panel(&uiThemer);
+            /*gameui::Panel* panel = new gameui::Panel(&uiThemer);
             gameui::Table* table = new gameui::Table(2);
                 table->Add(new gameui::StaticText(&uiThemer, "Press key for: "));
                 setControlsControl = new gameui::StaticText(&uiThemer, controlNames[setControlsIndex = 0]);
@@ -442,7 +442,7 @@ namespace ntile
             panel->SetExpands(false);
             panel->SetPadding(Int2(25, 25));
             panel->Add(table);
-            ui->PushModal(panel);
+            ui->PushModal(panel);*/
         }
         else if (payload->widget->GetNameString() == "quit")
             g_sys->StopMainLoop();
@@ -488,7 +488,7 @@ namespace ntile
             // FIXME: Disgusting hack
             //ui->OnMouseButton(-1, 0, true, 0, 0);
         }
-        else if (payload->widget->GetNameString() == "editing_property_ok" || payload->widget->GetNameString() == "editing_property_cancel")
+        /*else if (payload->widget->GetNameString() == "editing_property_ok" || payload->widget->GetNameString() == "editing_property_cancel")
         {
             gameui::TextBox* value;
 
@@ -497,7 +497,7 @@ namespace ntile
                 DataModel::UpdateFromString(*editedProperty, value->GetText());
 
             ui->PopModal(true);
-        }
+        }*/
         else if (strncmp(payload->widget->GetNameString(), "ed_", 3) == 0 && selectedEntity != nullptr)
         {
             iterate2 (i, entityProperties)
@@ -508,7 +508,7 @@ namespace ntile
 
                     editedProperty = &(*i);
 
-                    gameui::Popup* popup = new gameui::Popup(&uiThemer);
+                    /*gameui::Popup* popup = new gameui::Popup(&uiThemer);
                     gameui::Table* table1 = new gameui::Table(1);
 
                         gameui::Table* table2 = new gameui::Table(3);
@@ -547,7 +547,7 @@ namespace ntile
                     popup->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
                     popup->SetName("editing_property_dlg");
 
-                    ui->PushModal(popup);
+                    ui->PushModal(popup);*/
                     return;
                 }
             }

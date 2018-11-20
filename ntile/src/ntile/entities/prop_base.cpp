@@ -12,7 +12,7 @@ namespace entities
     {
         this->name = "prop_base";
 
-        model = nullptr;
+        //model = nullptr;
 
         movementListener = nullptr;
     }
@@ -34,23 +34,23 @@ namespace entities
 
     bool prop_base::Init()
     {
-        if (!modelPath.isEmpty())
-            g_res->ResourceByPath(&model, modelPath);
+        //if (!modelPath.isEmpty())
+        //    g_res->ResourceByPath(&model, modelPath);
 
         return true;
     }
 
     void prop_base::EditingModeInit()
     {
-        if (modelPath.isEmpty())
+        /*if (modelPath.isEmpty())
         {
             static const char* p_editorImagePath = "ntile/ui_gfx/editor_prop_base.png";
 
             g_res->ResourceByPath(&editorImage, p_editorImagePath);
-        }
+        }*/
     }
 
-    void prop_base::Draw(const UUID_t* uuidOrNull)
+    /*void prop_base::Draw(const UUID_t* uuidOrNull)
     {
         if (uuidOrNull != nullptr && uuidOrNull != &DRAW_ENT_PICKING && uuidOrNull != &DRAW_EDITOR_MODE)
             return;
@@ -67,13 +67,13 @@ namespace entities
             ir->DrawTextureBillboard(editorImage, Float3(), Float2(16.0f, 16.0f));
             ir->PopTransform();
         }
-    }
+    }*/
 
     bool prop_base::GetAABB(Float3& min, Float3& max)
     {
-        ZFW_ASSERT(model != nullptr)
+        /*ZFW_ASSERT(model != nullptr)
 
-        /*min = pos + model->GetAABBMin();
+        min = pos + model->GetAABBMin();
         max = pos + model->GetAABBMax();
         return true;*/
         return false;
@@ -81,9 +81,9 @@ namespace entities
 
     bool prop_base::GetAABBForPos(const Float3& newPos, Float3& min, Float3& max)
     {
-        ZFW_ASSERT(model != nullptr)
+        /*ZFW_ASSERT(model != nullptr)
 
-        /*min = newPos + model->GetAABBMin();
+        min = newPos + model->GetAABBMin();
         max = newPos + model->GetAABBMax();
         return true;*/
         return false;
