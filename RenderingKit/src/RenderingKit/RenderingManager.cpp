@@ -41,6 +41,7 @@ namespace RenderingKit
 
             virtual void BeginFrame() override;
             virtual void Clear() override;
+            virtual void Clear(Float4 color) override;
             virtual void ClearBuffers(bool color, bool depth, bool stencil) override;
             virtual void ClearDepth() override;
             virtual void EndFrame(int ticksElapsed) override;
