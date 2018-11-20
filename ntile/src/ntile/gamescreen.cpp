@@ -249,7 +249,7 @@ namespace ntile
 
         //camPos = Float3(worldSize.x * 128.0f - 128.0f, worldSize.y * 128.0f, 0.0f);
         camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
-        vfov = 60.0f * (M_PI / 180.0f);
+        vfov = 60.0f * (f_pi / 180.0f);
 
         world.reset(new EntityWorld(g_sys));
         world->AddEntityFilter(this);
