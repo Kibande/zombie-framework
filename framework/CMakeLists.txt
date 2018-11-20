@@ -36,7 +36,12 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/include/ztype/*.hpp
 )
 
-list(APPEND sources ${PROJECT_SOURCE_DIR}/src/framework/codecs/bmpcodec.cpp)
+list(APPEND sources
+        ${PROJECT_SOURCE_DIR}/include/framework/broadcasthandler.hpp
+
+        ${PROJECT_SOURCE_DIR}/src/framework/broadcasthandler.cpp
+        ${PROJECT_SOURCE_DIR}/src/framework/codecs/bmpcodec.cpp
+        )
 
 if (UNIX AND NOT APPLE)
     file(GLOB add_sources src/framework/linux/*)

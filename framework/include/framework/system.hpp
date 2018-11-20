@@ -41,6 +41,7 @@ namespace zfw
             virtual bool                Startup() = 0;
 
             // Core Handlers
+            virtual IBroadcastHandler*  GetBroadcastHandler(bool createIfNull) = 0;
             virtual IEntityHandler*     GetEntityHandler(bool createIfNull) = 0;
             virtual IFileSystem*        GetFileSystem() = 0;
             virtual IMediaCodecHandler* GetMediaCodecHandler(bool createIfNull) = 0;

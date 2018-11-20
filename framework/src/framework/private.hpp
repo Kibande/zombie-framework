@@ -6,6 +6,7 @@ namespace zfw
 {
     IConfig*            p_CreateConfig(ErrorBuffer_t* eb);
 
+    unique_ptr<IBroadcastHandler> p_CreateBroadcastHandler();
     IEntityHandler*     p_CreateEntityHandler(ErrorBuffer_t* eb, ISystem* sys);
     shared_ptr<IFileSystem> p_CreateStdFileSystem(ErrorBuffer_t* eb, const char* absolutePathPrefix, int access);
     IFSUnion*           p_CreateFSUnion(ErrorBuffer_t* eb);

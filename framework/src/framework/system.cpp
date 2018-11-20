@@ -1,6 +1,7 @@
 
 #include "private.hpp"
 
+#include <framework/broadcasthandler.hpp>
 #include <framework/entity.hpp>
 #include <framework/entityhandler.hpp>
 #include <framework/errorbuffer.hpp>
@@ -183,6 +184,7 @@ namespace zfw
             virtual bool            Startup() override;
 
             // Core Handlers
+            IBroadcastHandler* GetBroadcastHandler(bool createIfNull) override;
             virtual IEntityHandler* GetEntityHandler(bool createIfNull) override;
             virtual IFileSystem*    GetFileSystem() override { return fsUnion->GetFileSystem(); }
             virtual IMediaCodecHandler* GetMediaCodecHandler(bool createIfNull) override;
@@ -275,6 +277,7 @@ namespace zfw
             bool interactive;
 
             // core handlers
+            unique_ptr<IBroadcastHandler> broadcastHandler;
             shared_ptr<IEntityHandler> entityHandler;
             unique_ptr<IMediaCodecHandler> mediaCodecHandler;
             shared_ptr<IModuleHandler> moduleHandler;
@@ -812,6 +815,15 @@ namespace zfw
             var->SetVariable(tokens[0], tokens[1], 0);
     }
 
+    IBroadcastHandler* System::GetBroadcastHandler(bool createIfNull)
+    {
+        if (createIfNull && !broadcastHandler) {
+            broadcastHandler = p_CreateBroadcastHandler();
+        }
+
+        return broadcastHandler.get();
+    }
+
     IEntityHandler* System::GetEntityHandler(bool createIfNull)
     {
         if (createIfNull && entityHandler == nullptr)
@@ -987,9 +999,12 @@ namespace zfw
 		if (frameCounter == profileFrame)
 			profiler->EnterSection(profVideoHandler);
 
-		videoHandler->BeginFrame();
-		videoHandler->ReceiveEvents();
-		videoHandler->BeginDrawFrame();
+        if (videoHandler)
+        {
+            videoHandler->BeginFrame();
+            videoHandler->ReceiveEvents();
+            videoHandler->BeginDrawFrame();
+        }
 
 		if (frameCounter == profileFrame)
 		{
@@ -1022,7 +1037,11 @@ namespace zfw
 			profiler->EnterSection(profVideoHandler2);
 		}
 
-		videoHandler->EndFrame(tickAccum);
+        if (videoHandler)
+        {
+            videoHandler->EndFrame(tickAccum);
+        }
+
 		tickAccum = 0;
 
 		if (frameCounter == profileFrame)

@@ -99,6 +99,7 @@ namespace zfw
     struct Vkey_t;
 
     // core classes
+    class IBroadcastHandler;
     class IConfig;
     class IDecoder;
     class IEncoder;
