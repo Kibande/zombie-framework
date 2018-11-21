@@ -232,7 +232,7 @@ namespace RenderingKit
         public:
             virtual ~IRenderingManagerBackend() {}
 
-            virtual bool Startup() = 0;
+            virtual bool Startup(gsl::span<const char*> vertexAttribNames) = 0;
             virtual bool CheckErrors(const char* caller) = 0;
 
             virtual void CleanupMaterialAndVertexFormat() = 0;
@@ -273,7 +273,15 @@ namespace RenderingKit
 
             virtual bool Init(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, IRenderingKitHost* host) override;
 
+#if ZOMBIE_API_VERSION >= 201901
+            IRenderingManager*          StartupRendering(gsl::span<const char*> vertexAttribNames) override;
+#else
+            IRenderingManager*          StartupRendering(gsl::span<const char*> vertexAttribNames);
+#endif
+
+#if ZOMBIE_API_VERSION < 201901
             virtual IRenderingManager*  GetRenderingManager() override { return rm.get(); }
+#endif
             virtual IWindowManager*     GetWindowManager() override { return wm.get(); }
 
             //zfw::Env* GetEnv() { return sys->GetEnv(); }

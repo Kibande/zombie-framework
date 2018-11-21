@@ -97,7 +97,7 @@ namespace RenderingKit
             void SetShaderGlobal(intptr_t handle, Float4 value) override;
 
             // RenderingKit::IRenderingManagerBackend
-            virtual bool Startup() override;
+            virtual bool Startup(gsl::span<const char*> vertexAttribNames) override;
             virtual bool CheckErrors(const char* caller) override;
 
             virtual void CleanupMaterialAndVertexFormat() override;
@@ -166,6 +166,7 @@ namespace RenderingKit
             IGLMaterial* materialOverride;
 
             //
+            gsl::span<const char*> vertexAttribNames;
             std::vector<ShaderUniform> globalUniforms;
     };
 
@@ -1010,13 +1011,15 @@ namespace RenderingKit
         glViewport(viewportPos.x, framebufferSize.y - viewportPos.y - viewportSize.y, viewportSize.x, viewportSize.y);
     }
 
-    bool RenderingManager::Startup()
+    bool RenderingManager::Startup(gsl::span<const char*> vertexAttribNames)
     {
         rk->GetSys()->Printf(kLogInfo, "Rendering Kit: %s | %s | %s", glGetString(GL_VERSION), glGetString(GL_RENDERER), glGetString(GL_VENDOR));
 
 #ifdef RENDERING_KIT_USING_OPENGL_ES
 		rk->GetSys()->Printf(kLogInfo, "Rendering Kit: Using OpenGL ES-compatible subset");
 #endif
+
+        this->vertexAttribNames = vertexAttribNames;
 
         /*if (GLEW_ARB_debug_output)
         {

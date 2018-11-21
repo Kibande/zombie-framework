@@ -496,7 +496,6 @@ namespace RenderingKit
         protected:
             zfw::ErrorBuffer_t* eb;
             zfw::ISystem* sys;
-            IRenderingKit* rk;
             IRenderingManager* rm;
 
             IResourceManager* res;
@@ -518,10 +517,12 @@ namespace RenderingKit
             RKUIThemer();
             ~RKUIThemer();
 
-#if ZOMBIE_API_VERSION < 201701
-            virtual void Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* resRef) override;
-#else
+#if ZOMBIE_API_VERSION >= 201901
+            bool Init(zfw::ISystem* sys, IRenderingManager* rm, IResourceManager2* res) override;
+#elif ZOMBIE_API_VERSION >= 201701
             virtual bool Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager2* res) override;
+#else
+            virtual void Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* resRef) override;
 #endif
 
             virtual bool AcquireResources() override;
@@ -1418,7 +1419,6 @@ namespace RenderingKit
     RKUIThemer::RKUIThemer()
     {
         eb = nullptr;
-        rk = nullptr;
     }
 
     RKUIThemer::~RKUIThemer()
@@ -1428,31 +1428,41 @@ namespace RenderingKit
         DropResources();
     }
 
-#if ZOMBIE_API_VERSION < 201701
-    void RKUIThemer::Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* res)
+#if ZOMBIE_API_VERSION >= 201901
+    bool RKUIThemer::Init(zfw::ISystem* sys, IRenderingManager* rm, IResourceManager2* res)
     {
         SetEssentials(sys->GetEssentials());
 
         this->eb = GetErrorBuffer();
         this->sys = sys;
-        this->rk = rk;
-        this->rm = rk->GetRenderingManager();
-        this->res = res;
+        this->rm = rm;
 
         painter.reset(new RKUIPainter(rm, res));
+        return true;
     }
-#else
+#elif ZOMBIE_API_VERSION >= 201701
     bool RKUIThemer::Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager2* res)
     {
         SetEssentials(sys->GetEssentials());
 
         this->eb = GetErrorBuffer();
         this->sys = sys;
-        this->rk = rk;
         this->rm = rk->GetRenderingManager();
 
         painter.reset(new RKUIPainter(rm, res));
         return true;
+    }
+#else
+    void RKUIThemer::Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* res)
+    {
+        SetEssentials(sys->GetEssentials());
+
+        this->eb = GetErrorBuffer();
+        this->sys = sys;
+        this->rm = rk->GetRenderingManager();
+        this->res = res;
+
+        painter.reset(new RKUIPainter(rm, res));
     }
 #endif
 

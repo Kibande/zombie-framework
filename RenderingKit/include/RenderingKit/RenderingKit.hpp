@@ -14,6 +14,8 @@
 
 #include <reflection/magic.hpp>
 
+#include <gsl/span>
+
 // >2013
 // >windows still being windows
 #undef DrawText
@@ -593,7 +595,12 @@ namespace RenderingKit
 			// `host` is deprecated and ignored
             virtual bool Init(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, IRenderingKitHost* host) = 0;
 
+#if ZOMBIE_API_VERSION >= 201901
+            virtual IRenderingManager*  StartupRendering(gsl::span<const char*> vertexAttribNames) = 0;
+#else
             virtual IRenderingManager*  GetRenderingManager() = 0;
+#endif
+
             virtual IWindowManager*     GetWindowManager() = 0;
 
             REFL_CLASS_NAME("IRenderingKit", 1)

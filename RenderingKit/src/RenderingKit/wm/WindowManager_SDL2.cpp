@@ -375,11 +375,12 @@ namespace RenderingKit
         //if (cap != nullptr)
         //    cap->StartCapture(pixel_resolution, 60);
 
-        auto rm = rk->GetRenderingManagerBackend();
         //rMgr->SetVideoCapture(cap);
 
-        if (!rm->Startup())
+#if ZOMBIE_API_VERSION < 201901
+        if (!rk->StartupRendering({}))
             return false;
+#endif
 
         return true;
     }

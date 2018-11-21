@@ -43,4 +43,13 @@ namespace RenderingKit
 
         return true;
     }
+
+    IRenderingManager* RenderingKit::StartupRendering(gsl::span<const char*> vertexAttribNames)
+    {
+        if (!rm->Startup(vertexAttribNames)) {
+            return nullptr;
+        }
+
+        return rm.get();
+    }
 }
