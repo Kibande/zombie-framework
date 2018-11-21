@@ -4,6 +4,7 @@
 #include "../ntile.hpp"
 
 #include <RenderingKit/RenderingKit.hpp>
+#include <RenderingKit/utility/VertexFormat.hpp>
 
 namespace ntile {
     struct WorldVertex
@@ -12,6 +13,8 @@ namespace ntile {
         int16_t n[4];
         uint8_t rgba[4];
         float u, v;
+
+        static RenderingKit::VertexFormat<4> format;
     };
 
     static_assert(sizeof(WorldVertex) == 32, "WorldVertex size");
@@ -23,7 +26,7 @@ namespace ntile {
 
     class BlockViewer : public IViewer {
     public:
-        void Draw(RenderingKit::IRenderingManager* rm, Int2 blockXY, WorldBlock* block, RenderingKit::IMaterial* mat, RenderingKit::IVertexFormat* vf);
+        void Draw(RenderingKit::IRenderingManager* rm, Int2 blockXY, WorldBlock* block, RenderingKit::IMaterial* mat);
 
         void Update() { this->needsUpdate = true; }
 

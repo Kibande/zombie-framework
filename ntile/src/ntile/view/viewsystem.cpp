@@ -22,13 +22,13 @@ namespace ntile {
     using std::shared_ptr;
     using std::unique_ptr;
 
-    static const VertexAttrib_t worldVertexAttribs[] =
-    {
-        {"in_Position", 0,  RK_ATTRIB_INT_3,    RK_ATTRIB_NOT_NORMALIZED},
-        {"in_Normal",   12, RK_ATTRIB_SHORT_3,  0},
-        {"in_Color",    20, RK_ATTRIB_UBYTE_4,  0},
-        {"in_UV",       24, RK_ATTRIB_FLOAT_2,  0},
-        {}
+    VertexFormat<4> WorldVertex::format {
+        sizeof(WorldVertex), {{
+            {"in_Position", 0,  RK_ATTRIB_INT_3,    RK_ATTRIB_NOT_NORMALIZED},
+            {"in_Normal",   12, RK_ATTRIB_SHORT_3,  0},
+            {"in_Color",    20, RK_ATTRIB_UBYTE_4,  0},
+            {"in_UV",       24, RK_ATTRIB_FLOAT_2,  0},
+        }}
     };
 
     struct GlobalUniforms {
@@ -72,7 +72,6 @@ namespace ntile {
         shared_ptr<ICamera> cam;
 
         // Blocks
-        shared_ptr<IVertexFormat> blockVF;
         std::unordered_map<WorldBlock*, unique_ptr<BlockViewer>> blockViewers;
         IMaterial* blockMaterial;
     };
@@ -94,8 +93,7 @@ namespace ntile {
         wm->LoadDefaultSettings(nullptr);
         wm->ResetVideoOutput();
 
-        static const char* vertexAttribNames[] = { "in_Position", "in_Normal", "in_UV", "in_Color" };
-        this->rm = rk->StartupRendering(vertexAttribNames);
+        this->rm = rk->StartupRendering();
         zombie_ErrorCheck(rm);
 
         rm->RegisterResourceProviders(g_res.get());
@@ -115,7 +113,6 @@ namespace ntile {
         blockMaterial = g_res->GetResource<IMaterial>("shader=path=ntile/shaders/world", 0);
         blockMaterial->SetTextureByIndex(0, g_res->GetResourceByPath<ITexture>("ntile/worldtex_0.png", 0));
         // TODO[mess]: this requires the material to be already realized; further reason to decouple these
-        blockVF = rm->CompileVertexFormat(blockMaterial->GetShader(), sizeof(WorldVertex), worldVertexAttribs, false);
 
         bp3d.Init(rm);
 
@@ -172,7 +169,7 @@ namespace ntile {
                 auto& vw = blockViewers[block];
                 zombie_assert(vw != nullptr);
 
-                vw->Draw(rm, Int2(bx, by), block, blockMaterial, blockVF.get());
+                vw->Draw(rm, Int2(bx, by), block, blockMaterial);
                 return;
             }
         }

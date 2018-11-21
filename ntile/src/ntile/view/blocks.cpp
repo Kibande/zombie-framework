@@ -306,14 +306,14 @@ namespace ntile {
         }
     }
 
-    void BlockViewer::Draw(RenderingKit::IRenderingManager* rm, Int2 blockXY, WorldBlock* block, RenderingKit::IMaterial* mat, RenderingKit::IVertexFormat* vf) {
+    void BlockViewer::Draw(RenderingKit::IRenderingManager* rm, Int2 blockXY, WorldBlock* block, RenderingKit::IMaterial* mat) {
         if (!gc) {
             if (!gb) {
                 gb = rm->CreateGeomBuffer("blockviewer");       // TODO: share!
             }
 
-            gc.reset(gb->CreateGeomChunk());
-            zombie_assert(gc->AllocVertices(vf, TILES_IN_BLOCK_V * TILES_IN_BLOCK_H * 3 * 6, 0));
+            gc = gb->AllocVertices(WorldVertex::format, TILES_IN_BLOCK_V * TILES_IN_BLOCK_H * 3 * 6, 0);
+            zombie_assert(gc);
 
             InitAllTiles(blockXY, vertices);
 
