@@ -49,6 +49,9 @@
 
 #if defined(DEBUG) || defined(_DEBUG)
 #define ZOMBIE_DEBUG
+#endif
+
+#ifdef ZOMBIE_DEBUG
 #define ZOMBIE_BUILDTYPENAME "DEBUG"
 #else
 #define ZOMBIE_BUILDTYPENAME "RELEASE"

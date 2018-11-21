@@ -79,6 +79,8 @@ endif()
 
 add_library(${library} ${sources})
 
+target_compile_definitions(${library} PUBLIC $<$<CONFIG:DEBUG>:ZOMBIE_DEBUG>)
+
 if (ZOMBIE_API_VERSION)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC -DZOMBIE_API_VERSION=${ZOMBIE_API_VERSION})
 endif()

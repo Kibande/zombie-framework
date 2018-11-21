@@ -6,6 +6,8 @@
 
 #include <littl/Stream.hpp>
 
+#include <math.h>
+
 namespace zfw
 {
     /*
@@ -81,7 +83,7 @@ namespace zfw
         if (collHandler == nullptr || collHandler->CollideMovementTo(this, pos, newPos))
             pos = newPos;
 
-        ZFW_DBGASSERT(!_isnan(pos.x) && !_isnan(pos.y) && !_isnan(pos.z));
+        ZFW_DBGASSERT(!isnan(pos.x) && !isnan(pos.y) && !isnan(pos.z));
     }
 
     template <int dummy>
@@ -92,7 +94,7 @@ namespace zfw
         if (collHandler == nullptr || collHandler->CollideMovementTo(this, pos, newPos))
             pos = newPos;
 
-        ZFW_DBGASSERT(!_isnan(pos.x) && !_isnan(pos.y) && !_isnan(pos.z));
+        ZFW_DBGASSERT(!isnan(pos.x) && !isnan(pos.y) && !isnan(pos.z));
     }
 
     template <int dummy>

@@ -17,7 +17,7 @@
         zfw::g_essentials->AssertionFailResourceState(name_, (int) this->state, (int) expected_, li_functionName, __FILE__, __LINE__);\
 } while (false)
 
-#ifdef _DEBUG
+#ifdef ZOMBIE_DEBUG
 #define ZFW_DBGASSERT(expr_) if (!(expr_))\
 {\
     zfw::g_essentials->AssertionFail(#expr_, li_functionName, __FILE__, __LINE__, true);\
