@@ -19,6 +19,11 @@ namespace zfw
         virtual void SubscribeToMessageType(IBroadcastSubscriber* sub, intptr_t type) = 0;
 
         template <typename MessageStruct>
+        void BroadcastMessage(const MessageStruct& message) {
+            this->BroadcastMessage(MessageStruct::msgType, &message);
+        }
+
+        template <typename MessageStruct>
         void SubscribeToMessageType(IBroadcastSubscriber* sub) {
             this->SubscribeToMessageType(sub, MessageStruct::msgType);
         }

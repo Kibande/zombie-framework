@@ -70,6 +70,7 @@ namespace ntile {
 
         BasicPainter3D<> bp3d;
         shared_ptr<ICamera> cam;
+        Float3 camPos, camEye;
 
         // Blocks
         std::unordered_map<WorldBlock*, unique_ptr<BlockViewer>> blockViewers;
@@ -116,16 +117,15 @@ namespace ntile {
 
         bp3d.Init(rm);
 
-        auto camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
-        auto camEye = Float3(0.0f, 300.0f, 300.0f);
+        camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
         cam = rm->CreateCamera("ViewSystem::cam");
         cam->SetClippingDist(200, 2000);
         cam->SetPerspective();
         cam->SetVFov(45.0f / 180.0f * 3.14f);
-        cam->SetView(camPos + camEye, camPos, Float3(0.0f, -0.707f, 0.707f));
 
         // Sign up for broadcasts
         sys->GetBroadcastHandler(true)->SubscribeToMessageType<BlockStateChangeEvent>(this);
+        sys->GetBroadcastHandler(true)->SubscribeToMessageType<WorldSwitchedEvent>(this);
 
         return true;
     }
@@ -151,12 +151,18 @@ namespace ntile {
 
         rm->SetClearColour(Float4(backgroundColour, 1.0f));
         rm->Clear();
+        rm->SetRenderState(RK_DEPTH_TEST, true);
 
         // Set up camera
+        //if (player != nullptr)
+        //    camPos = player->GetPos();
+
+        auto camEye = Float3(0.0f, 300.0f, 300.0f);
+        cam->SetView(camPos + camEye, camPos, Float3(0.0f, -0.707f, 0.707f));
         rm->SetCamera(cam.get());
 
         // Draw terrain
-        bp3d.DrawGridAround(Float3(0, 0, 0), Float3(16, 16, 0), Int2(10, 10), RGBA_WHITE);
+        //bp3d.DrawGridAround(Float3(512,512, 32), Float3(16, 16, 0), Int2(10, 10), RGBA_BLACK);
         auto worldBlocks = blocks;
 
         int bx1 = 0, by1 = 0, bx2 = worldSize.x - 1, by2 = worldSize.y - 1;
@@ -170,7 +176,6 @@ namespace ntile {
                 zombie_assert(vw != nullptr);
 
                 vw->Draw(rm, Int2(bx, by), block, blockMaterial);
-                return;
             }
         }
 
@@ -184,6 +189,11 @@ namespace ntile {
         case kBlockStateChangeEvent: {
             auto data = reinterpret_cast<const BlockStateChangeEvent*>(payload);
             this->p_OnBlockStateChange(data->block, data->change);
+            break;
+        }
+
+        case kWorldSwitched: {
+            camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
             break;
         }
         }

@@ -49,12 +49,18 @@ namespace ntile {
     };
 
     enum {
-        kBlockStateChangeEvent = 1,
+        // TODO: just use typeID? do we care about serialization for these?
+        kNanotileMinEvent = 0,
+        kBlockStateChangeEvent,
+        kWorldSwitched,
     };
 
     DECL_MESSAGE(BlockStateChangeEvent, kBlockStateChangeEvent) {
         WorldBlock* block;
         BlockStateChange change;
+    };
+
+    DECL_MESSAGE(WorldSwitchedEvent, kWorldSwitched) {
     };
 
     // Utility functions

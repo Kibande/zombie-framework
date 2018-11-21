@@ -2,6 +2,8 @@
 #include "gamescreen.hpp"
 #include "world.hpp"
 
+#include <framework/broadcasthandler.hpp>
+
 namespace ntile
 {
     int GameScreen::LoadMap(const char* map)
@@ -36,6 +38,8 @@ namespace ntile
 
         if (!mapBlocks->readLE<uint16_t>(&map_w) || !mapBlocks->readLE<uint16_t>(&map_h))
             return EX_ASSET_CORRUPTED;
+
+        // TODO: something something broadcast all blocks destroyed
 
         Blocks::AllocBlocks(Int2(map_w, map_h));
 
@@ -73,6 +77,11 @@ namespace ntile
                         break;
                     }
                 }
+
+                BlockStateChangeEvent ev;
+                ev.block = p_block;
+                ev.change = BlockStateChange::created;
+                g_sys->GetBroadcastHandler(true)->BroadcastMessage(ev);
 
                 p_block++;
             }

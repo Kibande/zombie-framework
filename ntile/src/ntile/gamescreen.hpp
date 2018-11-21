@@ -106,10 +106,6 @@ namespace ntile
             Float3 edit_entityInitialPos;
             Int2 edit_entityMovementOrigin;
 
-            // Scene view
-            float vfov;
-            Float3 camPos, camEye;
-
             // Studio
 #ifdef ZOMBIE_STUDIO
             StudioBlebManager studioBlebManager;
@@ -146,10 +142,6 @@ namespace ntile
             bool StartGame();
 
             void p_LogResourceError();
-
-            ///////////////////////////////////////
-            //void DrawBlocks(bool picking, Int2 highlight);
-            //void SetupWorldLighting(const glm::mat4x4& modelView, Float3& backgroundColour);
 
             ///////////////////////////////////////
             bool LoadKeyBindings();

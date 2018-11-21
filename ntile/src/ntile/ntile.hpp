@@ -45,9 +45,11 @@ namespace ntile
     typedef int16_t Normal_t;
 
     struct World {
-        int daytime = 0;            // 30 ticks = 1 min (in-game),
+        int daytime = 0;        // 30 ticks = 1 min (in-game),
                                 // 1800 ticks = 1 hour,
                                 // 18000 ticks = 10 hours = 1 day
+
+        Float3 playerPos;       // temp!!
     };
 
     extern World g_world;

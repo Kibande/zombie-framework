@@ -52,6 +52,7 @@ namespace ntile
         auto var = g_sys->GetVarSystem();
         var->SetVariable("appName", "Nanotile", 0);
         var->SetVariable("startmap", "dev_zero", 0);
+        var->SetVariable("map", "dev_zero", 0);
 
         //Directory::create("AppData_nanotile");
 

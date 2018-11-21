@@ -154,7 +154,7 @@ namespace ntile
         if (copyOffset.x > 0 || copyOffset.y > 0)
         {
             const Float3 worldOffset(copyOffset.x * 256.0f, copyOffset.y * 256.0f, 0.0f);
-            camPos += worldOffset;
+            //camPos += worldOffset;
 
             world->IterateEntities([&worldOffset](IEntity* ent) { ent->SetPos(ent->GetPos() + worldOffset); });
         }
@@ -591,7 +591,8 @@ namespace ntile
                 else
                 {
                     ent->Init();
-                    ent->SetPos(glm::round(camPos / tileSize) * tileSize);
+                    zombie_assert(!"ent->SetPos(glm::round(camPos / tileSize) * tileSize);");
+                    //ent->SetPos(glm::round(camPos / tileSize) * tileSize);
 
                     ICommonEntity* ice = dynamic_cast<ICommonEntity*>(ent.get());
 

@@ -114,7 +114,6 @@ namespace ntile
 #ifdef ZOMBIE_CTR
         camEye = Float3(0.0f, 150.0f, 150.0f);
 #else
-        camEye = Float3(0.0f, 300.0f, 300.0f);
 
         // Editing
         editing.tool = TOOL_RAISE;
@@ -242,14 +241,10 @@ namespace ntile
                 BlockStateChangeEvent ev;
                 ev.block = p_block;
                 ev.change = BlockStateChange::created;
-                g_sys->GetBroadcastHandler(true)->BroadcastMessage(ev.msgType, &ev);
+                g_sys->GetBroadcastHandler(true)->BroadcastMessage(ev);
 
                 p_block++;
             }
-
-        //camPos = Float3(worldSize.x * 128.0f - 128.0f, worldSize.y * 128.0f, 0.0f);
-        camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
-        vfov = 60.0f * (f_pi / 180.0f);
 
         world.reset(new EntityWorld(g_sys));
         world->AddEntityFilter(this);
@@ -288,6 +283,8 @@ namespace ntile
             StartGame();
 
         g_sys->Printf(kLogInfo, "GameScreen: Initialization successful.");
+
+        g_sys->GetBroadcastHandler(true)->BroadcastMessage(WorldSwitchedEvent {});
         return true;
     }
 
@@ -799,10 +796,15 @@ namespace ntile
                                 }
                             }
                         }*/
-                        else if (button == MOUSEBTN_WHEEL_UP)
-                            camEye *= 1.0f / 1.02f;
-                        else if (button == MOUSEBTN_WHEEL_DOWN)
-                            camEye *= 1.02f;
+                        else if (button == MOUSEBTN_WHEEL_UP) {
+                            zombie_assert(!"camEye *= 1.0f / 1.02f;");
+                            //camEye *= 1.0f / 1.02f;
+                        }
+
+                        else if (button == MOUSEBTN_WHEEL_DOWN) {
+                            zombie_assert(!"camEye *= 1.02f;");
+                            //camEye *= 1.02f;
+                        }
 
                         break;
                     }
@@ -1039,33 +1041,33 @@ namespace ntile
 
         if (isTitle)
         {
-            camPos.x += 6.0f * ticks / CL_TICKRATE;
-
-            if (camPos.x >= worldSize.x * 128.0f + 128.0f)
-            {
-                uint8_t buffer[sizeof(WorldBlock)];
-                WorldBlock* tmp = reinterpret_cast<WorldBlock*>(buffer);
-
-                for (int by = 0; by < worldSize.y; by++)
-                {
-                    WorldBlock* p_block = &blocks[worldSize.x * by];
-
-                    Allocator<WorldBlock>::move(tmp, p_block, 1);
-                    Allocator<WorldBlock>::move(p_block, p_block + 1, worldSize.x - 1);
-                    Allocator<WorldBlock>::move(p_block + worldSize.x - 1, tmp, 1);
-                }
-
-                WorldBlock* p_block = &blocks[0];
-
-                for (int by = 0; by < worldSize.y; by++)
-                    for (int bx = 0; bx < worldSize.x; bx++)
-                    {
-                        Blocks::ResetBlock(p_block, bx, by);
-                        p_block++;
-                    }
-
-                camPos.x -= 256.0f;
-            }
+//            camPos.x += 6.0f * ticks / CL_TICKRATE;
+//
+//            if (camPos.x >= worldSize.x * 128.0f + 128.0f)
+//            {
+//                uint8_t buffer[sizeof(WorldBlock)];
+//                WorldBlock* tmp = reinterpret_cast<WorldBlock*>(buffer);
+//
+//                for (int by = 0; by < worldSize.y; by++)
+//                {
+//                    WorldBlock* p_block = &blocks[worldSize.x * by];
+//
+//                    Allocator<WorldBlock>::move(tmp, p_block, 1);
+//                    Allocator<WorldBlock>::move(p_block, p_block + 1, worldSize.x - 1);
+//                    Allocator<WorldBlock>::move(p_block + worldSize.x - 1, tmp, 1);
+//                }
+//
+//                WorldBlock* p_block = &blocks[0];
+//
+//                for (int by = 0; by < worldSize.y; by++)
+//                    for (int bx = 0; bx < worldSize.x; bx++)
+//                    {
+//                        Blocks::ResetBlock(p_block, bx, by);
+//                        p_block++;
+//                    }
+//
+//                camPos.x -= 256.0f;
+//            }
         }
 
         if (!editingMode)
@@ -1082,12 +1084,12 @@ namespace ntile
             }
 
             if (player != nullptr)
-                camPos = player->GetPos();
+                g_world.playerPos = player->GetPos();
         }
         else
         {
             g_world.daytime = 5 * HOUR_TICKS + 0 * MINUTE_TICKS;
-            camPos += Float3(10 * player->GetMotionVec(), 0.0f);
+//            camPos += Float3(10 * player->GetMotionVec(), 0.0f);
         }
     }
 
@@ -1100,23 +1102,6 @@ namespace ntile
             g_sys->Printf(kLogError, "Resource Loading Error: %s", desc);
         }
     }
-
-    /*void GameScreen::SetupWorldLighting(const glm::mat4x4& modelView, Float3& backgroundColour)
-    {
-        Float3 sun_ambient;
-        Float3 sun_diffuse;
-        Float3 sun_direction;
-
-        ambient.CalculateWorldLighting(daytime,
-                                       backgroundColour,
-                                       sun_ambient,
-                                       sun_diffuse,
-                                       sun_direction);
-
-        worldShader->SetUniformVec3(sun_amb, sun_ambient);
-        worldShader->SetUniformVec3(sun_diff, sun_diffuse);
-        worldShader->SetUniformVec3(sun_dir, sun_direction);
-    }*/
 
     bool GameScreen::StartGame()
     {
