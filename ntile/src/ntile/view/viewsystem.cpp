@@ -60,6 +60,7 @@ namespace ntile {
         World& world;
 
         unique_ptr<IRenderingKit> rk;
+        IRenderingManager* rm;
 
         // Global setup
         GlobalUniforms globalUniforms;
@@ -88,11 +89,14 @@ namespace ntile {
         rk.reset(CreateRenderingKit());
         rk->Init(sys, eb, nullptr);
 
-        auto rm = rk->GetRenderingManager();
         auto wm = rk->GetWindowManager();
 
         wm->LoadDefaultSettings(nullptr);
         wm->ResetVideoOutput();
+
+        static const char* vertexAttribNames[] = { "in_Position", "in_Normal", "in_UV", "in_Color" };
+        this->rm = rk->StartupRendering(vertexAttribNames);
+        zombie_ErrorCheck(rm);
 
         rm->RegisterResourceProviders(g_res.get());
         g_res->SetTargetState(IResource2::State_t::REALIZED);
@@ -130,8 +134,6 @@ namespace ntile {
     }
 
     void ViewSystem::OnFrame() {
-        auto rm = rk->GetRenderingManager();
-
         ambient.SetTime(world.daytime);
         Float3 backgroundColour;
         Float3 sun_ambient;
