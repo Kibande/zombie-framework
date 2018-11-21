@@ -97,14 +97,13 @@ namespace RenderingKit
             void SetShaderGlobal(intptr_t handle, Float4 value) override;
 
             // RenderingKit::IRenderingManagerBackend
-            virtual bool Startup(gsl::span<const char*> vertexAttribNames) override;
+            virtual bool Startup() override;
             virtual bool CheckErrors(const char* caller) override;
 
-            virtual void CleanupMaterialAndVertexFormat() override;
             virtual void OnWindowResized(Int2 newSize) override;
-            virtual void SetupMaterialAndVertexFormat(IGLMaterial* material, const MaterialSetupOptions& options,
-                GLVertexFormat* vertexFormat, GLuint vbo) override;
+            virtual void SetupMaterial(IGLMaterial* material, const MaterialSetupOptions& options) override;
 
+            GlobalCache& GetGlobalCache() override { return globalCache; }
             size_t GetNumGlobalUniforms() override { return globalUniforms.size(); }
             const char* GetGlobalUniformNameByIndex(size_t index) override { return globalUniforms[index].name.c_str(); }
             const ShaderValueVariant& GetGlobalUniformValueByIndex(size_t index) override { return globalUniforms[index].value; }
@@ -133,6 +132,7 @@ namespace RenderingKit
             {
                 unique_ptr<IGLVertexCache> cache;
 
+                GLuint vao;
                 GLVertexFormat* vertexFormat;
                 IGLMaterial* material;
                 MaterialSetupOptions options;
@@ -159,14 +159,11 @@ namespace RenderingKit
             shared_ptr<ICamera> cam;       // used for shortcut methods (SetProjectionOrtho)
             VertexCache_t vertexCache;
 
-            // Moar State
-            GLVertexFormat* currentVertexFormat;
-
             // Material Override
             IGLMaterial* materialOverride;
 
             //
-            gsl::span<const char*> vertexAttribNames;
+            GlobalCache globalCache;
             std::vector<ShaderUniform> globalUniforms;
     };
 
@@ -192,7 +189,6 @@ namespace RenderingKit
         vertexCache.vertexFormat = nullptr;
         vertexCache.material = nullptr;
 
-        currentVertexFormat = nullptr;
         materialOverride = nullptr;
     }
 
@@ -239,6 +235,8 @@ namespace RenderingKit
     {
         GLenum err = glGetError();
 
+        zombie_debug_assert(err == GL_NO_ERROR);
+
         if (err != GL_NO_ERROR)
         {
             rk->GetSys()->Printf(kLogError, "OpenGL error %04Xh, detected in %s\n", err, caller);
@@ -246,11 +244,6 @@ namespace RenderingKit
         }
 
         return true;
-    }
-
-    void RenderingManager::CleanupMaterialAndVertexFormat()
-    {
-        currentVertexFormat->Cleanup();
     }
 
     void RenderingManager::Clear()
@@ -277,11 +270,14 @@ namespace RenderingKit
     shared_ptr<IVertexFormat> RenderingManager::CompileVertexFormat(IShader* program, uint32_t vertexSize,
             const VertexAttrib_t* attributes, bool groupedByAttrib)
     {
-        auto fmt = std::make_shared<GLVertexFormat>(rk);
-        
-        fmt->Compile(program, vertexSize, attributes, groupedByAttrib);
+        size_t numAttributes = 0;
 
-        return fmt;
+        while (attributes[numAttributes].name) {
+            numAttributes++;
+        }
+
+        VertexFormatInfo vf_in { vertexSize, attributes, numAttributes, nullptr };
+        return std::make_shared<GLVertexFormat>(vf_in, globalCache);
     }
 
     shared_ptr<ICamera> RenderingManager::CreateCamera(const char* name)
@@ -407,6 +403,7 @@ namespace RenderingKit
         else if (resourceClass == typeid(IMaterial))
         {
 			zombie_assert(false);
+            return nullptr;
         }
         else if (resourceClass == typeid(IShader) || resourceClass == typeid(IGLShaderProgram))
         {
@@ -800,21 +797,24 @@ namespace RenderingKit
         *viewportSize_out = viewportSize;
     }
 
+    // Why is it done this way?
     void RenderingManager::OnVertexCacheFlush(IGLVertexCache* vc, size_t bytesUsed)
     {
         this->CheckErrors(li_functionName);
 
-        GLStateTracker::BindArrayBuffer(vc->GetVBO());
+        SetupMaterial(vertexCache.material, vertexCache.options);
+        this->CheckErrors("RenderingManager::SetupMaterial");
 
-        SetupMaterialAndVertexFormat(vertexCache.material, vertexCache.options, vertexCache.vertexFormat, vc->GetVBO());
-        this->CheckErrors("this->SetupMaterialAndVertexFormat");
+        glBindVertexArray(vertexCache.vao);
+
+        // TODO: this can be skipped if unchanged from last time
+        GLStateTracker::BindArrayBuffer(vc->GetVBO());
+        vertexCache.vertexFormat->Setup();
+        this->CheckErrors("vertexFormat Setup");
 
         // Ignore bytesUsed, we're tracking this ourselves (don't have to ask VertexFormat this way)
         glDrawArrays(primitiveTypeToGLMode[vertexCache.primitiveType], 0, vertexCache.numVertices);
         this->CheckErrors("glDrawArrays");
-
-        CleanupMaterialAndVertexFormat();
-        this->CheckErrors("this->CleanupMaterialAndVertexFormat");
 
         vertexCache.material = nullptr;
         vertexCache.vertexFormat = nullptr;
@@ -1011,15 +1011,13 @@ namespace RenderingKit
         glViewport(viewportPos.x, framebufferSize.y - viewportPos.y - viewportSize.y, viewportSize.x, viewportSize.y);
     }
 
-    bool RenderingManager::Startup(gsl::span<const char*> vertexAttribNames)
+    bool RenderingManager::Startup()
     {
         rk->GetSys()->Printf(kLogInfo, "Rendering Kit: %s | %s | %s", glGetString(GL_VERSION), glGetString(GL_RENDERER), glGetString(GL_VENDOR));
 
 #ifdef RENDERING_KIT_USING_OPENGL_ES
 		rk->GetSys()->Printf(kLogInfo, "Rendering Kit: Using OpenGL ES-compatible subset");
 #endif
-
-        this->vertexAttribNames = vertexAttribNames;
 
         /*if (GLEW_ARB_debug_output)
         {
@@ -1049,6 +1047,7 @@ namespace RenderingKit
 
         // Init private resources
         vertexCache.cache = unique_ptr<IGLVertexCache>(p_CreateVertexCache(eb, rk, this, 256 * 1024));
+        glGenVertexArrays(1, &vertexCache.vao);
         vertexCache.numVertices = 0;
         //immedVertexFormat = CompileVertexFormat(nullptr, 24, immedVertexAttribs, false);
 
@@ -1080,18 +1079,12 @@ namespace RenderingKit
             return nullptr;
     }
 
-    void RenderingManager::SetupMaterialAndVertexFormat(IGLMaterial* material, const MaterialSetupOptions& options,
-            GLVertexFormat* vertexFormat, GLuint vbo)
+    void RenderingManager::SetupMaterial(IGLMaterial* material, const MaterialSetupOptions& options)
     {
         if (materialOverride != nullptr)
             material = materialOverride;
 
-		int fpMaterialFlags = 0;
-
         material->GLSetup(options, *projectionCurrent, *modelViewCurrent);
-        vertexFormat->Setup(vbo, fpMaterialFlags);
-
-        currentVertexFormat = vertexFormat;
     }
 
     void* RenderingManager::VertexCacheAlloc(IVertexFormat* vertexFormat, IMaterial* material,
@@ -1110,8 +1103,7 @@ namespace RenderingKit
             vertexCache.primitiveType = primitiveType;
         }
 
-        void* p = vertexCache.cache->Alloc(this, numVertices * static_cast<GLVertexFormat*>(vertexFormat)
-                ->GetVertexSizeNonvirtual());
+        void* p = vertexCache.cache->Alloc(this, numVertices * static_cast<GLVertexFormat*>(vertexFormat)->GetVertexSize());
 
         vertexCache.numVertices += numVertices;
         return p;
@@ -1133,8 +1125,7 @@ namespace RenderingKit
             vertexCache.primitiveType = primitiveType;
         }
 
-        void* p = vertexCache.cache->Alloc(this, numVertices * static_cast<GLVertexFormat*>(vertexFormat)
-                ->GetVertexSizeNonvirtual());
+        void* p = vertexCache.cache->Alloc(this, numVertices * static_cast<GLVertexFormat*>(vertexFormat)->GetVertexSize());
 
         vertexCache.numVertices += numVertices;
         return p;

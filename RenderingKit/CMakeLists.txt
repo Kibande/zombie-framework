@@ -23,7 +23,6 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/RenderingKit/gameui/*.cpp
 
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/*.hpp
-    ${PROJECT_SOURCE_DIR}/include/RenderingKit/ShaderGlobal.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/gameui/*.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/utility/*.hpp
 )
@@ -32,7 +31,13 @@ if (USING_OPENGL_ES)
     list(REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/DeferredShadingManager.cpp)
 endif()
 
-list(APPEND sources ${PROJECT_SOURCE_DIR}/src/RenderingKit/wm/WindowManager_SDL2.cpp)
+list(APPEND sources
+        include/RenderingKit/utility/ShaderGlobal.hpp
+        include/RenderingKit/utility/VertexFormat.hpp
+
+        src/RenderingKit/GlobalCache.cpp
+        src/RenderingKit/wm/WindowManager_SDL2.cpp
+        )
 
 if (NOT EMSCRIPTEN)
     list(APPEND sources ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c)

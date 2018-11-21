@@ -28,7 +28,7 @@ namespace RenderingKit
     {
         if (currentVBO == handle)
             return;
-                
+
         glBindBuffer(GL_ARRAY_BUFFER, handle);
         currentVBO = handle;
 

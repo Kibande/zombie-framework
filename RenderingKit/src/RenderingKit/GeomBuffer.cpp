@@ -24,9 +24,13 @@ namespace RenderingKit
         enum { REGION_VERTEX, REGION_INDEX } type;
     };
 
+    /**
+     * A VertexRegion has its own VAO; thus multiple different vertex formats cannot appear within one region.
+     */
     struct VertexRegion_t : public Region_t
     {
-        GLVertexFormat* fmt;
+        GLVertexFormat* vf;
+        GLuint vao;
         uint32_t vertexSize;
         uint32_t capacityInVertices;
 
@@ -56,7 +60,7 @@ namespace RenderingKit
             int mapTimeout;
 
             // strategy = LINEAR
-            uint32_t allocIndex;
+            uint32_t allocIndex;    // offset of first byte available for allocation
         };
 
         zfw::ErrorBuffer_t* eb;
@@ -77,7 +81,7 @@ namespace RenderingKit
         size_t numLateMappedVBs;
 
         void p_DoUnmapVB(size_t i);
-        VertexRegion_t* p_GetVertexRegion(GLVertexFormat* fmt, size_t numVerticesRequired);
+        VertexRegion_t* p_GetVertexRegion(GLVertexFormat* vf, size_t numVerticesRequired);
         bool p_ProvideVertexBufferObject(size_t spaceNeeded, size_t& vbi);
 
         public:
@@ -93,9 +97,10 @@ namespace RenderingKit
             
             virtual IGeomChunk* CreateGeomChunk() override;
 
+            unique_ptr<IGeomChunk> AllocVertices(const VertexFormatInfo& vf, size_t count, int flags) override;
+
             virtual void GLBindChunk(IGeomChunk* gc) override;
-            bool AllocVertices(GLGeomChunk* gc, IVertexFormat* fmt, size_t count, int flags);
-            GLuint GetChunkVbo(GLGeomChunk* gc);
+            bool AllocVertices(GLGeomChunk* gc, GLVertexFormat* vf, size_t count, int flags);
             void ReleaseChunk(GLGeomChunk* gc);
             void UpdateVertices(GLGeomChunk* gc, size_t first, const void* buffer, size_t sizeInBytes);
     };
@@ -115,7 +120,7 @@ namespace RenderingKit
 
             virtual bool AllocVertices(IVertexFormat* fmt, size_t count, int flags) override
             {
-                return owner->AllocVertices(this, fmt, count, flags);
+                return owner->AllocVertices(this, static_cast<GLVertexFormat*>(fmt), count, flags);
             }
 
             virtual void UpdateVertices(size_t first, const void* buffer, size_t sizeInBytes) override
@@ -128,18 +133,25 @@ namespace RenderingKit
     {
         auto gc = static_cast<GLGeomChunk*>(gc_in);
 
-        ZFW_ASSERT(gc->region->type == Region_t::REGION_VERTEX)
+        zombie_assert(gc->region->type == Region_t::REGION_VERTEX);
+        auto vertexRegion = static_cast<VertexRegion_t*>(gc->region);
 
         gc->owner->GLBindChunk(gc_in);
 
         MaterialSetupOptions options;
         options.type = MaterialSetupOptions::kNone;
 
-        rm->SetupMaterialAndVertexFormat(material, options, static_cast<VertexRegion_t*>(gc->region)->fmt, gc->vbo);
+        // Tasks:
+        // - bind shader
+        // - update shader vars
+        // - bind vao
+        rm->SetupMaterial(material, options);
+
+        glBindVertexArray(vertexRegion->vao);
+        ZFW_ASSERT(glGetError() == GL_NO_ERROR);
 
         glDrawArrays(mode, gc->index, gc->count);
-
-        rm->CleanupMaterialAndVertexFormat();
+        ZFW_ASSERT(glGetError() == GL_NO_ERROR);
     }
 
     shared_ptr<IGLGeomBuffer> p_CreateGeomBuffer(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)
@@ -172,14 +184,34 @@ namespace RenderingKit
 
     GLGeomBuffer::~GLGeomBuffer()
     {
-        iterate2 (i, regions)
-            delete i;
+        for (auto region : regions) {
+            if (region->type == Region_t::REGION_VERTEX && static_cast<VertexRegion_t*>(region)->vao) {
+                glDeleteVertexArrays(1, &static_cast<VertexRegion_t*>(region)->vao);
+            }
 
-        iterate2 (i, vbufs)
-           glDeleteBuffers(1, &(*i).obj);
+            delete region;
+        }
+
+        for (auto& vbuf : vbufs) {
+            glDeleteBuffers(1, &vbuf.obj);
+        }
     }
-    
-    bool GLGeomBuffer::AllocVertices(GLGeomChunk* gc, IVertexFormat* fmt, size_t count, int flags)
+
+    unique_ptr<IGeomChunk> GLGeomBuffer::AllocVertices(const VertexFormatInfo& vf_in, size_t count, int flags)
+    {
+        auto vf = rm->GetGlobalCache().ResolveVertexFormat(vf_in);
+
+        auto gc = make_unique<GLGeomChunk>(this);
+
+        if (this->AllocVertices(gc.get(), vf, count, flags)) {
+            return move(gc);
+        }
+        else {
+            return {};
+        }
+    }
+
+    bool GLGeomBuffer::AllocVertices(GLGeomChunk* gc, GLVertexFormat* vf, size_t count, int flags)
     {
         if (gc->region != nullptr)
         {
@@ -190,7 +222,7 @@ namespace RenderingKit
         ZFW_ASSERT(strategy == ALLOC_LINEAR)
         //DBG_GLSanityCheck(true, nullptr);
 
-        VertexRegion_t* region = p_GetVertexRegion(static_cast<GLVertexFormat*>(fmt), count);
+        VertexRegion_t* region = p_GetVertexRegion(vf, count);
 
         ZFW_ASSERT(region != nullptr)
         ZFW_ASSERT(region->linearAllocIndex + count < region->capacityInVertices)
@@ -300,21 +332,21 @@ namespace RenderingKit
         return true;
     }
 
-    VertexRegion_t* GLGeomBuffer::p_GetVertexRegion(GLVertexFormat* fmt, size_t numVerticesRequired)
+    VertexRegion_t* GLGeomBuffer::p_GetVertexRegion(GLVertexFormat* vf, size_t numVerticesRequired)
     {
-        const size_t size = numVerticesRequired * fmt->GetVertexSize();
+        const size_t size = numVerticesRequired * vf->GetVertexSize();
 
         // Try to find a region with matching material and enough free space
         // TODO: Use binary search here
 
-        iterate2 (region, regions)
+        for (const auto& region : regions)
         {
             if (region->type != Region_t::REGION_VERTEX)
                 continue;
 
-            auto vertexRegion = static_cast<VertexRegion_t*>(*region);
+            auto vertexRegion = static_cast<VertexRegion_t*>(region);
 
-            if (vertexRegion->fmt == fmt && vertexRegion->linearAllocIndex + numVerticesRequired <= vertexRegion->capacityInVertices)
+            if (vertexRegion->vf == vf && vertexRegion->linearAllocIndex + numVerticesRequired <= vertexRegion->capacityInVertices)
                 return vertexRegion;
         }
 
@@ -333,10 +365,17 @@ namespace RenderingKit
         vertexRegion->length = vbufs[vbi].size;
         vertexRegion->type = Region_t::REGION_VERTEX;
 
-        vertexRegion->fmt = fmt;
-        vertexRegion->vertexSize = fmt->GetVertexSize();
+        vertexRegion->vf = vf;
+        vertexRegion->vao = 0;
+        vertexRegion->vertexSize = vf->GetVertexSize();
         vertexRegion->capacityInVertices = vertexRegion->length / vertexRegion->vertexSize;
         vertexRegion->linearAllocIndex = 0;
+
+        // Bake vertex attrib settings into a VAO
+        glGenVertexArrays(1, &vertexRegion->vao);
+        glBindVertexArray(vertexRegion->vao);
+        vf->Setup();
+
         regions.add(vertexRegion);
 
         vbufs[vbi].allocIndex += vertexRegion->length;

@@ -38,10 +38,12 @@ namespace RenderingKit
 {
     using namespace li;
 
+    using std::make_unique;
     using std::unique_ptr;
 
     struct Region_t;
 
+    class GlobalCache;
     class GLVertexFormat;
     class IGLMaterial;
     class IGLTexture;
@@ -90,42 +92,22 @@ namespace RenderingKit
     class GLVertexFormat : public IVertexFormat
     {
         public:
-            GLVertexFormat(RenderingKit* rk) : rk(rk) { vboBinding.vao = 0; }
-            ~GLVertexFormat() { ReleaseVboBinding(vboBinding); }
+            GLVertexFormat(const VertexFormatInfo& vf_in, GlobalCache& gc);
 
-            virtual uint32_t GetVertexSize() override { return vertexSize; }
-            virtual bool IsGroupedByAttrib() override { return groupedByAttrib; }
+            uint32_t GetVertexSize() final { return vertexSize; }
 
             //virtual bool GetComponent(const char* componentName, Component<Float3>& component) override;
             //virtual bool GetComponent(const char* componentName, Component<Byte4>& component) override;
             //virtual bool GetComponent(const char* componentName, Component<Float2>& component) override;
 
-            void Cleanup();
-            void Compile(IShader* program, uint32_t vertexSize, const VertexAttrib_t* attributes, bool groupedByAttrib);
-            uint32_t GetVertexSizeNonvirtual() const { return vertexSize; }
-            void Setup(GLuint vbo, int fpMaterialFlags);
+            bool Equals(const VertexFormatInfo& vf_in);
+            void Setup();
 
         private:
-            struct VboBinding_t
-            {
-                GLuint vbo;
-                GLuint vao;
-            };
-
-            bool InitializeVao(GLuint* vao_out);
-            void ReleaseVboBinding(VboBinding_t& binding) { glDeleteVertexArrays(1, &binding.vao); }
-
-            RenderingKit* rk;
-
-            GLVertexAttrib_t pos, normal, uv0, colour;
-
-            VboBinding_t vboBinding;
-
             uint32_t vertexSize;
-            bool groupedByAttrib;
 
             unsigned int numAttribs;
-            GLVertexAttrib_t attribs[8];    // temporary
+            GLVertexAttrib_t attribs[8];    // "temporary"
     };
 
     class IGLVertexCache;
@@ -227,20 +209,30 @@ namespace RenderingKit
             shared_ptr<IGLTexture> GLGetTexture() { return std::static_pointer_cast<IGLTexture>(GetTexture()); }
     };
 
+    class GlobalCache
+    {
+        public:
+            int GetAttribLocationByName(const char* name);
+            //void VisitAttribLocationMappings(const std::function<void(const char*, int)>& visitor);
+
+            GLVertexFormat* ResolveVertexFormat(const VertexFormatInfo& vf_in);
+
+        private:
+    };
+
     class IRenderingManagerBackend : public IRenderingManager
     {
         public:
             virtual ~IRenderingManagerBackend() {}
 
-            virtual bool Startup(gsl::span<const char*> vertexAttribNames) = 0;
+            virtual bool Startup() = 0;
             virtual bool CheckErrors(const char* caller) = 0;
 
-            virtual void CleanupMaterialAndVertexFormat() = 0;
             virtual void OnWindowResized(Int2 newSize) = 0;
-            virtual void SetupMaterialAndVertexFormat(IGLMaterial* material, const MaterialSetupOptions& options,
-                    GLVertexFormat* vertexFormat, GLuint vbo) = 0;
+            virtual void SetupMaterial(IGLMaterial* material, const MaterialSetupOptions& options) = 0;
 
             // Uniform globals
+            virtual GlobalCache& GetGlobalCache() = 0;
             virtual size_t GetNumGlobalUniforms() = 0;
             virtual const char* GetGlobalUniformNameByIndex(size_t index) = 0;
             virtual const ShaderValueVariant& GetGlobalUniformValueByIndex(size_t index) = 0;
@@ -249,6 +241,7 @@ namespace RenderingKit
     class IWindowManagerBackend : public IWindowManager
     {
         public:
+            virtual ~IWindowManagerBackend() = default;
             virtual void Release() = 0;
 
             virtual bool Init() = 0;
@@ -274,9 +267,9 @@ namespace RenderingKit
             virtual bool Init(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, IRenderingKitHost* host) override;
 
 #if ZOMBIE_API_VERSION >= 201901
-            IRenderingManager*          StartupRendering(gsl::span<const char*> vertexAttribNames) override;
+            IRenderingManager*          StartupRendering() override;
 #else
-            IRenderingManager*          StartupRendering(gsl::span<const char*> vertexAttribNames);
+            IRenderingManager*          StartupRendering();
 #endif
 
 #if ZOMBIE_API_VERSION < 201901

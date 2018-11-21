@@ -36,40 +36,36 @@ namespace RenderingKit
         }
     }
 
-    void GLVertexFormat::Cleanup()
+    GLVertexFormat::GLVertexFormat(const VertexFormatInfo& vf_in, GlobalCache& gc)
+            : vertexSize(vf_in.vertexSizeInBytes)
     {
-    }
-
-    void GLVertexFormat::Compile(IShader* program, uint32_t vertexSize, const VertexAttrib_t* attributes, bool groupedByAttrib)
-    {
-        this->vertexSize = vertexSize;
-        this->groupedByAttrib = groupedByAttrib;
-
-        pos.location =     -1;
-        normal.location =  -1;
-        uv0.location =     -1;
-        colour.location =  -1;
-
         numAttribs = 0;
 
-        ZFW_ASSERT(program != nullptr)
-
-        for ( ; attributes->name != nullptr; attributes++)
+        for (size_t i = 0; i < vf_in.numAttribs; i++)
         {
-            GLVertexAttrib_t attrib;
+            const auto& attrib_in = vf_in.attribs[i];
+            GLVertexAttrib_t attrib_baked;
 
-            attrib.location = static_cast<IGLShaderProgram*>(program)->GLGetAttribLocation(attributes->name);
-            //printf("%s] %s -> %i\n", program->GetName(), attributes->name, (int) attrib.location);
+            if (attrib_in.location >= 0) {
+                attrib_baked.location = attrib_in.location;
+            }
+            else {
+                zombie_assert(attrib_in.name != nullptr);
+                attrib_baked.location = gc.GetAttribLocationByName(attrib_in.name);
+            }
 
-            if (attrib.location == -1)
-                continue;
+            attrib_baked.offset = attrib_in.offset;
+            GetOpenGLDataType(attrib_in.datatype, attrib_baked.type, attrib_baked.components, attrib_baked.sizeInBytes);
+            attrib_baked.flags = attrib_in.flags;
 
-            attrib.offset = attributes->offset;
-            GetOpenGLDataType(attributes->datatype, attrib.type, attrib.components, attrib.sizeInBytes);
-            attrib.flags = attributes->flags;
-
-            attribs[numAttribs++] = attrib;
+            this->attribs[this->numAttribs++] = attrib_baked;
         }
+    }
+
+    bool GLVertexFormat::Equals(const VertexFormatInfo& vf_in)
+    {
+        // TODO
+        return false;
     }
 
     /*bool GLVertexFormat::GetComponent(const char* componentName, Component<Float3>& component)
@@ -117,45 +113,20 @@ namespace RenderingKit
         return false;
     }*/
 
-    bool GLVertexFormat::InitializeVao(GLuint* vao_out)
+    void GLVertexFormat::Setup()
     {
-        glGenVertexArrays(1, vao_out);
-        glBindVertexArray(*vao_out);
-
         for (size_t i = 0; i < numAttribs; i++)
         {
             const auto& attrib = attribs[i];
 
 #ifdef RENDERING_KIT_USING_OPENGL_ES
-			zombie_assert(attrib.type != GL_INT);
+            zombie_assert(attrib.type != GL_INT);
 #endif
 
             glEnableVertexAttribArray(attrib.location);
             glVertexAttribPointer(attrib.location, attrib.components, attrib.type,
-                    (attrib.flags & RK_ATTRIB_NOT_NORMALIZED) ? GL_FALSE : GL_TRUE,
-                    vertexSize, reinterpret_cast<void*>(attrib.offset));
+                                  (attrib.flags & RK_ATTRIB_NOT_NORMALIZED) ? GL_FALSE : GL_TRUE,
+                                  vertexSize, reinterpret_cast<void*>(attrib.offset));
         }
-
-        return true;
-    }
-
-    void GLVertexFormat::Setup(GLuint vbo, int fpMaterialFlags)
-    {
-        ZFW_ASSERT(!groupedByAttrib)
-
-        if (vboBinding.vao == 0)
-        {
-            ZFW_ASSERT(InitializeVao(&vboBinding.vao));
-            vboBinding.vbo = vbo;
-        }
-        else
-        {
-            // Yes, we know this is broken.
-            ZFW_ASSERT(vboBinding.vbo == vbo);
-        }
-
-        glBindVertexArray(vboBinding.vao);
-
-        ZFW_ASSERT(glGetError() == GL_NO_ERROR);
     }
 }

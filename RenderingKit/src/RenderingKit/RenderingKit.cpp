@@ -39,14 +39,14 @@ namespace RenderingKit
         if (!wm->Init())
             return false;
 
-        rm.reset(CreateRenderingManager(eb, this));
-
         return true;
     }
 
-    IRenderingManager* RenderingKit::StartupRendering(gsl::span<const char*> vertexAttribNames)
+    IRenderingManager* RenderingKit::StartupRendering()
     {
-        if (!rm->Startup(vertexAttribNames)) {
+        rm.reset(CreateRenderingManager(eb, this));
+
+        if (!rm->Startup()) {
             return nullptr;
         }
 

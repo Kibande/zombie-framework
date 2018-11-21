@@ -378,7 +378,7 @@ namespace RenderingKit
         //rMgr->SetVideoCapture(cap);
 
 #if ZOMBIE_API_VERSION < 201901
-        if (!rk->StartupRendering({}))
+        if (!rk->StartupRendering())
             return false;
 #endif
 

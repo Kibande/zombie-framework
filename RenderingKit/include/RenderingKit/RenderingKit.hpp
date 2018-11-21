@@ -114,20 +114,26 @@ namespace RenderingKit
         kRenderBufferDepthTexture = 2,
     };
 
-    enum RKBuiltinVertexAttrib_t
-    {
-        kBuiltinPosition,
-        kBuiltinNormal,
-        kBuiltinColor,
-        kBuiltinUV,
-    };
 
+    /**
+     * It is possible to either set name and keep location as -1, or set location and clear name to nullptr.
+     * If both are set, their precedence is undefined.
+     */
     struct VertexAttrib_t
     {
         const char* name;
         uint32_t offset;
         RKAttribDataType_t datatype;
         int flags;
+        int location = -1;
+    };
+
+    struct VertexFormatInfo
+    {
+        size_t vertexSizeInBytes;
+        const VertexAttrib_t* attribs;
+        size_t numAttribs;
+        void** cache;
     };
 
     struct ProjectionBuffer_t
@@ -370,6 +376,9 @@ namespace RenderingKit
             virtual void SetVBMinSize(size_t size) = 0;
             virtual void SetVBMaxSize(size_t size) = 0;
 
+            virtual unique_ptr<IGeomChunk> AllocVertices(const VertexFormatInfo& vf, size_t count, int flags) = 0;
+
+            // Pending deprecation
             virtual IGeomChunk* CreateGeomChunk() = 0;
     };
 
@@ -418,7 +427,6 @@ namespace RenderingKit
             virtual ~IVertexFormat() {}
 
             virtual uint32_t GetVertexSize() = 0;
-            virtual bool IsGroupedByAttrib() = 0;
 
             //virtual bool GetComponent(const char* componentName, Component<Float3>& component) = 0;
             //virtual bool GetComponent(const char* componentName, Component<Byte4>& component) = 0;
@@ -596,7 +604,7 @@ namespace RenderingKit
             virtual bool Init(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, IRenderingKitHost* host) = 0;
 
 #if ZOMBIE_API_VERSION >= 201901
-            virtual IRenderingManager*  StartupRendering(gsl::span<const char*> vertexAttribNames) = 0;
+            virtual IRenderingManager*  StartupRendering() = 0;
 #else
             virtual IRenderingManager*  GetRenderingManager() = 0;
 #endif

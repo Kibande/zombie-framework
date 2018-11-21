@@ -146,7 +146,8 @@ namespace RenderingKit
         if (vertexShader == 0 || pixelShader == 0)
             return false;
 
-        handle = glCreateProgram();
+        GLuint handle = glCreateProgram();
+        this->handle = handle;
         rm->CheckErrors("glCreateProgram");
 
         glAttachShader( handle, pixelShader );
@@ -155,10 +156,12 @@ namespace RenderingKit
         glAttachShader( handle, vertexShader );
         rm->CheckErrors("glAttachShader");
 
-        glBindAttribLocation(handle, kBuiltinPosition,  "in_Position");
-        glBindAttribLocation(handle, kBuiltinNormal,    "in_Normal");
-        glBindAttribLocation(handle, kBuiltinColor,     "in_Color");
-        glBindAttribLocation(handle, kBuiltinUV,        "in_UV");
+        auto& gc = rm->GetGlobalCache();
+
+        //gc.VisitAttribLocationMappings([handle] (const char* name, int position) {
+        //    glBindAttribLocation(handle, position, name);
+        //});
+
         rm->CheckErrors("glBindAttribLocation");
 
 #ifndef RENDERING_KIT_USING_OPENGL_ES
@@ -198,6 +201,29 @@ namespace RenderingKit
                     nullptr),
                     false;
         }
+
+        // Discover & bind vertex attributes
+        GLint active_attributes;
+        glGetProgramiv(handle, GL_ACTIVE_ATTRIBUTES, &active_attributes);
+
+        for (GLint i = 0; i < active_attributes; i++) {
+            GLchar name[50];
+            GLsizei length;
+            GLint size;
+            GLenum type;
+
+            glGetActiveAttrib(handle, i, sizeof(name), &length, &size, &type, name);
+
+            int position = gc.GetAttribLocationByName(name);
+
+            glBindAttribLocation(handle, position, name);
+        }
+
+        // Need to re-link the program, because we have just modified the attrib bindings
+        glLinkProgram( handle );
+
+        glGetProgramiv( handle, GL_LINK_STATUS, &status );
+        zombie_assert(status == GL_TRUE);
 
         /*if (glGetProgramBinary != nullptr)
         {
@@ -311,7 +337,6 @@ namespace RenderingKit
     {
         size_t count = rm->GetNumGlobalUniforms();
         globalUniforms.clear();
-        globalUniforms.empty();
         globalUniforms.reserve(count);
 
         for (size_t i = 0; i < count; i++) {
