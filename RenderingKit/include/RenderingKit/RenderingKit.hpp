@@ -533,6 +533,9 @@ namespace RenderingKit
 
             // Rendering
             virtual void DrawPrimitives(IMaterial* material, RKPrimitiveType_t primitiveType, IGeomChunk* gc) = 0;
+            virtual void DrawPrimitivesTransformed(IMaterial* material, RKPrimitiveType_t primitiveType, IGeomChunk* gc,
+                                                   const glm::mat4x4& transform) = 0;
+
 
             // Vertex Cache
             virtual void FlushMaterial(IMaterial* material) = 0;

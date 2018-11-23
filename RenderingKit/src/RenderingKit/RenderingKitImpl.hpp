@@ -319,7 +319,7 @@ namespace RenderingKit
 	shared_ptr<IGLDeferredShadingManager> p_CreateGLDeferredShadingManager();
 #endif
 
-    void p_DrawChunk(IRenderingManagerBackend* rm, IGeomChunk* gc_in, IGLMaterial* material, GLenum mode);
+    void p_DrawChunk(IRenderingManagerBackend* rm, IGeomChunk* gc_in, GLenum mode);
 
     IRenderingManagerBackend* CreateRenderingManager(zfw::ErrorBuffer_t* eb, RenderingKit* rk);
     IWindowManagerBackend* CreateSDLWindowManager(zfw::ErrorBuffer_t* eb, RenderingKit* rk);

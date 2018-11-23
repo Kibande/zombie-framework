@@ -71,6 +71,9 @@ namespace RenderingKit
                     const VertexAttrib_t* attributes, bool groupedByAttrib) override;
 
             virtual void DrawPrimitives(IMaterial* material, RKPrimitiveType_t primitiveType, IGeomChunk* gc) override;
+            void DrawPrimitivesTransformed(IMaterial* material, RKPrimitiveType_t primitiveType, IGeomChunk* gc,
+                                           const glm::mat4x4& transform) final;
+
 
             virtual Int2 GetViewportSize() override { return viewportSize; }
             virtual void GetViewportPosAndSize(Int2* viewportPos_out, Int2* viewportSize_out) override;
@@ -744,7 +747,24 @@ namespace RenderingKit
     {
         vertexCache.cache->Flush();
 
-        p_DrawChunk(this, gc, static_cast<IGLMaterial*>(material), primitiveTypeToGLMode[primitiveType]);
+        MaterialSetupOptions options;
+        options.type = MaterialSetupOptions::kNone;
+        this->SetupMaterial(static_cast<IGLMaterial*>(material), options);
+
+        p_DrawChunk(this, gc, primitiveTypeToGLMode[primitiveType]);
+    }
+
+    void RenderingManager::DrawPrimitivesTransformed(IMaterial* material, RKPrimitiveType_t primitiveType, IGeomChunk* gc,
+                                                     const glm::mat4x4& transform)
+    {
+        vertexCache.cache->Flush();
+
+        // This sure smells of a hack.
+        // TODO: Document why we don't own modelViewCurrent in the first place
+        auto prev = *modelViewCurrent;
+        *modelViewCurrent = *modelViewCurrent * transform;
+        this->DrawPrimitives(material, primitiveType, gc);
+        *modelViewCurrent = prev;
     }
 
     void RenderingManager::EndFrame(int ticksElapsed)

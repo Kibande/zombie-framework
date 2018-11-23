@@ -129,7 +129,7 @@ namespace RenderingKit
             }
     };
 
-    void p_DrawChunk(IRenderingManagerBackend* rm, IGeomChunk* gc_in, IGLMaterial* material, GLenum mode)
+    void p_DrawChunk(IRenderingManagerBackend* rm, IGeomChunk* gc_in, GLenum mode)
     {
         auto gc = static_cast<GLGeomChunk*>(gc_in);
 
@@ -137,15 +137,6 @@ namespace RenderingKit
         auto vertexRegion = static_cast<VertexRegion_t*>(gc->region);
 
         gc->owner->GLBindChunk(gc_in);
-
-        MaterialSetupOptions options;
-        options.type = MaterialSetupOptions::kNone;
-
-        // Tasks:
-        // - bind shader
-        // - update shader vars
-        // - bind vao
-        rm->SetupMaterial(material, options);
 
         glBindVertexArray(vertexRegion->vao);
         ZFW_ASSERT(glGetError() == GL_NO_ERROR);
