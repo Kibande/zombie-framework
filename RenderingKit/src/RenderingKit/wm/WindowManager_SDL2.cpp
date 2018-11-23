@@ -188,8 +188,11 @@ namespace RenderingKit
                     else if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT)
                         shiftDown = (event.key.type == SDL_KEYDOWN);*/
 
-                    PushVkeyEvent(msgQueue, VKEY_KEY, event_key_which, (uint16_t) event.key.keysym.sym, event.key.keysym.scancode,
-                            (event.key.type == SDL_KEYDOWN) ? VKEY_PRESSED : VKEY_RELEASED, 0);
+                    if (!event.key.repeat)
+                    {
+                        PushVkeyEvent(msgQueue, VKEY_KEY, event_key_which, (uint16_t) event.key.keysym.sym, event.key.keysym.scancode,
+                                (event.key.type == SDL_KEYDOWN) ? VKEY_PRESSED : VKEY_RELEASED, 0);
+                    }
 
                     /*if (event.key.keysym.unicode != 0 && event.type == SDL_KEYDOWN)
                     {
