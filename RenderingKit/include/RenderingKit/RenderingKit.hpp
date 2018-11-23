@@ -488,6 +488,7 @@ namespace RenderingKit
             virtual shared_ptr<IGeomBuffer>    CreateGeomBuffer(const char* name) = 0;
             virtual shared_ptr<zfw::IGraphics> CreateGraphicsFromTexture(shared_ptr<ITexture> texture) = 0;
             virtual shared_ptr<zfw::IGraphics> CreateGraphicsFromTexture2(shared_ptr<ITexture> texture, const Float2 uv[2]) = 0;
+            virtual unique_ptr<IMaterial>       CreateMaterial(const char* name, IShader* program) = 0;
             virtual shared_ptr<IMaterial>      CreateMaterial(const char* name, shared_ptr<IShader> program) = 0;
             virtual shared_ptr<IRenderBuffer>  CreateRenderBuffer(const char* name, Int2 size, int flags) = 0;
             virtual shared_ptr<IRenderBuffer>  CreateRenderBufferWithTexture(const char* name, shared_ptr<ITexture> texture, int flags) = 0;

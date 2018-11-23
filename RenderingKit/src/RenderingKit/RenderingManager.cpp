@@ -60,6 +60,7 @@ namespace RenderingKit
             virtual shared_ptr<IGeomBuffer>    CreateGeomBuffer(const char* name) override;
             virtual zfw::shared_ptr<IGraphics> CreateGraphicsFromTexture(shared_ptr<ITexture> texture) override;
             virtual zfw::shared_ptr<IGraphics> CreateGraphicsFromTexture2(shared_ptr<ITexture> texture, const Float2 uv[2]) override;
+            unique_ptr<IMaterial>               CreateMaterial(const char* name, IShader* program) final;
             virtual shared_ptr<IMaterial>      CreateMaterial(const char* name, shared_ptr<IShader> program) override;
             virtual shared_ptr<IRenderBuffer>  CreateRenderBuffer(const char* name, Int2 size, int flags) override;
             virtual shared_ptr<IRenderBuffer>  CreateRenderBufferWithTexture(const char* name, shared_ptr<ITexture> texture, int flags) override;
@@ -330,6 +331,11 @@ namespace RenderingKit
             return nullptr;
 
         return g;
+    }
+
+    unique_ptr<IMaterial> RenderingManager::CreateMaterial(const char* name, IShader* program)
+    {
+        return p_CreateMaterialUniquePtr(eb, rk, this, name, static_cast<IGLShaderProgram*>(program));
     }
 
     shared_ptr<IMaterial> RenderingManager::CreateMaterial(const char* name, shared_ptr<IShader> program)
