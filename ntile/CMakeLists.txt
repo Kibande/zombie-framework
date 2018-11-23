@@ -26,6 +26,10 @@ set(sources
         dependencies/glew-2.0.0/src/glew.c
 
         src/ntile/blocks.cpp
+        src/ntile/components/aabbcollision.cpp
+        src/ntile/components/aabbcollision.hpp
+        src/ntile/components/motion.cpp
+        src/ntile/components/motion.hpp
         src/ntile/gamescreen.cpp
         src/ntile/gamescreen.hpp
         src/ntile/gamescreen_editing.cpp
@@ -36,8 +40,9 @@ set(sources
         src/ntile/ntile_mkfont.cpp
         src/ntile/resourceprovider.cpp
         src/ntile/scriptapi.cpp
+        src/ntile/systems/motionsystem.hpp
+        src/ntile/systems/motionsystem.cpp
         src/ntile/viewsystem.hpp
-        src/ntile/worldcollisionhandler.cpp
         src/ntile/world.hpp
 
         src/ntile/view/blocks.cpp

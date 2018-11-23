@@ -247,7 +247,6 @@ namespace zfw
             virtual void ProfileFrame(int frameNumber) override { profileFrame = frameNumber; }
 
             // Utility Classes
-            unique_ptr<IEntityWorld2>   CreateEntityWorld2() final { return p_CreateEntityWorld2(broadcastHandler.get()); }
             virtual IResourceManager*   CreateResourceManager(const char* name) override;
             virtual IResourceManager2*  CreateResourceManager2() override;
 #ifndef ZOMBIE_NO_SHADER_PREPROCESSOR
@@ -291,8 +290,8 @@ namespace zfw
             unique_ptr<IVarSystem> varSystem;
             unique_ptr<IVideoHandler> videoHandler;
 
-            // components
-            std::vector<unique_ptr<ISystem>> components;
+            // systems
+            std::vector<unique_ptr<ISystem>> systems;
 
             // synchronization
             li::Mutex ioMutex, logMutex, stdoutMutex;
@@ -306,10 +305,8 @@ namespace zfw
 
     static void DumpLog(OutputStream* stream)
     {
-        iterate2 (i, log)
+        for (const auto& entry : log)
         {
-            auto& entry = *i;
-
             auto t = entry.time - clock0;
             stream->write((const char*) sprintf_t<63>("%-10s[%5u.%04u] ", logTypeNames[entry.type], (int)(t / 1000000), (int)(t % 1000000) / 100));
             stream->writeLine(entry.line);
@@ -425,7 +422,7 @@ namespace zfw
 
     void System::AddSystem(unique_ptr<ISystem> component)
     {
-        this->components.push_back(std::move(component));
+        this->systems.push_back(move(component));
     }
 
     void System::AssertionFail(const char* expr, const char* functionName, const char* file, int line,
@@ -959,8 +956,9 @@ namespace zfw
 
     void System::p_ClearLog()
     {
-        iterate2(i, log)
-            free((*i).line);
+        for (const auto& entry : log) {
+            free(entry.line);
+        }
 
         log.clear();
     }
@@ -1032,7 +1030,14 @@ namespace zfw
 		}
 
 		if (tickAccum > 0)
+        {
 			scene->OnTicks(tickAccum);
+
+            for (const auto& system : systems)
+            {
+                system->OnTicks(tickAccum);
+            }
+        }
 
 		if (frameCounter == profileFrame)
 		{
@@ -1048,9 +1053,9 @@ namespace zfw
             profiler->EnterSection(profSystems);
         }
 
-        for (const auto& comp : components)
+        for (const auto& system : systems)
         {
-            comp->OnFrame();
+            system->OnFrame();
         }
 
 		if (frameCounter == profileFrame)

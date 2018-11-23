@@ -51,8 +51,14 @@ namespace ntile {
     enum {
         // TODO: just use typeID? do we care about serialization for these?
         kNanotileMinEvent = 0,
+        kAnimationTrigger,
         kBlockStateChangeEvent,
         kWorldSwitched,
+    };
+
+    DECL_MESSAGE(AnimationTrigerEvent, kAnimationTrigger) {
+        intptr_t entityId;
+        const char* animationName;
     };
 
     DECL_MESSAGE(BlockStateChangeEvent, kBlockStateChangeEvent) {

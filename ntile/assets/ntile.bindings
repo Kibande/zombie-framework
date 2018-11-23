@@ -1,0 +1,9 @@
+bind_up		3:0:0077:001A
+bind_down		3:0:0073:0016
+bind_left		3:0:0061:0004
+bind_right		3:0:0064:0007
+bind_attack		3:0:0071:0014
+bind_block		3:0:0065:0008
+bind_screenshot		3:0:0031:001E
+bind_profiler		3:0:0032:001F
+bind_start		3:0:0033:0020

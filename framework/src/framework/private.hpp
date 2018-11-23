@@ -8,7 +8,6 @@ namespace zfw
 
     unique_ptr<IBroadcastHandler> p_CreateBroadcastHandler();
     IEntityHandler*     p_CreateEntityHandler(ErrorBuffer_t* eb, IEngine* sys);
-    unique_ptr<IEntityWorld2>       p_CreateEntityWorld2(IBroadcastHandler* broadcast);
     shared_ptr<IFileSystem> p_CreateStdFileSystem(ErrorBuffer_t* eb, const char* absolutePathPrefix, int access);
     IFSUnion*           p_CreateFSUnion(ErrorBuffer_t* eb);
     IMediaCodecHandler* p_CreateMediaCodecHandler();

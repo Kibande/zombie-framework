@@ -1,4 +1,5 @@
 #include <framework/componenttype.hpp>
+#include <framework/entity2.hpp>
 #include <framework/entityworld2.hpp>
 #include <framework/utility/util.hpp>
 
@@ -21,6 +22,7 @@ namespace zfw
 
         void* Get(intptr_t entityId);
         void* GetOrAlloc(intptr_t entityId, bool* wasCreated_out);
+        void Iterate(std::function<void(intptr_t entityId, void* component_data)> callback);
 
     private:
         IComponentType& type;
@@ -38,6 +40,8 @@ namespace zfw
         void* GetEntityComponent(intptr_t id, IComponentType &type) final;
         void* SetEntityComponent(intptr_t id, IComponentType &type, const void *data) final;
 
+        void IterateEntitiesByComponent(IComponentType &type, std::function<void(intptr_t entityId, void* component_data)> callback) final;
+
     private:
         IBroadcastHandler* broadcast;
 
@@ -51,7 +55,7 @@ namespace zfw
     //  class EntityWorld2
     // ====================================================================== //
 
-    unique_ptr<IEntityWorld2> p_CreateEntityWorld2(IBroadcastHandler* broadcast) {
+    unique_ptr<IEntityWorld2> IEntityWorld2::Create(IBroadcastHandler* broadcast) {
         return std::make_unique<EntityWorld2>(broadcast);
     }
 
@@ -64,6 +68,10 @@ namespace zfw
     }
 
     void* EntityWorld2::GetEntityComponent(intptr_t id, IComponentType &type) {
+        if (id == kInvalidEntity) {
+            return nullptr;
+        }
+
         auto iter = componentPools.find(&type);
 
         if (iter == componentPools.end()) {
@@ -71,6 +79,14 @@ namespace zfw
         }
         else {
             return iter->second->Get(id);
+        }
+    }
+
+    void EntityWorld2::IterateEntitiesByComponent(IComponentType &type, std::function<void(intptr_t entityId, void* component_data)> callback) {
+        auto iter = componentPools.find(&type);
+
+        if (iter != componentPools.end()) {
+            iter->second->Iterate(callback);
         }
     }
 
@@ -142,6 +158,12 @@ namespace zfw
         else {
             *wasCreated_out = false;
             return iter->second;
+        }
+    }
+
+    void PerInstanceDataPool::Iterate(std::function<void(intptr_t entityId, void* component_data)> callback) {
+        for (const auto& pair : this->perInstanceData) {
+            callback(pair.first, pair.second);
         }
     }
 }

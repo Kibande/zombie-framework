@@ -13,6 +13,7 @@ namespace zfw {
         virtual ~ISystem() {}
 
         virtual void OnFrame() {}
+        virtual void OnTicks(int ticks) {}
     };
 }
 

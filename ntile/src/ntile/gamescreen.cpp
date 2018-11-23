@@ -1,4 +1,5 @@
-
+#include "components/aabbcollision.hpp"
+#include "components/motion.hpp"
 #include "gamescreen.hpp"
 #include "world.hpp"
 
@@ -864,26 +865,28 @@ namespace ntile
                     }
 #endif
 
-//                    if (player != nullptr)
-//                    {
-//                        if (Vkey::Test(ev->input, controls[Controls::left]))
-//                            player->AddMotionX((ev->input.flags & VKEY_PRESSED) ? -1 : +1);
-//
-//                        if (Vkey::Test(ev->input, controls[Controls::right]))
-//                            player->AddMotionX((ev->input.flags & VKEY_PRESSED) ? +1 : -1);
-//
-//                        if (Vkey::Test(ev->input, controls[Controls::up]))
-//                            player->AddMotionY((ev->input.flags & VKEY_PRESSED) ? -1 : +1);
-//
-//                        if (Vkey::Test(ev->input, controls[Controls::down]))
-//                            player->AddMotionY((ev->input.flags & VKEY_PRESSED) ? +1 : -1);
-//
+                    auto motion = g_ew->GetEntityComponent<Motion>(g_world.playerEntity);
+
+                    if (motion)
+                    {
+                        if (Vkey::Test(ev->input, controls[Controls::left]))
+                            motion->nudgeDirection.x += ((ev->input.flags & VKEY_PRESSED) ? -1 : +1);
+
+                        if (Vkey::Test(ev->input, controls[Controls::right]))
+                            motion->nudgeDirection.x += ((ev->input.flags & VKEY_PRESSED) ? +1 : -1);
+
+                        if (Vkey::Test(ev->input, controls[Controls::up]))
+                            motion->nudgeDirection.y += ((ev->input.flags & VKEY_PRESSED) ? -1 : +1);
+
+                        if (Vkey::Test(ev->input, controls[Controls::down]))
+                            motion->nudgeDirection.y += ((ev->input.flags & VKEY_PRESSED) ? +1 : -1);
+
 //                        if (Vkey::Test(ev->input, controls[Controls::attack]) && (ev->input.flags & VKEY_PRESSED))
 //                            player->Hack_SlashAnim();
 //
 //                        if (Vkey::Test(ev->input, controls[Controls::block]) && (ev->input.flags & VKEY_PRESSED))
 //                            player->Hack_ShieldAnim();
-//                    }
+                    }
 
 #ifndef ZOMBIE_CTR
                     /*if (ev->input.vkey.type == VKEY_KEY && ev->input.vkey.key == 27 && (ev->input.flags & VKEY_PRESSED))
@@ -1139,6 +1142,8 @@ namespace ntile
         auto player = g_ew->CreateEntity();
         g_ew->SetEntityComponent(player, Position{Int3(worldSize * Int2(128, 128), 0)});
         g_ew->SetEntityComponent(player, Drawable{"ntile/models/player"});
+        g_ew->SetEntityComponent(player, Motion {});
+        g_ew->SetEntityComponent(player, AabbCollision {Float3(-6.0f, -6.0f, 0.0f), Float3(6.0f, 6.0f, 24.0f)});
         g_world.playerEntity = player;
 
 #ifndef ZOMBIE_CTR

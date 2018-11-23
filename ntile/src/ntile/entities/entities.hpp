@@ -14,9 +14,6 @@
 
 namespace ntile
 {
-    extern UUID_t DRAW_ENT_PICKING;
-    extern UUID_t DRAW_EDITOR_MODE;
-
     struct WorldVertex;
 
     class IEntityMovementListener

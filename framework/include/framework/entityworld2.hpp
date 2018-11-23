@@ -3,11 +3,14 @@
 
 #include <framework/base.hpp>
 
+#include <functional>
+
 namespace zfw
 {
     class IEntityWorld2
     {
         public:
+            static unique_ptr<IEntityWorld2> Create(IBroadcastHandler* broadcastHandler);
             virtual ~IEntityWorld2() = default;
 
             virtual intptr_t CreateEntity() = 0;
@@ -17,7 +20,7 @@ namespace zfw
 
             /**
              * Get a cache-able pointer to a specific entity component.
-             * @param id
+             * @param id a valid entity ID or kInvalidEntity
              * @param type
              * @return pointer to component data, or nullptr if the component has not been set for this entity.
              *         Guaranteed to remain valid as long as the entity exists.
@@ -33,6 +36,8 @@ namespace zfw
              *         as long as the entity exists.
              */
             virtual void* SetEntityComponent(intptr_t id, IComponentType &type, const void *data) = 0;
+
+            virtual void IterateEntitiesByComponent(IComponentType &type, std::function<void(intptr_t entityId, void* component_data)> callback) = 0;
 
             template <typename ComponentStruct>
             ComponentStruct* GetEntityComponent(intptr_t id) {

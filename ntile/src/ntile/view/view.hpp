@@ -46,6 +46,8 @@ namespace ntile {
     class DrawableViewer : public IViewer {
     public:
         void Draw(RenderingKit::IRenderingManager* rm, IEntityWorld2* world, intptr_t entityId);
+        void OnTicks(int ticks);
+        void TriggerAnimation(const char* animationName);
 
     private:
         Drawable* drawable = nullptr;

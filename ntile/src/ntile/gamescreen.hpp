@@ -49,12 +49,6 @@ namespace ntile
                 virtual unique_ptr<IOStream> OpenFile(bool readOnly, bool create) override;
     };
 
-    class WorldCollisionHandler : public ICollisionHandler
-    {
-        public:
-            virtual bool CollideMovementTo(IPointEntity* pe, const Float3& pos, Float3& newPos) override;
-    };
-
     class GameScreen
             : public zfw::IScene,
             public zfw::IEntityClassListener,

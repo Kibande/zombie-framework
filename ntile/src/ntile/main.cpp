@@ -5,6 +5,7 @@
 
 #include "gamescreen.hpp"
 #include "resourceprovider.hpp"
+#include "systems/motionsystem.hpp"
 #include "viewsystem.hpp"
 
 #include <framework/app.hpp>
@@ -37,8 +38,6 @@ namespace ntile
     NanoUI nui;
 
     Int2 r_pixelRes, r_mousePos;
-
-    UUID_t DRAW_EDITOR_MODE, DRAW_ENT_PICKING;
 
     ResourceProvider resourceProvider;
 
@@ -73,23 +72,17 @@ namespace ntile
 
         g_sys->Printf(kLogAlways, "Game version: " APP_VERSION);
 
-        //Var::SetInt( "cl_tickrate", 60 );
-
-        //Var::SetStr("appName", "Nanotile");
-
-        /*Sys::ExecList( "boot.txt", true );
-        Sys::ExecList( "cfg_ntile.txt", true );
-        Sys::ExecList( "cfg_ntile_" ZOMBIE_PLATFORM ".txt", false );*/
-
-        //Sys::SetTickRate(Var::GetInt("cl_tickrate", true));
-
         // Initialize all handlers here
         g_sys->GetEntityHandler(true);
 
         g_msgQueue.reset(MessageQueue::Create());
         g_res.reset(g_sys->CreateResourceManager2());
 
-        g_ew = g_sys->CreateEntityWorld2();
+        g_ew = IEntityWorld2::Create(g_sys->GetBroadcastHandler());
+
+        auto motionSystem = IMotionSystem::Create(g_sys->GetBroadcastHandler());
+        motionSystem->Attach(g_ew.get());
+        g_sys->AddSystem(move(motionSystem));
 
         return true;
     }

@@ -102,7 +102,6 @@ namespace zfw
             virtual void ProfileFrame(int frameNumber) = 0;
 
             // Utility Classes
-            virtual unique_ptr<IEntityWorld2>   CreateEntityWorld2() = 0;
             virtual IResourceManager*   CreateResourceManager(const char* name) = 0;
             virtual IResourceManager2*  CreateResourceManager2() = 0;
             virtual ShaderPreprocessor* CreateShaderPreprocessor() = 0;
