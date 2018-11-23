@@ -12,6 +12,34 @@ namespace zfw
             virtual const char* GetName() = 0;
     };
 
+    /**
+     * # Implementing an IResource2
+
+        1. Implement
+           bool BindDependencies(IResourceManager2* resMgr);
+           bool Preload(IResourceManager2* resMgr);
+           void Unload();
+           bool Realize(IResourceManager2* resMgr);
+           void Unrealize();
+
+        2. Override
+           virtual void* Cast(const TypeID& resourceClass) final override { return DefaultCast(this, resourceClass); }
+
+           virtual State_t GetState() const final override { return state; }
+
+           virtual bool StateTransitionTo(State_t targetState, IResourceManager2* resMgr) final override
+           {
+               return DefaultStateTransitionTo(this, targetState, resMgr);
+           }
+
+        3. Add
+           friend class IResource2;
+           To be able to use Defalt*() methods
+
+      # Memory management with IResource2
+
+        Memory is allocated in first GetResource call. The instance stays valid until the IResourceManager2 is destroyed.
+     */
     class IResource2
     {
         public:

@@ -118,6 +118,7 @@ namespace zfw
     class IFSObject;
     class IFSUnion;
     class IGeneric;
+    class IGraphics2;
     class IGraphics;
     class ILuaScriptContext;
     class IMediaCodecHandler;
