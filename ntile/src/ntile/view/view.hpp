@@ -48,6 +48,9 @@ namespace ntile {
         void Draw(RenderingKit::IRenderingManager* rm, IEntityWorld2* world, intptr_t entityId);
 
     private:
+        Drawable* drawable = nullptr;
+        Position* position = nullptr;
+
         unique_ptr<CharacterModel> model;
     };
 }

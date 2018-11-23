@@ -150,6 +150,10 @@ namespace zfw
     class IEntity;
     class IScene;
 
+    // built-in aspects
+    class Drawable;
+    class Position;
+
     template <int type>
     struct MessageStruct
     {

@@ -32,6 +32,9 @@ namespace zfw
         int value;
     };
 
+    /**
+     * A collection of poorly documented, yet useful utility functions.
+     */
     class Util
     {
         public:
@@ -40,11 +43,17 @@ namespace zfw
             static Int2         Align(Int2 pos, Int2 size, int alignment);
             static bool         Align(Int2& topLeftOut, const Int2& topLeft, const Int2& bottomRight, const Int2& size,
                     int alignment);
+
+            // TODO[deprecation]: This doesn't belong
             static const char*  Md5String(const char *string);
 
-            // Recognized formats: #RGB, #RRGGBB, #RRGGBBAA (1 character = 1 hex digit)
             static bool         ParseBool(const char* stringOrNull);
+
+            /**
+             * Recognized formats: #RGB, #RRGGBB, #RRGGBBAA (1 character = 1 hex digit)
+             */
             static bool         ParseColour(const char* string, Byte4& colour_out);
+
             static bool         ParseColourHex(const char* chars, size_t length, Byte4& colour_out);
             static int          ParseEnum(const char* string, int& value, const Flag* flags);
             static int          ParseFlagVec(const char* string, int& value, const Flag* flags);
@@ -54,6 +63,7 @@ namespace zfw
                     int(*callback)(const char* value, const char** end_value, void *user), void *user);
             static int          ParseVec(const char* string, float* vec, size_t minCount, size_t maxCount);
 
+            // TODO: rename ToString
             static const char*  Format(const Int2& vec);
             static const char*  Format(const Float2& vec);
             static const char*  Format(const Float3& vec);
@@ -75,6 +85,7 @@ namespace zfw
             }
     };
 
+    // TODO[deprecation]: phase these out in favor of type-safe alternatives
     int vasprintf(char **buf, size_t *size, const char *format, va_list arg);
     int asprintf(char ** buf, const char * format, ...);
     int asprintf2(char ** buf, size_t* bufSize, const char * format, ...);

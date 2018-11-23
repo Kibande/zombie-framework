@@ -36,7 +36,7 @@ namespace zfw
         void DestroyEntity(intptr_t id) final;
 
         void* GetEntityAspect(intptr_t id, IAspectType& type) final;
-        void SetEntityAspect(intptr_t id, IAspectType& type, const void* data) final;
+        void* SetEntityAspect(intptr_t id, IAspectType& type, const void* data) final;
 
     private:
         IBroadcastHandler* broadcast;
@@ -74,7 +74,7 @@ namespace zfw
         }
     }
 
-    void EntityWorld2::SetEntityAspect(intptr_t id, IAspectType& type, const void* data) {
+    void* EntityWorld2::SetEntityAspect(intptr_t id, IAspectType& type, const void* data) {
         auto iter = aspectPools.find(&type);
 
         PerInstanceDataPool* pool;
@@ -103,6 +103,8 @@ namespace zfw
         else {
             //broadcast->BroadcastAspectEvent(id, type, aspect_stored, AspectEvent::updated);
         }
+
+        return aspect_stored;
     }
 
     // ====================================================================== //
