@@ -33,7 +33,7 @@ namespace StudioKit
     class IStartupScreen : public IScene
     {
         public:
-            virtual bool Init(ISystem* sys, RenderingKit::IRenderingManager* rm, shared_ptr<IScene> nextScene) = 0;
+            virtual bool Init(IEngine* sys, RenderingKit::IRenderingManager* rm, shared_ptr<IScene> nextScene) = 0;
 
             virtual void AddTask(IStartupTask* task, bool inOrder, bool threaded) = 0;
 

@@ -24,7 +24,7 @@ namespace StudioKit
         public:
             virtual ~IWorldGeomTree() {}
 
-            virtual bool Init(zfw::ISystem* sys) = 0;
+            virtual bool Init(zfw::IEngine* sys) = 0;
 
             virtual void AddSolidBrush(const WorldVertex_t* vertices, size_t numVertices, size_t material) = 0;
             virtual size_t GetMaterialByParams(const char* normparams) = 0;

@@ -1,8 +1,8 @@
 
 #include <StudioKit/mapwriter.hpp>
 
+#include <framework/engine.hpp>
 #include <framework/errorbuffer.hpp>
-#include <framework/system.hpp>
 
 #include <bleb/repository.hpp>
 
@@ -23,7 +23,7 @@ namespace StudioKit
             MapWriter();
             ~MapWriter();
 
-            virtual bool Init(zfw::ISystem* sys, IOStream* outputContainerFile, const char* outputName) override;
+            virtual bool Init(zfw::IEngine* sys, IOStream* outputContainerFile, const char* outputName) override;
             virtual void SetMetadata(const char* key, const char* value) override;
 
             virtual void AddEntity(const char* entityCfx2) override;
@@ -35,7 +35,7 @@ namespace StudioKit
 
         private:
             ErrorBuffer_t* eb;
-            ISystem* sys;
+            IEngine* sys;
 
             std::string outputName;
             int numEntitiesWritten = 0;
@@ -73,7 +73,7 @@ namespace StudioKit
         entities.reset();
     }
 
-    bool MapWriter::Init(zfw::ISystem* sys, IOStream* outputContainerFile, const char* outputName)
+    bool MapWriter::Init(zfw::IEngine* sys, IOStream* outputContainerFile, const char* outputName)
     {
         SetEssentials(sys->GetEssentials());
 

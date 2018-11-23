@@ -3,10 +3,10 @@
 #include <StudioKit/mapwriter.hpp>
 #include <StudioKit/worldgeom.hpp>
 
+#include <framework/engine.hpp>
 #include <framework/errorbuffer.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/filesystem.hpp>
-#include <framework/system.hpp>
 #include <framework/varsystem.hpp>
 #include <framework/utility/params.hpp>
 
@@ -37,13 +37,13 @@ namespace mapcompiler
     };
 
     static ErrorBuffer_t* g_eb;
-    static ISystem* g_sys;
+    static IEngine* g_sys;
 
     static bool SysInit(int argc, char** argv)
     {
         ErrorBuffer::Create(g_eb);
 
-        g_sys = CreateSystem();
+        g_sys = CreateEngine();
 
         if (!g_sys->Init(g_eb, kSysNonInteractive))
             return false;

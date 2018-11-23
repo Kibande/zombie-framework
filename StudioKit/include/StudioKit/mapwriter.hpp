@@ -12,7 +12,7 @@ namespace StudioKit
         public:
             virtual ~IMapWriter() {}
 
-            virtual bool Init(zfw::ISystem* sys, zfw::IOStream* outputContainerFile, const char* outputName) = 0;
+            virtual bool Init(zfw::IEngine* sys, zfw::IOStream* outputContainerFile, const char* outputName) = 0;
             virtual void SetMetadata(const char* key, const char* value) = 0;
 
             virtual void AddEntity(const char* entityCfx2) = 0;

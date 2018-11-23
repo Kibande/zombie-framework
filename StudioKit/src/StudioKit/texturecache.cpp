@@ -84,7 +84,7 @@ namespace StudioKit
             TexturePreviewCache();
             ~TexturePreviewCache();
 
-            virtual bool Init(ISystem* sys, RenderingKit::IRenderingManager* rm,
+            virtual bool Init(IEngine* sys, RenderingKit::IRenderingManager* rm,
                     const char* fileName, Short2 previewSize, Short2 numTiles) override;
 
             virtual int AddToQueue(const char* fileName) override;
@@ -123,7 +123,7 @@ namespace StudioKit
                 }
             };
 
-            ISystem* sys;
+            IEngine* sys;
             ErrorBuffer_t* eb;
             IRenderingManager* rm;
 
@@ -152,7 +152,7 @@ namespace StudioKit
         public:
             UpdateTexturePreviewCacheStartupTask();
 
-            virtual bool Init(ISystem* sys, ITexturePreviewCache* previewCache) override;
+            virtual bool Init(IEngine* sys, ITexturePreviewCache* previewCache) override;
 
             virtual int Analyze() override;
             virtual void Init(IStartupTaskProgressListener* progressListener) override { listener = progressListener; }
@@ -162,7 +162,7 @@ namespace StudioKit
             virtual void AddTextureDirectory(const char* dir) override { textureDirs.add( dir ); }
 
         private:
-            ISystem* sys;
+            IEngine* sys;
 
             ITexturePreviewCache* previewCache;
 
@@ -193,7 +193,7 @@ namespace StudioKit
         //Flush();
     }
 
-    bool TexturePreviewCache::Init(ISystem* sys, RenderingKit::IRenderingManager* rm,
+    bool TexturePreviewCache::Init(IEngine* sys, RenderingKit::IRenderingManager* rm,
             const char* fileName, Short2 previewSize, Short2 numTiles)
     {
         SetEssentials(sys->GetEssentials());
@@ -496,7 +496,7 @@ namespace StudioKit
         count = 0;
     }
 
-    bool UpdateTexturePreviewCacheStartupTask::Init(ISystem* sys, ITexturePreviewCache* previewCache)
+    bool UpdateTexturePreviewCacheStartupTask::Init(IEngine* sys, ITexturePreviewCache* previewCache)
     {
         this->sys = sys;
         this->previewCache = previewCache;

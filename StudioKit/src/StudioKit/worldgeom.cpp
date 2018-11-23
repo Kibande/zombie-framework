@@ -1,8 +1,8 @@
 
 #include <StudioKit/worldgeom.hpp>
 
+#include <framework/engine.hpp>
 #include <framework/errorbuffer.hpp>
-#include <framework/system.hpp>
 
 #include <littl/Stream.hpp>
 
@@ -25,7 +25,7 @@ namespace StudioKit
     class WorldGeomTree : public IWorldGeomTree
     {
         public:
-            virtual bool Init(zfw::ISystem* sys) override;
+            virtual bool Init(zfw::IEngine* sys) override;
 
             virtual void AddSolidBrush(const WorldVertex_t* vertices, size_t numVertices, size_t material) override;
             virtual size_t GetMaterialByParams(const char* normparams) override;
@@ -36,7 +36,7 @@ namespace StudioKit
 
         private:
             ErrorBuffer_t* eb;
-            ISystem* sys;
+            IEngine* sys;
 
             std::vector<MatGrp_t> matGrps;
     };
@@ -50,7 +50,7 @@ namespace StudioKit
         return new WorldGeomTree();
     }
 
-    bool WorldGeomTree::Init(zfw::ISystem* sys)
+    bool WorldGeomTree::Init(zfw::IEngine* sys)
     {
         SetEssentials(sys->GetEssentials());
 

@@ -1,8 +1,8 @@
 
 #include <StudioKit/blenderimporter.hpp>
 
+#include <framework/engine.hpp>
 #include <framework/errorcheck.hpp>
-#include <framework/system.hpp>
 #include <framework/utility/errorbuffer.hpp>
 #include <framework/utility/essentials.hpp>
 
@@ -132,7 +132,7 @@ namespace StudioKit
     class BlenderImporter : public IBlenderImporter
     {
         public:
-            virtual void Init(zfw::ISystem* sys, float globalScale) override
+            virtual void Init(zfw::IEngine* sys, float globalScale) override
             {
                 this->sys = sys;
                 this->globalScale = globalScale;
@@ -150,7 +150,7 @@ namespace StudioKit
             bool MeshObject(cfx2::Node object);
             bool Object(cfx2::Node object);
 
-            zfw::ISystem* sys;
+            zfw::IEngine* sys;
             float globalScale;
 
             string fileName;
