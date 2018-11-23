@@ -37,11 +37,18 @@ file(GLOB sources
 )
 
 list(APPEND sources
-        ${PROJECT_SOURCE_DIR}/include/framework/broadcasthandler.hpp
-        ${PROJECT_SOURCE_DIR}/include/framework/component.hpp
+        include/framework/aspects/drawable.hpp
+        include/framework/aspects/position.hpp
+        include/framework/broadcasthandler.hpp
+        include/framework/component.hpp
+        include/framework/entity2.hpp
+        include/framework/entityworld2.hpp
 
-        ${PROJECT_SOURCE_DIR}/src/framework/broadcasthandler.cpp
-        ${PROJECT_SOURCE_DIR}/src/framework/codecs/bmpcodec.cpp
+        src/framework/aspects/drawable.cpp
+        src/framework/aspects/position.cpp
+        src/framework/codecs/bmpcodec.cpp
+        src/framework/broadcasthandler.cpp
+        src/framework/entityworld2.cpp
         )
 
 if (UNIX AND NOT APPLE)

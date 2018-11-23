@@ -41,7 +41,7 @@ namespace zfw
             virtual bool                Startup() = 0;
 
             // Core Handlers
-            virtual IBroadcastHandler*  GetBroadcastHandler(bool createIfNull) = 0;
+            virtual IBroadcastHandler*  GetBroadcastHandler() = 0;
             virtual IEntityHandler*     GetEntityHandler(bool createIfNull) = 0;
             virtual IFileSystem*        GetFileSystem() = 0;
             virtual IMediaCodecHandler* GetMediaCodecHandler(bool createIfNull) = 0;
@@ -102,6 +102,7 @@ namespace zfw
             virtual void ProfileFrame(int frameNumber) = 0;
 
             // Utility Classes
+            virtual unique_ptr<IEntityWorld2>   CreateEntityWorld2() = 0;
             virtual IResourceManager*   CreateResourceManager(const char* name) = 0;
             virtual IResourceManager2*  CreateResourceManager2() = 0;
             virtual ShaderPreprocessor* CreateShaderPreprocessor() = 0;

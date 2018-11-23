@@ -102,13 +102,17 @@ namespace zfw
     struct Vkey_t;
 
     // core classes
+    struct IAspectType;
+    //class IAspectVisitor;
     class IBroadcastHandler;
     class IComponent;
     class IConfig;
     class IDecoder;
     class IEncoder;
+    //class IEntity2;
     class IEntityHandler;
     class IEntityVisitor;
+    class IEntityWorld2;
     class IEssentials;
     class IFileSystem;
     class IFSObject;

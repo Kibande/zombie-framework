@@ -4,6 +4,7 @@
 #include <framework/broadcasthandler.hpp>
 #include <framework/component.hpp>
 #include <framework/entityhandler.hpp>
+#include <framework/entityworld2.hpp>
 #include <framework/errorbuffer.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/event.hpp>
@@ -185,7 +186,7 @@ namespace zfw
             virtual bool            Startup() override;
 
             // Core Handlers
-            IBroadcastHandler* GetBroadcastHandler(bool createIfNull) override;
+            IBroadcastHandler* GetBroadcastHandler() final;
             virtual IEntityHandler* GetEntityHandler(bool createIfNull) override;
             virtual IFileSystem*    GetFileSystem() override { return fsUnion->GetFileSystem(); }
             virtual IMediaCodecHandler* GetMediaCodecHandler(bool createIfNull) override;
@@ -246,6 +247,7 @@ namespace zfw
             virtual void ProfileFrame(int frameNumber) override { profileFrame = frameNumber; }
 
             // Utility Classes
+            unique_ptr<IEntityWorld2>   CreateEntityWorld2() final { return p_CreateEntityWorld2(broadcastHandler.get()); }
             virtual IResourceManager*   CreateResourceManager(const char* name) override;
             virtual IResourceManager2*  CreateResourceManager2() override;
 #ifndef ZOMBIE_NO_SHADER_PREPROCESSOR
@@ -355,7 +357,8 @@ namespace zfw
 
         scene = nullptr;
         newScene = nullptr;
-        
+
+        broadcastHandler = p_CreateBroadcastHandler();
         entityHandler = nullptr;
         fsUnion = nullptr;
         moduleHandler = nullptr;
@@ -827,12 +830,8 @@ namespace zfw
             var->SetVariable(tokens[0], tokens[1], 0);
     }
 
-    IBroadcastHandler* System::GetBroadcastHandler(bool createIfNull)
+    IBroadcastHandler* System::GetBroadcastHandler()
     {
-        if (createIfNull && !broadcastHandler) {
-            broadcastHandler = p_CreateBroadcastHandler();
-        }
-
         return broadcastHandler.get();
     }
 
