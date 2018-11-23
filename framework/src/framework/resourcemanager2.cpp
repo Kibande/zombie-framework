@@ -1,6 +1,6 @@
 
 #include <framework/resourcemanager2.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include <littl/List.hpp>
 #include <littl/String.hpp>
@@ -31,7 +31,7 @@ namespace zfw
     class ResourceManager2 : public IResourceManager2
     {
         public:
-            ResourceManager2(ISystem* sys);
+            ResourceManager2(IEngine* sys);
             virtual ~ResourceManager2();
 
             virtual IResource2::State_t GetTargetState() final override { return targetState; }
@@ -73,7 +73,7 @@ namespace zfw
             bool p_MakeResourceCorrectState(IResource2* res);
             bool p_MakeResourcesInStorageState(size_t storage, IResource2::State_t state, bool propagateError);
 
-            ISystem* sys;
+            IEngine* sys;
 
             IResource2::State_t targetState;
 
@@ -87,12 +87,12 @@ namespace zfw
     //  class ResourceManager2
     // ====================================================================== //
 
-    IResourceManager2* p_CreateResourceManager2(ISystem* sys)
+    IResourceManager2* p_CreateResourceManager2(IEngine* sys)
     {
         return new ResourceManager2(sys);
     }
 
-    ResourceManager2::ResourceManager2(ISystem* sys)
+    ResourceManager2::ResourceManager2(IEngine* sys)
             : sys(sys)
     {
         targetState = IResource2::CREATED;

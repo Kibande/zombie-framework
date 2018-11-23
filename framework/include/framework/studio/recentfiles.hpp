@@ -9,7 +9,7 @@ namespace studio
     class RecentFiles
     {
         public:
-            static RecentFiles* Create(ISystem* sys);
+            static RecentFiles* Create(IEngine* sys);
             virtual ~RecentFiles() {}
 
             virtual bool Load(const char* filename) = 0;

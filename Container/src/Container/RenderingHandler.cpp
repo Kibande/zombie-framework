@@ -1,8 +1,8 @@
 #include <Container/RenderingHandler.hpp>
 
+#include <framework/engine.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/pixmap.hpp>
-#include <framework/system.hpp>
 #include <framework/utility/essentials.hpp>
 
 #include <RenderingKit/utility/RKVideoHandler.hpp>
@@ -10,7 +10,7 @@
 namespace Container {
     using namespace RenderingKit;
 
-    RenderingHandler::RenderingHandler(zfw::ISystem* sys, std::shared_ptr<zfw::MessageQueue> msgQueue) : sys(sys), msgQueue(msgQueue) {
+    RenderingHandler::RenderingHandler(zfw::IEngine* sys, std::shared_ptr<zfw::MessageQueue> msgQueue) : sys(sys), msgQueue(msgQueue) {
     }
 
     bool RenderingHandler::RenderingInit() {

@@ -4,7 +4,7 @@
 
 #include <framework/colorconstants.hpp>
 #include <framework/resourcemanager2.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/varsystem.hpp>
 
 namespace ntile

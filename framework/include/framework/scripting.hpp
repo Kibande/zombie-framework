@@ -33,7 +33,7 @@ namespace zfw
         public:
             virtual ~IScriptHandler() {}
 
-            virtual bool Init(ISystem* sys, ErrorBuffer_t* eb) = 0;
+            virtual bool Init(IEngine* sys, ErrorBuffer_t* eb) = 0;
 
             virtual void AddScriptAPI(shared_ptr<IScriptAPI> api) = 0;
 

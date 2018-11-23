@@ -11,7 +11,7 @@
 #include <framework/entityworld2.hpp>
 #include <framework/filesystem.hpp>
 #include <framework/resourcemanager2.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/varsystem.hpp>
 
 #ifdef _3DS
@@ -25,7 +25,7 @@ namespace ntile
     // TODO: might want to move these? and use this unit just as the entry point
 
     ErrorBuffer_t* g_eb;
-    ISystem* g_sys;
+    IEngine* g_sys;
 
     static IViewSystem* ivs = nullptr;
     unique_ptr<MessageQueue> g_msgQueue;
@@ -46,7 +46,7 @@ namespace ntile
     {
         ErrorBuffer::Create(g_eb);
 
-        g_sys = CreateSystem();
+        g_sys = CreateEngine();
 
         if (!g_sys->Init(g_eb, 0))
             return false;

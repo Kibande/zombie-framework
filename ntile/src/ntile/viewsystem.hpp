@@ -25,7 +25,7 @@ namespace ntile {
          * @param eventQueue
          * @return
          */
-        virtual bool Startup(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) = 0;
+        virtual bool Startup(zfw::IEngine* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) = 0;
     };
 }
 

@@ -3,18 +3,19 @@
 #endif
 
 #include <framework/app.hpp>
-#include <framework/framework.hpp>
+#include <framework/engine.hpp>
+#include <framework/utility/errorbuffer.hpp>
 
 namespace example
 {
     zfw::ErrorBuffer_t* g_eb;
-    zfw::ISystem* g_sys;
+    zfw::IEngine* g_sys;
 
     static bool SysInit(int argc, char** argv)
     {
         zfw::ErrorBuffer::Create(g_eb);
 
-        g_sys = zfw::CreateSystem();
+        g_sys = zfw::CreateEngine();
 
         if (!g_sys->Init(g_eb, 0))
             return false;

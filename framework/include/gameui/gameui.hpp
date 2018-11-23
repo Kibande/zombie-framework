@@ -773,7 +773,7 @@ namespace gameui
     class UIContainer : public WidgetContainer
     {
         protected:
-            ISystem* sys;
+            IEngine* sys;
 
             Int3 pos;
             Int2 size;
@@ -787,7 +787,7 @@ namespace gameui
             UIContainer(const UIContainer&) = delete;
 
         public:
-            UIContainer(ISystem* sys) : sys(sys) {}
+            UIContainer(IEngine* sys) : sys(sys) {}
             ~UIContainer();
 
             virtual bool DoRemoveWidget(Widget* widget) override;
@@ -814,7 +814,7 @@ namespace gameui
 
     class UILoader
     {
-        ISystem* sys;
+        IEngine* sys;
 
         UIContainer* uiBase;
         UIThemer* themer;
@@ -829,7 +829,7 @@ namespace gameui
             UILoader(const UILoader&);
 
         public:
-            UILoader(ISystem* sys, UIContainer* uiBase, UIThemer* themer);
+            UILoader(IEngine* sys, UIContainer* uiBase, UIThemer* themer);
            
             void SetCustomLoaderCallback(UILoaderCallback callback) { customLoaderCb = callback; }
             void SetDefaultFont(intptr_t defaultFont) { this->defaultFont = defaultFont; }

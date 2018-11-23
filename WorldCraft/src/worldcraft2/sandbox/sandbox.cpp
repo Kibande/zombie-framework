@@ -18,13 +18,13 @@ namespace sandbox
 {
     Globals g;
 
-    ISystem*       g_sys;
+    IEngine*       g_sys;
 
     static bool SysInit(int argc, char** argv)
     {
         ErrorBuffer::Create(g.eb);
 
-        g_sys = CreateSystem();
+        g_sys = CreateEngine();
 
         if (!g_sys->Init(g.eb, 0))
             return false;

@@ -26,7 +26,7 @@ namespace StudioKit
 
             virtual void SetOutputFile(std::unique_ptr<li::IOStream>&& file) = 0;
 
-            virtual bool Init(zfw::ISystem* sys, const char* authored_using) = 0;
+            virtual bool Init(zfw::IEngine* sys, const char* authored_using) = 0;
 
             virtual void AddEntity(const char* entityCfx2) = 0;
             virtual void AddSolidBrush(const WorldVertex_t* vertices, size_t numVertices, size_t material) = 0;

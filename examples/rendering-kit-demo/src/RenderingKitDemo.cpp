@@ -6,12 +6,12 @@
 #include "RenderingKitDemo.hpp"
 
 #include <framework/app.hpp>
+#include <framework/engine.hpp>
 #include <framework/errorbuffer.hpp>
 #include <framework/filesystem.hpp>
 #include <framework/modulehandler.hpp>
 #include <framework/resourcemanager.hpp>
 #include <framework/shader_preprocessor.hpp>
-#include <framework/system.hpp>
 #include <framework/varsystem.hpp>
 #include <framework/videohandler.hpp>
 //#include <framework/vp8videocapture.hpp>
@@ -23,7 +23,7 @@
 
 namespace client
 {
-    ISystem* g_sys;
+    IEngine* g_sys;
     ErrorBuffer_t* g_eb;
     MessageQueue* g_msgQueue;
     EntityWorld* g_world;
@@ -80,7 +80,7 @@ namespace client
 
     static bool SysInit(int argc, char** argv)
     {
-		g_sys = CreateSystem();
+        g_sys = CreateEngine();
 
         if (!g_sys->Init(g_eb, 0))
             return false;

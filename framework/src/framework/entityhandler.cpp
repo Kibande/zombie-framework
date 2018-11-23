@@ -3,7 +3,7 @@
 
 #include <framework/entity.hpp>
 #include <framework/entityhandler.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include <littl/cfx2.hpp>
 #include <littl/HashMap.hpp>
@@ -22,11 +22,11 @@ namespace zfw
             };
 
             ErrorBuffer_t* eb;
-            ISystem* sys;
+            IEngine* sys;
             HashMap<String, EntityDef_t> registeredEntities;
 
         public:
-            EntityHandler(ErrorBuffer_t* eb, ISystem* sys) : eb(eb), sys(sys) {}
+            EntityHandler(ErrorBuffer_t* eb, IEngine* sys) : eb(eb), sys(sys) {}
             virtual ~EntityHandler();
 
             virtual bool Register(const char* className, IEntity* (*Instantiate)()) override;
@@ -38,7 +38,7 @@ namespace zfw
             bool RegisterEntityClass(const char* className, IEntity* (*Instantiate)(), cfx2::Node properties);
     };
 
-    IEntityHandler* p_CreateEntityHandler(ErrorBuffer_t* eb, ISystem* sys)
+    IEntityHandler* p_CreateEntityHandler(ErrorBuffer_t* eb, IEngine* sys)
     {
         return new EntityHandler(eb, sys);
     }

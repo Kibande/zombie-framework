@@ -73,7 +73,7 @@ namespace guier {
     };
 
     struct Guier {
-        Guier(zfw::ISystem* sys, gameui::UIThemer* themer, gameui::UIContainer* container) : sys(sys), themer(themer), container(container) {}
+        Guier(zfw::IEngine* sys, gameui::UIThemer* themer, gameui::UIContainer* container) : sys(sys), themer(themer), container(container) {}
 
         Guier_Ui Ui() {
             if (state) {
@@ -99,7 +99,7 @@ namespace guier {
             return id;
         }
 
-        zfw::ISystem* sys;
+        zfw::IEngine* sys;
         gameui::UIThemer* themer;
         gameui::UIContainer* container;
 

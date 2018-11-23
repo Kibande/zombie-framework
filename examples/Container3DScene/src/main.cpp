@@ -2,10 +2,10 @@
 #include <Container/ContainerScene.hpp>
 
 #include <framework/colorconstants.hpp>
+#include <framework/engine.hpp>
 #include <framework/event.hpp>
 #include <framework/messagequeue.hpp>
 #include <framework/pointentity.hpp>
-#include <framework/system.hpp>
 
 #include <RenderingKit/utility/CameraMouseControl.hpp>
 #include <RenderingKit/utility/TexturedPainter.hpp>

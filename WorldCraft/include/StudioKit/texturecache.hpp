@@ -26,7 +26,7 @@ namespace StudioKit
         public:
             virtual ~ITexturePreviewCache() {}
 
-            virtual bool Init(ISystem* sys, RenderingKit::IRenderingManager* rm,
+            virtual bool Init(IEngine* sys, RenderingKit::IRenderingManager* rm,
                     const char* fileName, Short2 previewSize, Short2 numTiles) = 0;
 
             virtual int AddToQueue(const char* fileName) = 0;
@@ -43,7 +43,7 @@ namespace StudioKit
     class IUpdateTexturePreviewCacheStartupTask : public IStartupTask
     {
         public:
-            virtual bool Init(ISystem* sys, ITexturePreviewCache* previewCache) = 0;
+            virtual bool Init(IEngine* sys, ITexturePreviewCache* previewCache) = 0;
 
             virtual void AddTextureDirectory(const char* dir) = 0;
 

@@ -4,7 +4,7 @@
 #include <framework/errorbuffer.hpp>
 #include <framework/event.hpp>
 #include <framework/messagequeue.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/varsystem.hpp>
 
 #include <SDL.h>

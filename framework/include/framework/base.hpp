@@ -109,6 +109,7 @@ namespace zfw
     class IConfig;
     class IDecoder;
     class IEncoder;
+    class IEngine;
     //class IEntity2;
     class IEntityHandler;
     class IEntityVisitor;
@@ -134,7 +135,6 @@ namespace zfw
     class IScriptAPI;
     class IScriptEnv;
     class IScriptHandler;
-    class ISystem;
     class IVarSystem;
     class IVideoHandler;
 
@@ -152,8 +152,8 @@ namespace zfw
     class IScene;
 
     // built-in aspects
-    class Drawable;
-    class Position;
+    struct Drawable;
+    struct Position;
 
     template <int type>
     struct MessageStruct

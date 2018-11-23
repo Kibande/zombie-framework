@@ -2,14 +2,14 @@
 #include <Container/ContainerScene.hpp>
 #include <Container/RenderingHandler.hpp>
 
+#include <framework/engine.hpp>
 #include <framework/errorbuffer.hpp>
 #include <framework/filesystem.hpp>
 #include <framework/messagequeue.hpp>
-#include <framework/system.hpp>
 #include <framework/varsystem.hpp>
 
 namespace Container {
-    bool ContainerApp::ConfigureFileSystem(zfw::ISystem* sys) {
+    bool ContainerApp::ConfigureFileSystem(zfw::IEngine* sys) {
         zfw::IFSUnion* fsUnion = sys->GetFSUnion();
         fsUnion->AddFileSystem(sys->CreateStdFileSystem(".", zfw::kFSAccessStat | zfw::kFSAccessRead), 100);
 
@@ -67,7 +67,7 @@ namespace Container {
         this->argv = argv;
     }
 
-    /*void ContainerApp::SetSystem(ISystem) {
+    /*void ContainerApp::SetSystem(IEngine) {
         this->argc = argc;
         this->argv = argv;
     }*/
@@ -76,7 +76,7 @@ namespace Container {
         zfw::ErrorBuffer_t* eb;
         zfw::ErrorBuffer::Create(eb);
 
-        auto sys = zfw::CreateSystem();
+        auto sys = zfw::CreateEngine();
 
         if (!sys->Init(eb, 0))
             return false;

@@ -50,7 +50,7 @@ namespace worldcraft
 
             virtual ~IBlenderImporter() {}
 
-            virtual void Init(zfw::ISystem* sys, float globalScale) = 0;
+            virtual void Init(zfw::IEngine* sys, float globalScale) = 0;
             virtual bool ImportScene(const char* fileName, Scene_t* scene_out) = 0;
     };
 

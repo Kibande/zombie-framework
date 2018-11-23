@@ -13,7 +13,7 @@ namespace zfw
     class EntityWorld
     {
         public:
-            EntityWorld(ISystem* sys) : sys(sys) {}
+            EntityWorld(IEngine* sys) : sys(sys) {}
             
             bool AddEntity(shared_ptr<IEntity> ent);
             void AddEntityFilter(IEntityFilter* filter);
@@ -44,7 +44,7 @@ namespace zfw
 #endif
 
         protected:
-            ISystem* sys;
+            IEngine* sys;
 
             li::List<shared_ptr<IEntity>> entities;
             li::List<IEntityFilter*>    entityFilters;

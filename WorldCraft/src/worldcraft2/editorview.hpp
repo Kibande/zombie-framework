@@ -58,7 +58,7 @@ namespace worldcraftpro
         public:
             virtual ~IEditorView() {}
 
-            virtual bool Init(ISystem* sys, IRenderingKit* rk, IRenderingManager* rm,
+            virtual bool Init(IEngine* sys, IRenderingKit* rk, IRenderingManager* rm,
                     shared_ptr<IResourceManager> brushTexMgrRef) = 0;
             virtual void Shutdown() = 0;
 

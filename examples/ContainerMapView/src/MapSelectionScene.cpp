@@ -6,10 +6,10 @@
 
 #include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
+#include <framework/engine.hpp>
 #include <framework/event.hpp>
 #include <framework/filesystem.hpp>
 #include <framework/messagequeue.hpp>
-#include <framework/system.hpp>
 #include <framework/varsystem.hpp>
 
 #include <gameui/gameui.hpp>

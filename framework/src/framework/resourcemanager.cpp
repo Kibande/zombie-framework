@@ -1,7 +1,7 @@
 
 #include <framework/errorbuffer.hpp>
 #include <framework/resourcemanager.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include <littl/HashMap.hpp>
 #include <littl/String.hpp>
@@ -26,7 +26,7 @@ namespace zfw
     class ResourceManager : public IResourceManager
     {
         public:
-            ResourceManager(ErrorBuffer_t* eb, ISystem* system, const char* name);
+            ResourceManager(ErrorBuffer_t* eb, IEngine* system, const char* name);
             ~ResourceManager();
 
             virtual ErrorBuffer_t* GetErrorBuffer() { return eb; }
@@ -80,18 +80,18 @@ namespace zfw
             };
 
             ErrorBuffer_t* eb;
-            ISystem* sys;
+            IEngine* sys;
             String name;
 
             HashMap<TypeID, ResourceClassBucket_t, size_t, &getHash> buckets;
     };
 
-    IResourceManager* p_CreateResourceManager(ErrorBuffer_t* eb, ISystem* sys, const char* name)
+    IResourceManager* p_CreateResourceManager(ErrorBuffer_t* eb, IEngine* sys, const char* name)
     {
         return new ResourceManager(eb, sys, name);
     }
 
-    ResourceManager::ResourceManager(ErrorBuffer_t* eb, ISystem* sys, const char* name)
+    ResourceManager::ResourceManager(ErrorBuffer_t* eb, IEngine* sys, const char* name)
     {
         this->eb = eb;
         this->sys = sys;

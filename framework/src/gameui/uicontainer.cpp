@@ -2,7 +2,7 @@
 #include <gameui/gameui.hpp>
 
 #include <framework/event.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/messagequeue.hpp>
 #include <framework/utility/util.hpp>
 

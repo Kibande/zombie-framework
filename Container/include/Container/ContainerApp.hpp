@@ -11,7 +11,7 @@ namespace Container {
 
         std::shared_ptr<zfw::MessageQueue> GetEventQueue() { return eventQueue; }
         IRenderingHandler* GetRenderingHandler() { return renderingHandler.get(); }
-        zfw::ISystem* GetSystem() { return sys; }
+        zfw::IEngine* GetSystem() { return sys; }
 
     protected:
         ContainerApp(const char* appName) : appName(appName) {}
@@ -24,7 +24,7 @@ namespace Container {
         virtual void SysDeinit();
 
         /// Called before ISystem::Startup!
-        virtual bool ConfigureFileSystem(zfw::ISystem* sys);
+        virtual bool ConfigureFileSystem(zfw::IEngine* sys);
 
         virtual std::shared_ptr<zfw::IScene> CreateInitialScene();
         virtual std::unique_ptr<IRenderingHandler> CreateRenderingHandler();
@@ -36,7 +36,7 @@ namespace Container {
         int argc;
         char** argv;
 
-        zfw::ISystem* sys;
+        zfw::IEngine* sys;
         zfw::ErrorBuffer_t* eb;
         std::shared_ptr<zfw::MessageQueue> eventQueue;
 

@@ -1,7 +1,7 @@
 
 #include <framework/errorbuffer.hpp>
 #include <framework/filesystem.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include <littl/File.hpp>
 
@@ -25,7 +25,7 @@ namespace zfw
     class FileSystemBleb : public IFileSystem
     {
         public:
-            FileSystemBleb(ISystem* sys, const char* path, int access);
+            FileSystemBleb(IEngine* sys, const char* path, int access);
             virtual ~FileSystemBleb();
 
             virtual IDirectory* OpenDirectory(const char* normalizedPath, int flags) override;
@@ -39,7 +39,7 @@ namespace zfw
             const char* GetNativeAbsoluteFilename(const char* normalizedPath) override;
 
         protected:
-            ISystem* sys;
+            IEngine* sys;
             String path;
 
             bleb::StdioFileByteIO bio;
@@ -54,7 +54,7 @@ namespace zfw
     //  class FileSystemBleb
     // ====================================================================== //
 
-    shared_ptr<IFileSystem> p_CreateBlebFileSystem(ISystem* sys, const char* path, int access)
+    shared_ptr<IFileSystem> p_CreateBlebFileSystem(IEngine* sys, const char* path, int access)
     {
         // Require Stat access at the very least (other methods assume it)
         ZFW_ASSERT(access & kFSAccessStat)
@@ -62,7 +62,7 @@ namespace zfw
         return std::make_shared<FileSystemBleb>(sys, path, access);
     }
 
-    FileSystemBleb::FileSystemBleb(ISystem* sys, const char* path, int access)
+    FileSystemBleb::FileSystemBleb(IEngine* sys, const char* path, int access)
             : sys(sys), path(path), bio(nullptr, true), repo(&bio)
     {
         sys->Printf(kLogInfo, "FileSystemBleb: mounting '%s'", path);

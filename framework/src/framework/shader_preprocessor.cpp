@@ -1,7 +1,7 @@
 
 #include <framework/errorbuffer.hpp>
 #include <framework/shader_preprocessor.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include "private.hpp"
 
@@ -16,16 +16,16 @@ namespace zfw
 
     class ShaderPreprocessorImpl: public ShaderPreprocessor
     {
-        ISystem* sys;
+        IEngine* sys;
 
         public:
-            ShaderPreprocessorImpl(ISystem* sys) : sys(sys) {}
+            ShaderPreprocessorImpl(IEngine* sys) : sys(sys) {}
 
             virtual bool LoadShader(const char* path, const char* prepend, char** preprocessed_source_out) override;
             virtual void ReleaseShader(char* preprocessed_source) override { free(preprocessed_source); }
     };
 
-    ShaderPreprocessor* p_CreateShaderPreprocessor(ISystem* sys)
+    ShaderPreprocessor* p_CreateShaderPreprocessor(IEngine* sys)
     {
         return new ShaderPreprocessorImpl(sys);
     }

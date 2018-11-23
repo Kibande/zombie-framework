@@ -2,7 +2,7 @@
 
 #include <framework/pixmap.hpp>
 #include <framework/mediacodechandler.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/utility/essentials.hpp>
 
 #include <littl/Algorithm.hpp>
@@ -66,7 +66,7 @@ namespace zfw
             }
 
             template <class Pixmap_t>
-            static bool LoadFromFile(ISystem* sys, Pixmap_t* pm, const char* fileName)
+            static bool LoadFromFile(IEngine* sys, Pixmap_t* pm, const char* fileName)
             {
                 // FIXME: Error description on error
 

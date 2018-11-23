@@ -11,7 +11,7 @@ namespace zfw
     class StudioBlebManager
     {
         public:
-            bool Init(ISystem* sys);
+            bool Init(IEngine* sys);
 
             void MountAllInDirectory(const char* nativePath);
             bool MountBleb(const char* nativePath);
@@ -27,7 +27,7 @@ namespace zfw
 
             bool RefreshResource(MountedBleb_t& res);
 
-            ISystem* sys;
+            IEngine* sys;
 
             std::vector<MountedBleb_t> mountedBlebs;
     };

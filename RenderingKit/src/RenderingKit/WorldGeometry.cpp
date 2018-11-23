@@ -5,7 +5,7 @@
 #include <framework/errorbuffer.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/resourcemanager2.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include <littl/Stream.hpp>
 

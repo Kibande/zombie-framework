@@ -14,7 +14,7 @@
 #include <framework/broadcasthandler.hpp>
 #include <framework/colorconstants.hpp>
 #include <framework/resourcemanager2.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include <unordered_map>
 
@@ -50,7 +50,7 @@ namespace ntile {
     public:
         ViewSystem(World& world) : world(world) {}
 
-        bool Startup(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) override;
+        bool Startup(zfw::IEngine* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) override;
 
         // zfw::IBroadcastSubscriber
         void OnAspectEvent(intptr_t entityId, IAspectType& type, void* data, AspectEvent event) final;
@@ -93,7 +93,7 @@ namespace ntile {
         return new ViewSystem(world);
     }
 
-    bool ViewSystem::Startup(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) {
+    bool ViewSystem::Startup(zfw::IEngine* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) {
         rk.reset(CreateRenderingKit());
         rk->Init(sys, eb, nullptr);
 

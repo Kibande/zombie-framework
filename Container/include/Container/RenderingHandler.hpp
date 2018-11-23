@@ -7,14 +7,14 @@
 namespace Container {
     class RenderingHandler : public IRenderingHandler {
     public:
-        RenderingHandler(zfw::ISystem* sys, std::shared_ptr<zfw::MessageQueue> msgQueue);
+        RenderingHandler(zfw::IEngine* sys, std::shared_ptr<zfw::MessageQueue> msgQueue);
 
         virtual bool RenderingInit() override;
 
         virtual RenderingKit::IRenderingKit* GetRenderingKit() override { return rk.get(); }
 
     protected:
-        zfw::ISystem* sys;
+        zfw::IEngine* sys;
         std::shared_ptr<zfw::MessageQueue> msgQueue;
 
         std::unique_ptr<RenderingKit::IRenderingKit> rk;

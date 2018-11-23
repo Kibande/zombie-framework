@@ -1,5 +1,5 @@
 
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/studio/recentfiles.hpp>
 #include <framework/utility/util.hpp>
 
@@ -19,7 +19,7 @@ namespace studio
     class RecentFilesImpl : public RecentFiles
     {
         public:
-            RecentFilesImpl(ISystem* sys);
+            RecentFilesImpl(IEngine* sys);
 
             virtual bool Load(const char* filename) override;
             virtual bool Save(const char* filename) override;
@@ -34,7 +34,7 @@ namespace studio
             virtual void SetMaxNumItems(size_t maxNumItems) override { this->maxNumItems = maxNumItems; }
 
         protected:
-            ISystem* sys;
+            IEngine* sys;
 
             List<String> items;
             size_t maxNumItems;
@@ -42,12 +42,12 @@ namespace studio
             bool isDirty;
     };
 
-    RecentFiles* RecentFiles::Create(ISystem* sys)
+    RecentFiles* RecentFiles::Create(IEngine* sys)
     {
         return new RecentFilesImpl(sys);
     }
 
-    RecentFilesImpl::RecentFilesImpl(ISystem* sys) : sys(sys)
+    RecentFilesImpl::RecentFilesImpl(IEngine* sys) : sys(sys)
     {
         maxNumItems = 10;
         isDirty = false;

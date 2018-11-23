@@ -3,10 +3,6 @@
 #include <Container/ContainerApp.hpp>
 #include <Container/ContainerScene.hpp>
 
-#include <framework/event.hpp>
-#include <framework/messagequeue.hpp>
-#include <framework/system.hpp>
-
 namespace example {
     using Container::ContainerApp;
     using Container::ContainerScene;

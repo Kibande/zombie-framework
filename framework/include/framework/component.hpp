@@ -6,7 +6,7 @@ namespace zfw {
      * A generic component that integrates into the framework using its tools (main loop, message broadcast...)
      *
      * Available ownership models:
-     *  - owning - ISystem holds a unique_ptr to the component
+     *  - owning - IEngine holds a unique_ptr to the component
      */
     class IComponent {
     public:

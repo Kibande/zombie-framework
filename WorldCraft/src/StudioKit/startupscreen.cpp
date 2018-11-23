@@ -4,9 +4,9 @@
 #include <RenderingKit/utility/BasicPainter.hpp>
 
 #include <framework/colorconstants.hpp>
+#include <framework/engine.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/resourcemanager.hpp>
-#include <framework/system.hpp>
 
 #include <littl/Directory.hpp>
 #include <littl/Thread.hpp>
@@ -56,7 +56,7 @@ namespace StudioKit
     
     class StartupScreen : public IStartupScreen
     {
-        ISystem* sys;
+        IEngine* sys;
         ErrorBuffer_t* eb;
         IRenderingManager* rm;
 
@@ -76,7 +76,7 @@ namespace StudioKit
         public:
             StartupScreen();
         
-            virtual bool Init(ISystem* sys, RenderingKit::IRenderingManager* rm, shared_ptr<IScene> nextScene) override;
+            virtual bool Init(IEngine* sys, RenderingKit::IRenderingManager* rm, shared_ptr<IScene> nextScene) override;
 
             virtual bool Init() override;
             virtual void Shutdown() override;
@@ -153,7 +153,7 @@ namespace StudioKit
         worker = nullptr;
     }
 
-    bool StartupScreen::Init(ISystem* sys, RenderingKit::IRenderingManager* rm, shared_ptr<IScene> nextScene)
+    bool StartupScreen::Init(IEngine* sys, RenderingKit::IRenderingManager* rm, shared_ptr<IScene> nextScene)
     {
         SetEssentials(sys->GetEssentials());
 

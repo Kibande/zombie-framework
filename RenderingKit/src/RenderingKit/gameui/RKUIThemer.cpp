@@ -6,7 +6,7 @@
 #include <framework/colorconstants.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/graphics.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #if ZOMBIE_API_VERSION < 201701
 #include <framework/resourcemanager.hpp>
@@ -495,7 +495,7 @@ namespace RenderingKit
     {
         protected:
             zfw::ErrorBuffer_t* eb;
-            zfw::ISystem* sys;
+            zfw::IEngine* sys;
             IRenderingManager* rm;
 
             IResourceManager* res;
@@ -518,11 +518,11 @@ namespace RenderingKit
             ~RKUIThemer();
 
 #if ZOMBIE_API_VERSION >= 201901
-            bool Init(zfw::ISystem* sys, IRenderingManager* rm, IResourceManager2* res) override;
+            bool Init(zfw::IEngine* sys, IRenderingManager* rm, IResourceManager2* res) override;
 #elif ZOMBIE_API_VERSION >= 201701
-            virtual bool Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager2* res) override;
+            virtual bool Init(zfw::IEngine* sys, IRenderingKit* rk, IResourceManager2* res) override;
 #else
-            virtual void Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* resRef) override;
+            virtual void Init(zfw::IEngine* sys, IRenderingKit* rk, IResourceManager* resRef) override;
 #endif
 
             virtual bool AcquireResources() override;
@@ -551,7 +551,7 @@ namespace RenderingKit
             bool AcquireFontResources(FontEntry& entry);
             RKUIPainter* GetPainter() { return painter.get(); }
             IResourceManager* GetResourceManager() { return res; }
-            ISystem* GetSys() { return sys; }
+            IEngine* GetSys() { return sys; }
     };
 
     bool TextObj::LayoutCentered(IFontFace* face, const char* label, int unused)
@@ -1429,7 +1429,7 @@ namespace RenderingKit
     }
 
 #if ZOMBIE_API_VERSION >= 201901
-    bool RKUIThemer::Init(zfw::ISystem* sys, IRenderingManager* rm, IResourceManager2* res)
+    bool RKUIThemer::Init(zfw::IEngine* sys, IRenderingManager* rm, IResourceManager2* res)
     {
         SetEssentials(sys->GetEssentials());
 
@@ -1441,7 +1441,7 @@ namespace RenderingKit
         return true;
     }
 #elif ZOMBIE_API_VERSION >= 201701
-    bool RKUIThemer::Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager2* res)
+    bool RKUIThemer::Init(zfw::IEngine* sys, IRenderingKit* rk, IResourceManager2* res)
     {
         SetEssentials(sys->GetEssentials());
 
@@ -1453,7 +1453,7 @@ namespace RenderingKit
         return true;
     }
 #else
-    void RKUIThemer::Init(zfw::ISystem* sys, IRenderingKit* rk, IResourceManager* res)
+    void RKUIThemer::Init(zfw::IEngine* sys, IRenderingKit* rk, IResourceManager* res)
     {
         SetEssentials(sys->GetEssentials());
 

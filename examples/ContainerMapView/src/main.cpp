@@ -4,11 +4,7 @@
 #include <Container/ContainerApp.hpp>
 #include <Container/ContainerScene.hpp>
 
-#include <framework/colorconstants.hpp>
-#include <framework/event.hpp>
-#include <framework/messagequeue.hpp>
-#include <framework/pointentity.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/varsystem.hpp>
 
 #if defined(_DEBUG) && defined(_MSC_VER)

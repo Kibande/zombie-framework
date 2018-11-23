@@ -3,7 +3,7 @@
 
 #include <framework/colorconstants.hpp>
 #include <framework/errorbuffer.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 namespace gameui
 {
@@ -72,7 +72,7 @@ namespace gameui
         }
     }
 
-    UILoader::UILoader(ISystem* sys, UIContainer* uiBase, UIThemer* themer)
+    UILoader::UILoader(IEngine* sys, UIContainer* uiBase, UIThemer* themer)
             : sys(sys), uiBase(uiBase), themer(themer)
     {
         customLoaderCb = nullptr;

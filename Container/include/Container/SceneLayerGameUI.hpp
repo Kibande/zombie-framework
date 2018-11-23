@@ -7,7 +7,7 @@
 namespace Container {
     class SceneLayerGameUI : public SceneLayerScreenSpace {
     public:
-        SceneLayerGameUI(zfw::ISystem* sys) : ui(sys) {}
+        SceneLayerGameUI(zfw::IEngine* sys) : ui(sys) {}
 
         virtual void DrawContents() override {
             ui.Draw();

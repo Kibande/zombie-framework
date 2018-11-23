@@ -35,7 +35,7 @@ namespace client
         IResourceManager* res;
     };
 
-	extern ISystem* g_sys;
+    extern IEngine* g_sys;
     extern ErrorBuffer_t* g_eb;
     extern MessageQueue* g_msgQueue;
     extern EntityWorld* g_world;

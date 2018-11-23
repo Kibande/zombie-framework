@@ -2,7 +2,7 @@
 #include "RenderingKitImpl.hpp"
 
 #include <framework/shader_preprocessor.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 namespace RenderingKit
 {
@@ -27,7 +27,7 @@ namespace RenderingKit
         return shaderPreprocessor.get();
     }
 
-    bool RenderingKit::Init(ISystem* sys, ErrorBuffer_t* eb, IRenderingKitHost* host)
+    bool RenderingKit::Init(IEngine* sys, ErrorBuffer_t* eb, IRenderingKitHost* host)
     {
         SetEssentials(sys->GetEssentials());
 

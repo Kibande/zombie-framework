@@ -66,7 +66,7 @@ namespace zfw
     //  class LodePngDecoder
     // ====================================================================== //
 
-    IPixmapDecoder* p_CreateLodePngDecoder(ISystem* sys)
+    IPixmapDecoder* p_CreateLodePngDecoder(IEngine* sys)
     {
         return new LodePngDecoder();
     }
@@ -112,7 +112,7 @@ namespace zfw
     //  class LodePngEncoder
     // ====================================================================== //
 
-    IPixmapEncoder* p_CreateLodePngEncoder(ISystem* sys)
+    IPixmapEncoder* p_CreateLodePngEncoder(IEngine* sys)
     {
         return new LodePngEncoder();
     }

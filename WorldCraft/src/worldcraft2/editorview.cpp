@@ -5,9 +5,9 @@
 #include <RenderingKit/utility/TexturedPainter.hpp>
 
 #include <framework/colorconstants.hpp>
+#include <framework/engine.hpp>
 #include <framework/event.hpp>
 #include <framework/resourcemanager.hpp>
-#include <framework/system.hpp>
 #include <framework/utility/algebrahelpers.hpp>
 
 #include <littl/File.hpp>
@@ -94,7 +94,7 @@ namespace worldcraftpro
             EditorView();
             ~EditorView();
 
-            virtual bool Init(ISystem* sys, IRenderingKit* rk, IRenderingManager* rm,
+            virtual bool Init(IEngine* sys, IRenderingKit* rk, IRenderingManager* rm,
                     shared_ptr<IResourceManager> brushTexMgrRef) override;
             virtual void Shutdown() override;
 
@@ -134,7 +134,7 @@ namespace worldcraftpro
             bool p_ScreenToWorldDelta(const Viewport_t& viewport, Int2 mouseInEVOrig, Int2 mouseDelta, Float3& worldDelta_out);
             int p_ViewportAtPos(Int2 mousePos);
 
-            ISystem* sys;
+            IEngine* sys;
 
             IRenderingKit* rk;
             IRenderingManager* rm;
@@ -223,7 +223,7 @@ namespace worldcraftpro
         Shutdown();
     }
 
-    bool EditorView::Init(ISystem* sys, IRenderingKit* rk, IRenderingManager* rm, shared_ptr<IResourceManager> brushTexMgr)
+    bool EditorView::Init(IEngine* sys, IRenderingKit* rk, IRenderingManager* rm, shared_ptr<IResourceManager> brushTexMgr)
     {
         this->sys = sys;
         this->rk = rk;

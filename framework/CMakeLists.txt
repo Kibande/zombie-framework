@@ -15,60 +15,160 @@ add_subdirectory(dependencies/bleb)
 add_subdirectory(dependencies/libcfx2)
 add_subdirectory(dependencies/littl)
 
-# Also add headers so that they're included in generated projects
-file(GLOB sources
-    ${PROJECT_SOURCE_DIR}/src/framework/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/framework/studio/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/framework/utility/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/gameui/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/gameui/dialogs/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/gameui/utility/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/zshared/*.c
-    ${PROJECT_SOURCE_DIR}/src/zshared/*.cpp
+set(sources
+        dependencies/reflector/include/reflection/default_error_handler.cpp
 
-    ${PROJECT_SOURCE_DIR}/dependencies/reflector/include/reflection/default_error_handler.cpp
-
-    ${PROJECT_SOURCE_DIR}/src/framework/*.hpp
-    ${PROJECT_SOURCE_DIR}/include/framework/*.hpp
-    ${PROJECT_SOURCE_DIR}/include/framework/utility/*.hpp
-    ${PROJECT_SOURCE_DIR}/include/gameui/*.hpp
-    ${PROJECT_SOURCE_DIR}/include/zshared/*.hpp
-    ${PROJECT_SOURCE_DIR}/include/ztype/*.hpp
-)
-
-list(APPEND sources
+        include/framework/abstractentity.hpp
+        include/framework/app.hpp
         include/framework/aspects/drawable.hpp
         include/framework/aspects/position.hpp
+        include/framework/aspecttype.hpp
+        include/framework/base.hpp
+        include/framework/bleb/studiobleb.hpp
         include/framework/broadcasthandler.hpp
+        include/framework/colorconstants.hpp
         include/framework/component.hpp
+        include/framework/datamodel.hpp
+        include/framework/engine.hpp
+        include/framework/entity.hpp
         include/framework/entity2.hpp
+        include/framework/entityhandler.hpp
+        include/framework/entityworld.hpp
         include/framework/entityworld2.hpp
+        include/framework/errorbuffer.hpp
+        include/framework/errorcheck.hpp
+        include/framework/errorcodes.hpp
+        include/framework/event.hpp
+        include/framework/filesystem.hpp
+        include/framework/framework.hpp
+        include/framework/graphics.hpp
+        include/framework/interpolator.hpp
+        include/framework/lua/luascript.hpp
+        include/framework/mediacodechandler.hpp
+        include/framework/messagequeue.hpp
+        include/framework/module.hpp
+        include/framework/modulehandler.hpp
+        include/framework/nativedialogs.hpp
+        include/framework/pixmap.hpp
+        include/framework/pointentity.hpp
+        include/framework/profiler.hpp
+        include/framework/resource.hpp
+        include/framework/resourcemanager.hpp
+        include/framework/resourcemanager2.hpp
+        include/framework/scene.hpp
+        include/framework/scripting.hpp
+        include/framework/shader_preprocessor.hpp
+        include/framework/studio/recentfiles.hpp
+        include/framework/timer.hpp
+        include/framework/utility/algebrahelpers.hpp
+        include/framework/utility/errorbuffer.hpp
+        include/framework/utility/essentials.hpp
+        include/framework/utility/params.hpp
+        include/framework/utility/pixmap.hpp
+        include/framework/utility/util.hpp
+        include/framework/varsystem.hpp
+        include/framework/videocapture.hpp
+        include/framework/videohandler.hpp
+
+        include/gameui/dialogs.hpp
+        include/gameui/gameui.hpp
+        include/gameui/gameui_base.hpp
+        include/gameui/uithemer.hpp
+
+        include/zshared/crc16_ccitt.hpp
+        include/zshared/mediafile2.hpp
+
+        include/ztype/ztype.hpp
 
         src/framework/aspects/drawable.cpp
         src/framework/aspects/position.cpp
-        src/framework/codecs/bmpcodec.cpp
+        src/framework/asprintf.cpp
         src/framework/broadcasthandler.cpp
+        src/framework/codecs/bmpcodec.cpp
+        src/framework/codecs/jfifcodec.cpp
+        src/framework/codecs/lodepngcodec.cpp
+        src/framework/datamodel.cpp
+        src/framework/engine.cpp
+        src/framework/entityhandler.cpp
+        src/framework/entityworld.cpp
         src/framework/entityworld2.cpp
+        src/framework/filesystem_std.cpp
+        src/framework/fsunion.cpp
+        src/framework/mediacodechandler.cpp
+        src/framework/messagequeue.cpp
+        src/framework/modulehandler.cpp
+        src/framework/private.hpp
+        src/framework/profiler.cpp
+        src/framework/resourcemanager.cpp
+        src/framework/resourcemanager2.cpp
+        src/framework/scene.cpp
+        src/framework/shader_preprocessor.cpp
+        src/framework/studio/recentfiles.cpp
+        src/framework/timer.cpp
+        src/framework/utility/algebrahelpers.cpp
+        src/framework/utility/essentials.cpp
+        src/framework/utility/params.cpp
+        src/framework/utility/util.cpp
+        src/framework/utility/vkey.cpp
+        src/framework/varsystem.cpp
+        src/framework/vkeyreflection.cpp
+
+        src/gameui/button.cpp
+        src/gameui/checkbox.cpp
+        src/gameui/combobox.cpp
+        src/gameui/dialogs/messagedlg.cpp
+        src/gameui/graphics.cpp
+        src/gameui/listctrl.cpp
+        src/gameui/menubar.cpp
+        src/gameui/panel.cpp
+        src/gameui/popup.cpp
+        src/gameui/scrollbar.cpp
+        src/gameui/slider.cpp
+        src/gameui/staticimage.cpp
+        src/gameui/statictext.cpp
+        src/gameui/tablelayout.cpp
+        src/gameui/textbox.cpp
+        src/gameui/treebox.cpp
+        src/gameui/uicontainer.cpp
+        src/gameui/uiloader.cpp
+        src/gameui/utility/uithemerhelper.cpp
+        src/gameui/widget.cpp
+        src/gameui/widgetcontainer.cpp
+        src/gameui/window.cpp
+
+        src/zshared/crc16_ccitt.cpp
+        src/zshared/md5.c
+        src/zshared/md5.h
+        src/zshared/mediafile2.cpp
         )
 
 if (UNIX AND NOT APPLE)
-    file(GLOB add_sources src/framework/linux/*)
-    list(APPEND sources ${add_sources})
+    list(APPEND sources
+            src/framework/linux/nativedialogs.cpp
+            )
 endif()
 
 if (WITH_BLEB)
-    file(GLOB add_sources src/framework/bleb/*.cpp)
-    list(APPEND sources ${add_sources})
+    list(APPEND sources
+            src/framework/bleb/filesystem_bleb.cpp
+            src/framework/bleb/studiobleb.cpp
+            )
 endif()
 
 if (ZOMBIE_WITH_LUA)
-    file(GLOB add_sources src/framework/lua/*.cpp)
-    list(APPEND sources ${add_sources})
+    list(APPEND sources
+            src/framework/lua/luascript.cpp
+            src/framework/lua/private.hpp
+            )
 endif()
 
 if (WITH_ZTYPE)
-    file(GLOB add_sources src/ztype/*.cpp)
-    list(APPEND sources ${add_sources})
+    list(APPEND sources
+            src/ztype/facefile.cpp
+            src/ztype/facelistfile.cpp
+            src/ztype/fontcache.cpp
+            src/ztype/rasterizer.cpp
+            )
 endif()
 
 if (WITH_JPEG)
@@ -80,13 +180,14 @@ if (WITH_LODEPNG)
 endif()
 
 if (WIN32)
-    file(GLOB add_sources src/framework/win32/*)
-    list(APPEND sources ${add_sources})
+    list(APPEND sources
+            src/framework/win32/nativedialogs.cpp
+            )
 endif()
 
 add_library(${library} ${sources})
 
-target_compile_definitions(${library} PUBLIC $<$<CONFIG:DEBUG>:ZOMBIE_DEBUG>)
+target_compile_definitions(${library} PUBLIC $<$<CONFIG:DEBUG>:DEBUG>)
 target_compile_features(${library} PUBLIC cxx_std_14)
 
 if (ZOMBIE_API_VERSION)

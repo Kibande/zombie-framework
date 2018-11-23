@@ -2,6 +2,7 @@
 #include "worldcraftpro.hpp"
 
 #include <framework/colorconstants.hpp>
+#include <framework/engine.hpp>
 #include <framework/entityhandler.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/filesystem.hpp>
@@ -9,7 +10,6 @@
 #include <framework/nativedialogs.hpp>
 #include <framework/messagequeue.hpp>
 #include <framework/resourcemanager.hpp>
-#include <framework/system.hpp>
 
 #include <littl/Directory.hpp>
 #include <littl/File.hpp>

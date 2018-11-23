@@ -53,7 +53,7 @@ namespace worldcraftpro
 
     extern Globals g;
 
-    extern ISystem*        g_sys;
+    extern IEngine*        g_sys;
 
     /*
     class ModelPreviewCache

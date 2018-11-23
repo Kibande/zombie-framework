@@ -7,7 +7,7 @@
 #include <littl/Directory.hpp>
 #include <littl/File.hpp>
 
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/utility/essentials.hpp>
 
 namespace zfw
@@ -33,7 +33,7 @@ namespace zfw
         return "\"" + arg + "\"";
     }
 
-    bool StudioBlebManager::Init(ISystem* sys)
+    bool StudioBlebManager::Init(IEngine* sys)
     {
         this->sys = sys;
 

@@ -1,5 +1,5 @@
 
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/varsystem.hpp>
 #include <framework/utility/errorbuffer.hpp>
 #include <framework/utility/essentials.hpp>
@@ -18,7 +18,7 @@ namespace zfw
     class VarSystem : public IVarSystem
     {
         public:
-            VarSystem(ISystem* sys) : sys(sys) {}
+            VarSystem(IEngine* sys) : sys(sys) {}
 
             virtual bool GetVariable(const char* name, const char** value_out, int flags) override;
             virtual bool SetVariable(const char* name, const char* value, int flags) override;
@@ -38,7 +38,7 @@ namespace zfw
             void p_SetErrorNotBound(const char* name, const char* function);
             bool p_WriteToStream(OutputStream* output, const char* outputNameOrNull, const char* name, const char* value);
 
-            ISystem* sys;
+            IEngine* sys;
 
             string valueBuffer;
 
@@ -50,7 +50,7 @@ namespace zfw
     //  class VarSystem
     // ====================================================================== //
 
-    IVarSystem* p_CreateVarSystem(ISystem* sys)
+    IVarSystem* p_CreateVarSystem(IEngine* sys)
     {
         // Will be called in System pre-init!
 

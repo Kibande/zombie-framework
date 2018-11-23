@@ -4,7 +4,7 @@
 #include <framework/errorbuffer.hpp>
 #include <framework/resource.hpp>
 #include <framework/shader_preprocessor.hpp>
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include <string>
 #include <vector>

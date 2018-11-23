@@ -4,9 +4,9 @@
 #include "worldcraftpro.hpp"
 
 #include <framework/colorconstants.hpp>
+#include <framework/engine.hpp>
 #include <framework/entityhandler.hpp>
 #include <framework/resourcemanager.hpp>
-#include <framework/system.hpp>
 
 #define GET_PROPERTY(name_) properties.add(NodeProperty(#name_, name_));
 #define SET_PROPERTY(name_) if (strcmp(property.name, #name_) == 0) {\

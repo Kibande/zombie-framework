@@ -21,7 +21,7 @@ namespace ntile
         }
 
         ErrorBuffer::Create(g_eb);
-        g_sys = CreateSystem();
+        g_sys = CreateEngine();
         g_sys->Init(g_eb, kSysNonInteractive);
 
         IFSUnion* fsUnion = g_sys->GetFSUnion();

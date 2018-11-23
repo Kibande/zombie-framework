@@ -1,7 +1,7 @@
 
 #include <framework/lua/luascript.hpp>
 
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 #include <framework/utility/errorbuffer.hpp>
 
 extern "C"
@@ -23,7 +23,7 @@ namespace zfw
     class LuaScriptContext: public ILuaScriptContext
     {
         public:
-            LuaScriptContext(ISystem* sys);
+            LuaScriptContext(IEngine* sys);
             ~LuaScriptContext();
 
             virtual bool ExecuteFile(const char* path) override;
@@ -31,7 +31,7 @@ namespace zfw
             virtual lua_State* GetLuaState() override { return L; }
 
         private:
-            ISystem* sys;
+            IEngine* sys;
 
             lua_State* L;
     };
@@ -40,12 +40,12 @@ namespace zfw
     //  class LuaScriptContext
     // ====================================================================== //
 
-    shared_ptr<ILuaScriptContext> p_CreateLuaScriptContext(ISystem* sys)
+    shared_ptr<ILuaScriptContext> p_CreateLuaScriptContext(IEngine* sys)
     {
         return std::make_shared<LuaScriptContext>(sys);
     }
 
-    LuaScriptContext::LuaScriptContext(ISystem* sys) : sys(sys)
+    LuaScriptContext::LuaScriptContext(IEngine* sys) : sys(sys)
     {
         L = luaL_newstate();
     }

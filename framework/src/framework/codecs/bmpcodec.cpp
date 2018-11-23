@@ -4,7 +4,7 @@
 #include <framework/utility/essentials.hpp>
 #include <framework/utility/pixmap.hpp>
 
-#include <framework/system.hpp>
+#include <framework/engine.hpp>
 
 #include <littl/Stream.hpp>
 
@@ -32,7 +32,7 @@ namespace zfw
     //  class BmpEncoder
     // ====================================================================== //
 
-    IPixmapEncoder* p_CreateBmpEncoder(ISystem* sys)
+    IPixmapEncoder* p_CreateBmpEncoder(IEngine* sys)
     {
         return new BmpEncoder();
     }

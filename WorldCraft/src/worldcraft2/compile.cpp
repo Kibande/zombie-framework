@@ -1,8 +1,8 @@
 
 #include "worldcraftpro.hpp"
 
+#include <framework/engine.hpp>
 #include <framework/filesystem.hpp>
-#include <framework/system.hpp>
 #include <framework/varsystem.hpp>
 
 #include <StudioKit/worldgeom.hpp>
@@ -25,7 +25,7 @@ namespace worldcraftpro
 
     static bool SysInit(int argc, char** argv)
     {
-        g_sys = CreateSystem();
+        g_sys = CreateEngine();
 
         if (!g_sys->Init(g.eb, kSysNonInteractive))
             return false;

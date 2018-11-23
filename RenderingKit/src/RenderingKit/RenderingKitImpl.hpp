@@ -252,7 +252,7 @@ namespace RenderingKit
 
     class RenderingKit : public IRenderingKit
     {
-        zfw::ISystem* sys;
+        zfw::IEngine* sys;
         zfw::ErrorBuffer_t* eb;
 
         unique_ptr<zfw::ShaderPreprocessor> shaderPreprocessor;
@@ -264,7 +264,7 @@ namespace RenderingKit
         public:
             RenderingKit();
 
-            virtual bool Init(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, IRenderingKitHost* host) override;
+            virtual bool Init(zfw::IEngine* sys, zfw::ErrorBuffer_t* eb, IRenderingKitHost* host) override;
 
 #if ZOMBIE_API_VERSION >= 201901
             IRenderingManager*          StartupRendering() override;
@@ -279,7 +279,7 @@ namespace RenderingKit
 
             //zfw::Env* GetEnv() { return sys->GetEnv(); }
             zfw::ShaderPreprocessor* GetShaderPreprocessor();
-            zfw::ISystem* GetSys() { return sys; }
+            zfw::IEngine* GetSys() { return sys; }
 
             IRenderingManagerBackend*   GetRenderingManagerBackend() { return rm.get(); }
             IWindowManagerBackend*      GetWindowManagerBackend() { return wm.get(); }

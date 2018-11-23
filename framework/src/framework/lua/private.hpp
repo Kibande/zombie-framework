@@ -4,5 +4,5 @@
 
 namespace zfw
 {
-    shared_ptr<ILuaScriptContext> p_CreateLuaScriptContext(ISystem* sys);
+    shared_ptr<ILuaScriptContext> p_CreateLuaScriptContext(IEngine* sys);
 }

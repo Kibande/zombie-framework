@@ -28,7 +28,7 @@ namespace sandbox
 
     extern Globals g;
 
-    extern ISystem*               g_sys;
+    extern IEngine*               g_sys;
 
     class ISandboxScene : public zfw::IScene
     {

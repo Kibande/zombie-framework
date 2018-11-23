@@ -8,7 +8,6 @@
 #include <framework/filesystem.hpp>
 #include <framework/messagequeue.hpp>
 #include <framework/resourcemanager.hpp>
-#include <framework/system.hpp>
 #include <framework/varsystem.hpp>
 
 #include <framework/utility/pixmap.hpp>
@@ -25,7 +24,7 @@ namespace worldcraftpro
 {
     Globals g;
 
-    ISystem*       g_sys;
+    IEngine*       g_sys;
 
     static unique_ptr<ITexturePreviewCache> s_texPreviewCache;
     static shared_ptr<StudioKit::IStartupScreen> s_startup;
@@ -71,7 +70,7 @@ namespace worldcraftpro
 
     static bool SysInit(int argc, char** argv)
     {
-        g_sys = CreateSystem();
+        g_sys = CreateEngine();
 
         if (!g_sys->Init(g.eb, 0))
             abort();

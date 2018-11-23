@@ -1,8 +1,8 @@
 
 #include <StudioKit/worldgeom.hpp>
 
+#include <framework/engine.hpp>
 #include <framework/errorbuffer.hpp>
-#include <framework/system.hpp>
 
 #include <bleb/repository.hpp>
 
@@ -31,7 +31,7 @@ namespace StudioKit
 
             virtual void SetOutputFile(unique_ptr<li::IOStream>&& file) override { this->file = std::move(file); }
 
-            virtual bool Init(zfw::ISystem* sys, const char* authored_using) override;
+            virtual bool Init(zfw::IEngine* sys, const char* authored_using) override;
 
             virtual void AddEntity(const char* entityCfx2) override;
             virtual void AddSolidBrush(const WorldVertex_t* vertices, size_t numVertices, size_t material) override;
@@ -43,7 +43,7 @@ namespace StudioKit
 
         private:
             ErrorBuffer_t* eb;
-            ISystem* sys;
+            IEngine* sys;
 
             unique_ptr<li::IOStream> file;
             li::StreamByteIO bio;
@@ -66,7 +66,7 @@ namespace StudioKit
     {
     }
 
-    bool WorldGeomTree::Init(zfw::ISystem* sys, const char* authored_using)
+    bool WorldGeomTree::Init(zfw::IEngine* sys, const char* authored_using)
     {
         SetEssentials(sys->GetEssentials());
 
