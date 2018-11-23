@@ -8,7 +8,7 @@
 
 #include <setjmp.h>
 
-#ifdef ZOMBIE_WINNT
+#ifdef _MSC_VER
 // On Windows, system headers define boolean
 #define HAVE_BOOLEAN
 #endif
