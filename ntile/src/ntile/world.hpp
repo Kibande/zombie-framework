@@ -78,6 +78,7 @@ namespace ntile {
 
     extern Int2 worldSize;
     extern WorldBlock* blocks;
+    extern unique_ptr<IEntityWorld2> g_ew;
 }
 
 #endif

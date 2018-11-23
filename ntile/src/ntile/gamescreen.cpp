@@ -2,8 +2,11 @@
 #include "gamescreen.hpp"
 #include "world.hpp"
 
+#include <framework/aspects/drawable.hpp>
+#include <framework/aspects/position.hpp>
 #include <framework/broadcasthandler.hpp>
 #include <framework/colorconstants.hpp>
+#include <framework/entityworld2.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/filesystem.hpp>
 #include <framework/graphics.hpp>
@@ -241,7 +244,7 @@ namespace ntile
                 BlockStateChangeEvent ev;
                 ev.block = p_block;
                 ev.change = BlockStateChange::created;
-                g_sys->GetBroadcastHandler(true)->BroadcastMessage(ev);
+                g_sys->GetBroadcastHandler()->BroadcastMessage(ev);
 
                 p_block++;
             }
@@ -284,7 +287,7 @@ namespace ntile
 
         g_sys->Printf(kLogInfo, "GameScreen: Initialization successful.");
 
-        g_sys->GetBroadcastHandler(true)->BroadcastMessage(WorldSwitchedEvent {});
+        g_sys->GetBroadcastHandler()->BroadcastMessage(WorldSwitchedEvent {});
         return true;
     }
 
@@ -1145,6 +1148,10 @@ namespace ntile
         player->Init();
         player->SetCollisionHandler(std::make_shared<WorldCollisionHandler>());
         world->AddEntity(player);
+
+        auto tree = g_ew->CreateEntity();
+        g_ew->SetEntityAspect(tree, Position{Float3(512, 512, 0)});
+        g_ew->SetEntityAspect(tree, Drawable{"ntile/models/prop_tree"});
 
 #ifndef ZOMBIE_CTR
         // Set up UI

@@ -1,12 +1,16 @@
 #ifndef ntile_view_hpp
 #define ntile_view_hpp
 
+#include "ntile_model.hpp"
+
 #include "../ntile.hpp"
 
 #include <RenderingKit/RenderingKit.hpp>
 #include <RenderingKit/utility/VertexFormat.hpp>
 
 namespace ntile {
+    extern RenderingKit::IRenderingManager* irm;
+
     struct WorldVertex
     {
         int32_t x, y, z;
@@ -37,6 +41,14 @@ namespace ntile {
 
         shared_ptr<RenderingKit::IGeomBuffer> gb;
         unique_ptr<RenderingKit::IGeomChunk> gc;
+    };
+
+    class DrawableViewer : public IViewer {
+    public:
+        void Draw(RenderingKit::IRenderingManager* rm, IEntityWorld2* world, intptr_t entityId);
+
+    private:
+        unique_ptr<CharacterModel> model;
     };
 }
 

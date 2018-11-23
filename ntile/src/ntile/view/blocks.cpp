@@ -1,4 +1,3 @@
-#include <RenderingKit/RenderingKit.hpp>
 #include "view.hpp"
 
 #include "../world.hpp"

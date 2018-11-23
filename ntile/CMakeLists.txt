@@ -15,33 +15,37 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/ntile/entities/*.cpp
     ${PROJECT_SOURCE_DIR}/src/ntile/studio/*.cpp
 
-    ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c
-
     ${PROJECT_SOURCE_DIR}/src/ntile/*.hpp
     ${PROJECT_SOURCE_DIR}/src/ntile/entities/*.hpp
     ${PROJECT_SOURCE_DIR}/src/ntile/studio/*.hpp
 )
 
 set(sources
-    ${sources}
-    ${PROJECT_SOURCE_DIR}/src/ntile/blocks.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/gamescreen.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/gamescreen.hpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/gamescreen_editing.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/gamescreen_map.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/luascript.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/luascript.hpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/main.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/ntile_mkfont.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/resourceprovider.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/scriptapi.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/viewsystem.hpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/worldcollisionhandler.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/world.hpp
+        ${sources}
 
-    ${PROJECT_SOURCE_DIR}/src/ntile/view/blocks.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/view/view.hpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/view/viewsystem.cpp
+        dependencies/glew-2.0.0/src/glew.c
+
+        src/ntile/blocks.cpp
+        src/ntile/gamescreen.cpp
+        src/ntile/gamescreen.hpp
+        src/ntile/gamescreen_editing.cpp
+        src/ntile/gamescreen_map.cpp
+        src/ntile/luascript.cpp
+        src/ntile/luascript.hpp
+        src/ntile/main.cpp
+        src/ntile/ntile_mkfont.cpp
+        src/ntile/resourceprovider.cpp
+        src/ntile/scriptapi.cpp
+        src/ntile/viewsystem.hpp
+        src/ntile/worldcollisionhandler.cpp
+        src/ntile/world.hpp
+
+        src/ntile/view/blocks.cpp
+        src/ntile/view/drawableviewer.cpp
+        src/ntile/view/ntile_model.cpp
+        src/ntile/view/ntile_model.hpp
+        src/ntile/view/view.hpp
+        src/ntile/view/viewsystem.cpp
 )
 
 add_subdirectory(../framework ${CMAKE_BINARY_DIR}/build-framework)

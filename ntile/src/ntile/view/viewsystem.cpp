@@ -9,6 +9,8 @@
 #include <RenderingKit/utility/RKVideoHandler.hpp>
 #include <RenderingKit/utility/ShaderGlobal.hpp>
 
+#include <framework/aspects/drawable.hpp>
+#include <framework/aspects/position.hpp>
 #include <framework/broadcasthandler.hpp>
 #include <framework/colorconstants.hpp>
 #include <framework/resourcemanager2.hpp>
@@ -21,6 +23,8 @@ namespace ntile {
     using std::make_unique;
     using std::shared_ptr;
     using std::unique_ptr;
+
+    IRenderingManager* irm;
 
     VertexFormat<4> WorldVertex::format {
         sizeof(WorldVertex), {{
@@ -49,10 +53,11 @@ namespace ntile {
         bool Startup(zfw::ISystem* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) override;
 
         // zfw::IBroadcastSubscriber
-        void OnMessageBroadcast(intptr_t type, const void* payload) override;
+        void OnAspectEvent(intptr_t entityId, IAspectType& type, void* data, AspectEvent event) final;
+        void OnMessageBroadcast(intptr_t type, const void* payload) final;
 
         // zfw::IComponent
-        void OnFrame() override;
+        void OnFrame() final;
 
     private:
         void p_OnBlockStateChange(WorldBlock* block, BlockStateChange change);
@@ -75,6 +80,9 @@ namespace ntile {
         // Blocks
         std::unordered_map<WorldBlock*, unique_ptr<BlockViewer>> blockViewers;
         IMaterial* blockMaterial;
+
+        // Drawables
+        std::unordered_map<intptr_t, unique_ptr<DrawableViewer>> drawableViewers;
     };
 
     // ====================================================================== //
@@ -96,6 +104,7 @@ namespace ntile {
 
         this->rm = rk->StartupRendering();
         zombie_ErrorCheck(rm);
+        irm = rm;
 
         rm->RegisterResourceProviders(g_res.get());
         g_res->SetTargetState(IResource2::State_t::REALIZED);
@@ -124,10 +133,28 @@ namespace ntile {
         cam->SetVFov(45.0f / 180.0f * 3.14f);
 
         // Sign up for broadcasts
-        sys->GetBroadcastHandler(true)->SubscribeToMessageType<BlockStateChangeEvent>(this);
-        sys->GetBroadcastHandler(true)->SubscribeToMessageType<WorldSwitchedEvent>(this);
+        auto ibh = sys->GetBroadcastHandler();
+        ibh->SubscribeToMessageType<BlockStateChangeEvent>(this);
+        ibh->SubscribeToMessageType<WorldSwitchedEvent>(this);
+
+        ibh->SubscribeToAspectType<Drawable>(this);
 
         return true;
+    }
+
+    void ViewSystem::OnAspectEvent(intptr_t entityId, IAspectType& type, void* data, AspectEvent event) {
+        if (&type == &Drawable::GetType()) {
+            auto drawable = reinterpret_cast<Drawable*>(data);
+
+            switch (event) {
+                case AspectEvent::created:
+                    drawableViewers.emplace(entityId, std::make_unique<DrawableViewer>());
+                    break;
+                case AspectEvent::destroyed:
+                    drawableViewers.erase(entityId);
+                    break;
+            }
+        }
     }
 
     void ViewSystem::OnFrame() {
@@ -180,6 +207,9 @@ namespace ntile {
         }
 
         // TODO: Draw entities
+        for (const auto& pair : drawableViewers) {
+            pair.second->Draw(rm, g_ew.get(), pair.first);
+        }
 
         // TODO: Draw UI
     }
@@ -193,7 +223,7 @@ namespace ntile {
         }
 
         case kWorldSwitched: {
-            camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
+            //camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
             break;
         }
         }

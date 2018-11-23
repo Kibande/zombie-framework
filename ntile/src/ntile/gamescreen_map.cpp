@@ -81,7 +81,7 @@ namespace ntile
                 BlockStateChangeEvent ev;
                 ev.block = p_block;
                 ev.change = BlockStateChange::created;
-                g_sys->GetBroadcastHandler(true)->BroadcastMessage(ev);
+                g_sys->GetBroadcastHandler()->BroadcastMessage(ev);
 
                 p_block++;
             }
