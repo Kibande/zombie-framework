@@ -223,7 +223,7 @@ namespace ntile {
         }
 
         case kWorldSwitched: {
-            //camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
+            camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
             break;
         }
         }

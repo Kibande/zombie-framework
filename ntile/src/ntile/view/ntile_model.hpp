@@ -129,7 +129,7 @@ namespace ntile
             ~CharacterModel();
 
             // Basic
-            void Draw();
+            void Draw(const glm::mat4x4& transform);
             bool Load(const char* path);
             bool Save(zshared::MediaFile* modelFile);
 

@@ -23,6 +23,6 @@ namespace ntile {
             this->model->Load(drawable->modelPath.c_str());
         }
 
-        this->model->Draw();
+        this->model->Draw(position ? glm::translate({}, position->pos) : glm::mat4x4());
     }
 }

@@ -605,10 +605,10 @@ namespace ntile
         return true;
     }
 
-    void CharacterModel::Draw()
+    void CharacterModel::Draw(const glm::mat4x4& transform)
     {
         for (auto mesh : meshes)
-            irm->DrawPrimitives(materialRef.get(), mesh->primitiveType, mesh->gc);
+            irm->DrawPrimitivesTransformed(materialRef.get(), mesh->primitiveType, mesh->gc, transform);
     }
 
     Joint_t* CharacterModel::FindJoint(const char* name)
