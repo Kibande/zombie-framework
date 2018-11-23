@@ -129,6 +129,14 @@ if (NOT EMSCRIPTEN)
         endif()
     endif()
 
+    if (WIN32 AND NOT MSVC)
+        set(SDL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL-1.2.15/include)
+        if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+            set(SDL_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL-1.2.15/lib/libSDL.dll.a)
+            set(SDL_DLL ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL-1.2.15/bin/SDL.dll)
+        endif()
+    endif()
+
     find_package(SDL REQUIRED)
 
     target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${SDL_INCLUDE_DIR}")
