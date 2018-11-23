@@ -249,9 +249,6 @@ namespace ntile
                 p_block++;
             }
 
-        world.reset(new EntityWorld(g_sys));
-        world->AddEntityFilter(this);
-
         for (size_t i = 0; i < li_lengthof(controlVarNames); i++)
             var->BindVariable(controlVarNames[i], reflection::ReflectedValue_t(controls[i]), IVarSystem::kReadWrite, 0);
 
@@ -354,8 +351,6 @@ namespace ntile
         //ui.reset();
         //uiThemer.DropResources();
 #endif
-
-        world.reset();
 
         Blocks::ReleaseBlocks(blocks, worldSize);
 
@@ -677,25 +672,25 @@ namespace ntile
     }
 #endif
 
-    bool GameScreen::OnAddEntity(EntityWorld* world, IEntity* ent)
-    {
-        IPointEntity* pe = dynamic_cast<IPointEntity*>(ent);
-
-        if (pe == nullptr)
-            return true;
-
-        Short2 blockXY = WorldToBlockXY(Float2(ent->GetPos()));
-
-        if (blockXY.x >= 0 && blockXY.y >= 0 && blockXY.x < worldSize.x && blockXY.y < worldSize.y)
-            blocks[blockXY.y * worldSize.x + blockXY.x].entities.add(pe);
-
-        ICommonEntity* ice = dynamic_cast<ICommonEntity*>(ent);
-
-        if (ice != nullptr)
-            ice->SetMovementListener(this);
-
-        return true;
-    }
+//    bool GameScreen::OnAddEntity(EntityWorld* world, IEntity* ent)
+//    {
+//        IPointEntity* pe = dynamic_cast<IPointEntity*>(ent);
+//
+//        if (pe == nullptr)
+//            return true;
+//
+//        Short2 blockXY = WorldToBlockXY(Float2(ent->GetPos()));
+//
+//        if (blockXY.x >= 0 && blockXY.y >= 0 && blockXY.x < worldSize.x && blockXY.y < worldSize.y)
+//            blocks[blockXY.y * worldSize.x + blockXY.x].entities.add(pe);
+//
+//        ICommonEntity* ice = dynamic_cast<ICommonEntity*>(ent);
+//
+//        if (ice != nullptr)
+//            ice->SetMovementListener(this);
+//
+//        return true;
+//    }
 
     void GameScreen::OnFrame(double delta)
     {
@@ -869,26 +864,26 @@ namespace ntile
                     }
 #endif
 
-                    if (player != nullptr)
-                    {
-                        if (Vkey::Test(ev->input, controls[Controls::left]))
-                            player->AddMotionX((ev->input.flags & VKEY_PRESSED) ? -1 : +1);
-
-                        if (Vkey::Test(ev->input, controls[Controls::right]))
-                            player->AddMotionX((ev->input.flags & VKEY_PRESSED) ? +1 : -1);
-
-                        if (Vkey::Test(ev->input, controls[Controls::up]))
-                            player->AddMotionY((ev->input.flags & VKEY_PRESSED) ? -1 : +1);
-
-                        if (Vkey::Test(ev->input, controls[Controls::down]))
-                            player->AddMotionY((ev->input.flags & VKEY_PRESSED) ? +1 : -1);
-
-                        if (Vkey::Test(ev->input, controls[Controls::attack]) && (ev->input.flags & VKEY_PRESSED))
-                            player->Hack_SlashAnim();
-
-                        if (Vkey::Test(ev->input, controls[Controls::block]) && (ev->input.flags & VKEY_PRESSED))
-                            player->Hack_ShieldAnim();
-                    }
+//                    if (player != nullptr)
+//                    {
+//                        if (Vkey::Test(ev->input, controls[Controls::left]))
+//                            player->AddMotionX((ev->input.flags & VKEY_PRESSED) ? -1 : +1);
+//
+//                        if (Vkey::Test(ev->input, controls[Controls::right]))
+//                            player->AddMotionX((ev->input.flags & VKEY_PRESSED) ? +1 : -1);
+//
+//                        if (Vkey::Test(ev->input, controls[Controls::up]))
+//                            player->AddMotionY((ev->input.flags & VKEY_PRESSED) ? -1 : +1);
+//
+//                        if (Vkey::Test(ev->input, controls[Controls::down]))
+//                            player->AddMotionY((ev->input.flags & VKEY_PRESSED) ? +1 : -1);
+//
+//                        if (Vkey::Test(ev->input, controls[Controls::attack]) && (ev->input.flags & VKEY_PRESSED))
+//                            player->Hack_SlashAnim();
+//
+//                        if (Vkey::Test(ev->input, controls[Controls::block]) && (ev->input.flags & VKEY_PRESSED))
+//                            player->Hack_ShieldAnim();
+//                    }
 
 #ifndef ZOMBIE_CTR
                     /*if (ev->input.vkey.type == VKEY_KEY && ev->input.vkey.key == 27 && (ev->input.flags & VKEY_PRESSED))
@@ -991,52 +986,52 @@ namespace ntile
 #endif
     }
 
-    void GameScreen::OnRemoveEntity(EntityWorld* world, IEntity* ent)
-    {
-    }
+//    void GameScreen::OnRemoveEntity(EntityWorld* world, IEntity* ent)
+//    {
+//    }
 
-    void GameScreen::OnSetPos(IPointEntity* pe, const Float3& oldPos, const Float3& newPos) 
-    {
-        const Short2 oldBucket = WorldToBlockXY(Float2(oldPos));
-        const Short2 newBucket = WorldToBlockXY(Float2(newPos));
-
-        if (oldBucket != newBucket)
-        {
-            if (oldBucket.x >= 0 && oldBucket.y >= 0 && oldBucket.x < worldSize.x && oldBucket.y < worldSize.y)
-                blocks[oldBucket.y * worldSize.x + oldBucket.x].entities.removeItem(pe);
-
-            if (newBucket.x >= 0 && newBucket.y >= 0 && newBucket.x < worldSize.x && newBucket.y < worldSize.y)
-                blocks[newBucket.y * newBucket.x + newBucket.x].entities.add(pe);
-        }
-
-        if (pe == player.get())
-        {
-            IPointEntity* nearestEntity = nullptr;
-
-            static const float MAX_DIST = 24.0f;
-            float nearestEntityDist = MAX_DIST;
-
-            for (int by = std::max(newBucket.y - 1, 0); by < newBucket.y + 1 && by < worldSize.y; by++)
-                for (int bx = std::max(newBucket.x - 1, 0); bx < newBucket.x + 1 && bx < worldSize.x; bx++)
-                {
-                    for (const auto& ent : blocks[by * worldSize.x + bx].entities)
-                    {
-                        if (ent == pe)
-                            continue;
-
-                        const float dist = glm::length(newPos - ent->GetEntity()->GetPos());
-
-                        if (dist < nearestEntityDist && dist < MAX_DIST)
-                        {
-                            nearestEntityDist = dist;
-                            nearestEntity = ent;
-                        }
-                    }
-                }
-
-            playerNearestEntity = nearestEntity;
-        }
-    }
+//    void GameScreen::OnSetPos(IPointEntity* pe, const Float3& oldPos, const Float3& newPos)
+//    {
+//        const Short2 oldBucket = WorldToBlockXY(Float2(oldPos));
+//        const Short2 newBucket = WorldToBlockXY(Float2(newPos));
+//
+//        if (oldBucket != newBucket)
+//        {
+//            if (oldBucket.x >= 0 && oldBucket.y >= 0 && oldBucket.x < worldSize.x && oldBucket.y < worldSize.y)
+//                blocks[oldBucket.y * worldSize.x + oldBucket.x].entities.removeItem(pe);
+//
+//            if (newBucket.x >= 0 && newBucket.y >= 0 && newBucket.x < worldSize.x && newBucket.y < worldSize.y)
+//                blocks[newBucket.y * newBucket.x + newBucket.x].entities.add(pe);
+//        }
+//
+//        if (pe == player.get())
+//        {
+//            IPointEntity* nearestEntity = nullptr;
+//
+//            static const float MAX_DIST = 24.0f;
+//            float nearestEntityDist = MAX_DIST;
+//
+//            for (int by = std::max(newBucket.y - 1, 0); by < newBucket.y + 1 && by < worldSize.y; by++)
+//                for (int bx = std::max(newBucket.x - 1, 0); bx < newBucket.x + 1 && bx < worldSize.x; bx++)
+//                {
+//                    for (const auto& ent : blocks[by * worldSize.x + bx].entities)
+//                    {
+//                        if (ent == pe)
+//                            continue;
+//
+//                        const float dist = glm::length(newPos - ent->GetEntity()->GetPos());
+//
+//                        if (dist < nearestEntityDist && dist < MAX_DIST)
+//                        {
+//                            nearestEntityDist = dist;
+//                            nearestEntity = ent;
+//                        }
+//                    }
+//                }
+//
+//            playerNearestEntity = nearestEntity;
+//        }
+//    }
 
     void GameScreen::OnTicks(int ticks)
     {
@@ -1077,7 +1072,7 @@ namespace ntile
         {
             while (ticks--)
             {
-                world->OnTick();
+                //world->OnTick();
                 //nui.OnTick();
 
                 g_world.daytime += daytimeIncr;
@@ -1085,9 +1080,6 @@ namespace ntile
                 if (g_world.daytime > DAY_TICKS)
                     g_world.daytime = 0;
             }
-
-            if (player != nullptr)
-                g_world.playerPos = player->GetPos();
         }
         else
         {
@@ -1144,14 +1136,10 @@ namespace ntile
 
         isTitle = false;
 
-        player = std::make_shared<entities::char_player>(Int3(worldSize * Int2(128, 128), 0), 0.0f);
-        player->Init();
-        player->SetCollisionHandler(std::make_shared<WorldCollisionHandler>());
-        world->AddEntity(player);
-
-        auto tree = g_ew->CreateEntity();
-        g_ew->SetEntityAspect(tree, Position{Float3(512, 512, 0)});
-        g_ew->SetEntityAspect(tree, Drawable{"ntile/models/prop_tree"});
+        auto player = g_ew->CreateEntity();
+        g_ew->SetEntityAspect(player, Position{Int3(worldSize * Int2(128, 128), 0)});
+        g_ew->SetEntityAspect(player, Drawable{"ntile/models/player"});
+        g_world.playerEntity = player;
 
 #ifndef ZOMBIE_CTR
         // Set up UI

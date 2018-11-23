@@ -47,9 +47,10 @@ namespace ntile
         mapBlocks.reset();
 
         unique_ptr<OutputStream> entities(mapFile->OpenOrCreateSection("ntile.Entities"));
-        
-        if (!world->Serialize(entities.get(), 0))
-            g_sys->DisplayError(g_eb, false);
+
+        NOT_IMPLEMENTED();
+//        if (!g_ew->Serialize(entities.get(), 0))
+//            g_sys->DisplayError(g_eb, false);
 
         entities.reset();
         
@@ -156,7 +157,8 @@ namespace ntile
             const Float3 worldOffset(copyOffset.x * 256.0f, copyOffset.y * 256.0f, 0.0f);
             //camPos += worldOffset;
 
-            world->IterateEntities([&worldOffset](IEntity* ent) { ent->SetPos(ent->GetPos() + worldOffset); });
+            NOT_IMPLEMENTED();
+//            world->IterateEntities([&worldOffset](IEntity* ent) { ent->SetPos(ent->GetPos() + worldOffset); });
         }
     }
 
@@ -213,8 +215,9 @@ namespace ntile
         
         if (!entities)
             return EX_ASSET_CORRUPTED;
-        
-        world->Serialize(entities.get(), 0);
+
+        NOT_IMPLEMENTED();
+//        world->Serialize(entities.get(), 0);
         
         entities.reset();
         
@@ -482,7 +485,8 @@ namespace ntile
         {
             ZFW_ASSERT(selectedEntity != nullptr)
 
-            world->RemoveEntity(selectedEntity->GetEntity());
+            NOT_IMPLEMENTED();
+//            world->RemoveEntity(selectedEntity->GetEntity());
             selectedEntity = nullptr;
             Edit_SelectEntity(nullptr);
 
@@ -591,15 +595,16 @@ namespace ntile
                 else
                 {
                     ent->Init();
-                    zombie_assert(!"ent->SetPos(glm::round(camPos / tileSize) * tileSize);");
+                    NOT_IMPLEMENTED();
                     //ent->SetPos(glm::round(camPos / tileSize) * tileSize);
 
                     ICommonEntity* ice = dynamic_cast<ICommonEntity*>(ent.get());
 
                     if (ice != nullptr && g_allowEditingMode)
                         ice->EditingModeInit();
-                            
-                    world->AddEntity(ent);
+
+                    NOT_IMPLEMENTED();
+                    //world->AddEntity(ent);
                 }
             }
         }

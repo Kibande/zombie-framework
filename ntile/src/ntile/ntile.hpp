@@ -4,6 +4,7 @@
 #include "nanoui.hpp"
 
 #include <framework/entity.hpp>
+#include <framework/entity2.hpp>
 #include <framework/event.hpp>
 #include <framework/interpolator.hpp>
 #include <framework/messagequeue.hpp>
@@ -19,6 +20,8 @@
 #define APP_TITLE       "nanotile: Quest of Kyria"
 #define APP_VENDOR      "Minexew Games"
 #define APP_VERSION     "alpha (build 301)"
+
+#define NOT_IMPLEMENTED() zombie_assert(false)
 
 #undef DrawText
 
@@ -49,7 +52,7 @@ namespace ntile
                                 // 1800 ticks = 1 hour,
                                 // 18000 ticks = 10 hours = 1 day
 
-        Float3 playerPos;       // temp!!
+        intptr_t playerEntity = kInvalidEntity;
     };
 
     extern World g_world;

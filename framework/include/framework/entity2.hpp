@@ -5,6 +5,8 @@
 
 namespace zfw
 {
+    constexpr static intptr_t kInvalidEntity = -1;
+
     /**
      * Some of the concerns involved in the development of the new entity-component system:
      *  - a component will want to subscribe to certain classes of data (aspects) -- but it never *owns* an aspect type

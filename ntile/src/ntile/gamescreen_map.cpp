@@ -109,19 +109,20 @@ namespace ntile
         }
         
         g_sys->Printf(kLogInfo, "GameScreen: World loading...");
-        if (!world->Unserialize(entities.get(), 0))
-        {
-            if (g_eb->errorCode == EX_OBJECT_UNDEFINED)
-                ErrorBuffer::SetError(g_eb, EX_SERIALIZATION_ERR,
-                    "desc", sprintf_255("Failed to load map '%s'. The map is corrupted or was created by an incompatible version of the game.", map),
-                    "function", li_functionName,
-                    nullptr);
+        NOT_IMPLEMENTED();
+        // if (!world->Unserialize(entities.get(), 0))
+        // {
+        //     if (g_eb->errorCode == EX_OBJECT_UNDEFINED)
+        //         ErrorBuffer::SetError(g_eb, EX_SERIALIZATION_ERR,
+        //             "desc", sprintf_255("Failed to load map '%s'. The map is corrupted or was created by an incompatible version of the game.", map),
+        //             "function", li_functionName,
+        //             nullptr);
 
-            g_sys->DisplayError(g_eb, false);
-            return EX_ASSET_CORRUPTED;
-        }
-        else
-            g_sys->Printf(kLogInfo, "GameScreen: World loading successful.");
+        //     g_sys->DisplayError(g_eb, false);
+        //     return EX_ASSET_CORRUPTED;
+        // }
+        // else
+        //     g_sys->Printf(kLogInfo, "GameScreen: World loading successful.");
 
         /*auto water = std::make_shared<entities::water_body>();
         water->SetPos(Float3(256.0f, 256.0f, 16.0f));

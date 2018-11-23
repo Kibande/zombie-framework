@@ -58,8 +58,6 @@ namespace ntile
     class GameScreen
             : public zfw::IScene,
             public zfw::IEntityClassListener,
-            public zfw::IEntityFilter,
-            public ntile::IEntityMovementListener,
             public ntile::IGameScreen
     {
         // TODO: some reordering could be done here, but we really don't want to break the readability
@@ -71,8 +69,6 @@ namespace ntile
             ResourceSection_t sectPrivate, sectEntities;
 
             // Blocks & world
-            unique_ptr<EntityWorld> world;
-            shared_ptr<entities::char_player> player;
             IPointEntity* playerNearestEntity;
 
             int daytimeIncr;
@@ -185,10 +181,10 @@ namespace ntile
             virtual void OnFrame( double delta ) override;
             virtual void OnTicks(int ticks) override;
 
-            virtual bool OnAddEntity(EntityWorld* world, IEntity* ent) override;
-            virtual void OnRemoveEntity(EntityWorld* world, IEntity* ent) override;
+//            virtual bool OnAddEntity(EntityWorld* world, IEntity* ent) override;
+//            virtual void OnRemoveEntity(EntityWorld* world, IEntity* ent) override;
 
-            virtual void OnSetPos(IPointEntity* pe, const Float3& oldPos, const Float3& newPos) override;
+//            virtual void OnSetPos(IPointEntity* pe, const Float3& oldPos, const Float3& newPos) override;
 
             // ntile::IGameScreen
             virtual IResourceManager2* GetResourceManager() override { return g_res.get(); }
