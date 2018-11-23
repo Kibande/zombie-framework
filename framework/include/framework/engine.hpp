@@ -62,8 +62,8 @@ namespace zfw
             virtual shared_ptr<ILuaScriptContext> CreateLuaScriptContext() = 0;
 #endif
 
-            // Components
-            virtual void                AddComponent(unique_ptr<IComponent> component) = 0;
+            // Component systems
+            virtual void                AddSystem(unique_ptr<ISystem> component) = 0;
 
             // Main loop
             virtual void ChangeScene(shared_ptr<IScene> scene) = 0;

@@ -174,7 +174,7 @@ namespace ntile
         if (!ivs->Startup(g_sys, g_eb, g_msgQueue.get()))
             return false;
 
-        g_sys->AddComponent(std::move(ivs_));
+        g_sys->AddSystem(std::move(ivs_));
         return true;
     }
 

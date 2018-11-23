@@ -2,7 +2,7 @@
 #include "private.hpp"
 
 #include <framework/broadcasthandler.hpp>
-#include <framework/component.hpp>
+#include <framework/system.hpp>
 #include <framework/entityhandler.hpp>
 #include <framework/entityworld2.hpp>
 #include <framework/errorbuffer.hpp>
@@ -154,10 +154,10 @@ namespace zfw
 
     static li::List<LogEntry> log;
 
-    static ProfilingSection_t profComponents = {"IComponent::OnFrame"};
     static ProfilingSection_t profDrawScene = {"IScene::DrawFrame"};
     static ProfilingSection_t profOnFrame = {"IScene::OnFrame"};
     static ProfilingSection_t profOnTicks = {"IScene::OnTicks"};
+    static ProfilingSection_t profSystems = {"ISystem::OnFrame"};
     static ProfilingSection_t profVideoHandler = {"VideoHandler"};
     static ProfilingSection_t profVideoHandler2 = {"VideoHandler"};
 
@@ -208,7 +208,7 @@ namespace zfw
 #endif
 
             // Components
-            void                AddComponent(unique_ptr<IComponent> component) override;
+            void                AddSystem(unique_ptr<ISystem> component) override;
 
             // Main loop
             virtual void ChangeScene(shared_ptr<IScene> scene) override;
@@ -292,7 +292,7 @@ namespace zfw
             unique_ptr<IVideoHandler> videoHandler;
 
             // components
-            std::vector<unique_ptr<IComponent>> components;
+            std::vector<unique_ptr<ISystem>> components;
 
             // synchronization
             li::Mutex ioMutex, logMutex, stdoutMutex;
@@ -423,7 +423,7 @@ namespace zfw
         p_ClearLog();
     }
 
-    void System::AddComponent(unique_ptr<IComponent> component)
+    void System::AddSystem(unique_ptr<ISystem> component)
     {
         this->components.push_back(std::move(component));
     }
@@ -1045,7 +1045,7 @@ namespace zfw
         if (frameCounter == profileFrame)
         {
             profiler->LeaveSection();
-            profiler->EnterSection(profComponents);
+            profiler->EnterSection(profSystems);
         }
 
         for (const auto& comp : components)

@@ -9,10 +9,10 @@
 #include <RenderingKit/utility/RKVideoHandler.hpp>
 #include <RenderingKit/utility/ShaderGlobal.hpp>
 
-#include <framework/aspects/drawable.hpp>
-#include <framework/aspects/position.hpp>
 #include <framework/broadcasthandler.hpp>
 #include <framework/colorconstants.hpp>
+#include <framework/components/drawable.hpp>
+#include <framework/components/position.hpp>
 #include <framework/resourcemanager2.hpp>
 #include <framework/engine.hpp>
 
@@ -53,10 +53,10 @@ namespace ntile {
         bool Startup(zfw::IEngine* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) override;
 
         // zfw::IBroadcastSubscriber
-        void OnAspectEvent(intptr_t entityId, IAspectType& type, void* data, AspectEvent event) final;
+        void OnComponentEvent(intptr_t entityId, IComponentType &type, void *data, ComponentEvent event) final;
         void OnMessageBroadcast(intptr_t type, const void* payload) final;
 
-        // zfw::IComponent
+        // zfw::ISystem
         void OnFrame() final;
 
     private:
@@ -137,20 +137,20 @@ namespace ntile {
         ibh->SubscribeToMessageType<BlockStateChangeEvent>(this);
         ibh->SubscribeToMessageType<WorldSwitchedEvent>(this);
 
-        ibh->SubscribeToAspectType<Drawable>(this);
+        ibh->SubscribeToComponentType<Drawable>(this);
 
         return true;
     }
 
-    void ViewSystem::OnAspectEvent(intptr_t entityId, IAspectType& type, void* data, AspectEvent event) {
+    void ViewSystem::OnComponentEvent(intptr_t entityId, IComponentType &type, void *data, ComponentEvent event) {
         if (&type == &Drawable::GetType()) {
             auto drawable = reinterpret_cast<Drawable*>(data);
 
             switch (event) {
-                case AspectEvent::created:
+                case ComponentEvent::created:
                     drawableViewers.emplace(entityId, std::make_unique<DrawableViewer>());
                     break;
-                case AspectEvent::destroyed:
+                case ComponentEvent::destroyed:
                     drawableViewers.erase(entityId);
                     break;
             }

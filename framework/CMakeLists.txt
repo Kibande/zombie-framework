@@ -20,14 +20,13 @@ set(sources
 
         include/framework/abstractentity.hpp
         include/framework/app.hpp
-        include/framework/aspects/drawable.hpp
-        include/framework/aspects/position.hpp
-        include/framework/aspecttype.hpp
+        include/framework/components/drawable.hpp
+        include/framework/components/position.hpp
+        include/framework/componenttype.hpp
         include/framework/base.hpp
         include/framework/bleb/studiobleb.hpp
         include/framework/broadcasthandler.hpp
         include/framework/colorconstants.hpp
-        include/framework/component.hpp
         include/framework/datamodel.hpp
         include/framework/engine.hpp
         include/framework/entity.hpp
@@ -59,6 +58,7 @@ set(sources
         include/framework/scripting.hpp
         include/framework/shader_preprocessor.hpp
         include/framework/studio/recentfiles.hpp
+        include/framework/system.hpp
         include/framework/timer.hpp
         include/framework/utility/algebrahelpers.hpp
         include/framework/utility/errorbuffer.hpp
@@ -80,8 +80,8 @@ set(sources
 
         include/ztype/ztype.hpp
 
-        src/framework/aspects/drawable.cpp
-        src/framework/aspects/position.cpp
+        src/framework/components/drawable.cpp
+        src/framework/components/position.cpp
         src/framework/asprintf.cpp
         src/framework/broadcasthandler.cpp
         src/framework/codecs/bmpcodec.cpp

@@ -2,7 +2,7 @@
 #define ntile_viewsystem_hpp
 
 #include <framework/base.hpp>
-#include <framework/component.hpp>
+#include <framework/system.hpp>
 
 namespace ntile {
     struct World;
@@ -13,7 +13,7 @@ namespace ntile {
      *  - display graphics
      *  - push input events into engine queue
      */
-    class IViewSystem : public zfw::IComponent {
+    class IViewSystem : public zfw::ISystem {
     public:
         static IViewSystem* Create(World& world);
 

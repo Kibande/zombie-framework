@@ -2,10 +2,10 @@
 #include "gamescreen.hpp"
 #include "world.hpp"
 
-#include <framework/aspects/drawable.hpp>
-#include <framework/aspects/position.hpp>
 #include <framework/broadcasthandler.hpp>
 #include <framework/colorconstants.hpp>
+#include <framework/components/drawable.hpp>
+#include <framework/components/position.hpp>
 #include <framework/entityworld2.hpp>
 #include <framework/errorcheck.hpp>
 #include <framework/filesystem.hpp>
@@ -1137,8 +1137,8 @@ namespace ntile
         isTitle = false;
 
         auto player = g_ew->CreateEntity();
-        g_ew->SetEntityAspect(player, Position{Int3(worldSize * Int2(128, 128), 0)});
-        g_ew->SetEntityAspect(player, Drawable{"ntile/models/player"});
+        g_ew->SetEntityComponent(player, Position{Int3(worldSize * Int2(128, 128), 0)});
+        g_ew->SetEntityComponent(player, Drawable{"ntile/models/player"});
         g_world.playerEntity = player;
 
 #ifndef ZOMBIE_CTR

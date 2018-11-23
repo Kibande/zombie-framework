@@ -1,4 +1,4 @@
-#include <framework/aspecttype.hpp>
+#include <framework/componenttype.hpp>
 #include <framework/entityworld2.hpp>
 #include <framework/utility/util.hpp>
 
@@ -16,14 +16,14 @@ namespace zfw
     // TODO: re-implement in a cache friendly way
     class PerInstanceDataPool {
     public:
-        PerInstanceDataPool(IAspectType& type) : type(type) {}
+        PerInstanceDataPool(IComponentType& type) : type(type) {}
         ~PerInstanceDataPool();
 
         void* Get(intptr_t entityId);
         void* GetOrAlloc(intptr_t entityId, bool* wasCreated_out);
 
     private:
-        IAspectType& type;
+        IComponentType& type;
         std::unordered_map<intptr_t, void*> perInstanceData;
     };
 
@@ -35,8 +35,8 @@ namespace zfw
 
         void DestroyEntity(intptr_t id) final;
 
-        void* GetEntityAspect(intptr_t id, IAspectType& type) final;
-        void* SetEntityAspect(intptr_t id, IAspectType& type, const void* data) final;
+        void* GetEntityComponent(intptr_t id, IComponentType &type) final;
+        void* SetEntityComponent(intptr_t id, IComponentType &type, const void *data) final;
 
     private:
         IBroadcastHandler* broadcast;
@@ -44,7 +44,7 @@ namespace zfw
         intptr_t nextId;
 
         // TODO: re-do as vector by component id
-        std::unordered_map<IAspectType*, unique_ptr<PerInstanceDataPool>> aspectPools;
+        std::unordered_map<IComponentType*, unique_ptr<PerInstanceDataPool>> componentPools;
     };
 
     // ====================================================================== //
@@ -63,10 +63,10 @@ namespace zfw
         // FIXME!
     }
 
-    void* EntityWorld2::GetEntityAspect(intptr_t id, IAspectType& type) {
-        auto iter = aspectPools.find(&type);
+    void* EntityWorld2::GetEntityComponent(intptr_t id, IComponentType &type) {
+        auto iter = componentPools.find(&type);
 
-        if (iter == aspectPools.end()) {
+        if (iter == componentPools.end()) {
             return nullptr;
         }
         else {
@@ -74,37 +74,37 @@ namespace zfw
         }
     }
 
-    void* EntityWorld2::SetEntityAspect(intptr_t id, IAspectType& type, const void* data) {
-        auto iter = aspectPools.find(&type);
+    void* EntityWorld2::SetEntityComponent(intptr_t id, IComponentType &type, const void *data) {
+        auto iter = componentPools.find(&type);
 
         PerInstanceDataPool* pool;
 
-        if (iter == aspectPools.end()) {
+        if (iter == componentPools.end()) {
             auto pool_ = make_unique<PerInstanceDataPool>(type);
             pool = pool_.get();
-            aspectPools[&type] = move(pool_);
+            componentPools[&type] = move(pool_);
         }
         else {
             pool = iter->second.get();
         }
 
         bool wasCreated;
-        void* aspect_stored = pool->GetOrAlloc(id, &wasCreated);
+        void* component_stored = pool->GetOrAlloc(id, &wasCreated);
 
         if (!wasCreated) {
-            type.Destruct(aspect_stored);
+            type.Destruct(component_stored);
         }
 
-        type.ConstructFrom(aspect_stored, data);
+        type.ConstructFrom(component_stored, data);
 
         if (wasCreated) {
-            broadcast->BroadcastAspectEvent(id, type, aspect_stored, AspectEvent::created);
+            broadcast->BroadcastComponentEvent(id, type, component_stored, ComponentEvent::created);
         }
         else {
-            //broadcast->BroadcastAspectEvent(id, type, aspect_stored, AspectEvent::updated);
+            //broadcast->BroadcastComponentEvent(id, type, component_stored, ComponentEvent::updated);
         }
 
-        return aspect_stored;
+        return component_stored;
     }
 
     // ====================================================================== //

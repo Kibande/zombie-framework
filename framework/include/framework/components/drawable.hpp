@@ -1,5 +1,5 @@
-#ifndef framework_drawable_hpp
-#define framework_drawable_hpp
+#ifndef framework_components_drawable_hpp
+#define framework_components_drawable_hpp
 
 #include <framework/base.hpp>
 
@@ -11,7 +11,7 @@ namespace zfw
     {
         std::string modelPath;
 
-        static IAspectType& GetType();
+        static IComponentType& GetType();
     };
 }
 

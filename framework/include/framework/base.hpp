@@ -102,10 +102,9 @@ namespace zfw
     struct Vkey_t;
 
     // core classes
-    struct IAspectType;
     //class IAspectVisitor;
     class IBroadcastHandler;
-    class IComponent;
+    struct IComponentType;
     class IConfig;
     class IDecoder;
     class IEncoder;
@@ -135,6 +134,7 @@ namespace zfw
     class IScriptAPI;
     class IScriptEnv;
     class IScriptHandler;
+    class ISystem;
     class IVarSystem;
     class IVideoHandler;
 
@@ -151,7 +151,7 @@ namespace zfw
     class IEntity;
     class IScene;
 
-    // built-in aspects
+    // built-in components
     struct Drawable;
     struct Position;
 

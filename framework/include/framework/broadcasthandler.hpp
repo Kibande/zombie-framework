@@ -5,14 +5,14 @@
 
 namespace zfw
 {
-    enum class AspectEvent {
+    enum class ComponentEvent {
         created,
         destroyed,
     };
 
     class IBroadcastSubscriber {
     public:
-        virtual void OnAspectEvent(intptr_t entityId, IAspectType& type, void* data, AspectEvent event) {}
+        virtual void OnComponentEvent(intptr_t entityId, IComponentType &type, void *data, ComponentEvent event) {}
         virtual void OnMessageBroadcast(intptr_t type, const void* payload) {}
     };
 
@@ -20,10 +20,10 @@ namespace zfw
     public:
         virtual ~IBroadcastHandler() = default;
 
-        virtual void BroadcastAspectEvent(intptr_t entityId, IAspectType& type, void* data, AspectEvent event) = 0;
+        virtual void BroadcastComponentEvent(intptr_t entityId, IComponentType &type, void *data, ComponentEvent event) = 0;
         virtual void BroadcastMessage(intptr_t type, const void* payload) = 0;
 
-        virtual void SubscribeToAspectType(IBroadcastSubscriber* sub, IAspectType& type) = 0;
+        virtual void SubscribeToComponentType(IBroadcastSubscriber *sub, IComponentType &type) = 0;
         virtual void SubscribeToMessageType(IBroadcastSubscriber* sub, intptr_t type) = 0;
 
         template <typename MessageStruct>
@@ -32,8 +32,8 @@ namespace zfw
         }
 
         template <typename ComponentDataStruct>
-        void SubscribeToAspectType(IBroadcastSubscriber* sub) {
-            this->SubscribeToAspectType(sub, ComponentDataStruct::GetType());
+        void SubscribeToComponentType(IBroadcastSubscriber *sub) {
+            this->SubscribeToComponentType(sub, ComponentDataStruct::GetType());
         }
 
         template <typename MessageStruct>

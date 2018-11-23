@@ -1,5 +1,5 @@
-#ifndef framework_aspecttype_hpp
-#define framework_aspecttype_hpp
+#ifndef framework_componenttype_hpp
+#define framework_componenttype_hpp
 
 #include <framework/base.hpp>
 #include <littl/Allocator.hpp>
@@ -14,7 +14,7 @@ namespace zfw
      *
      * TODO: perhaps we could just have a generic Compound Type Reflection interface?
      */
-    struct IAspectType
+    struct IComponentType
     {
         size_t sizeof_;
         //std::type_index type;
@@ -27,9 +27,9 @@ namespace zfw
     };
 
     template <typename T>
-    struct GenericAspectType : public IAspectType {
+    struct BasicComponentType : public IComponentType {
     public:
-        GenericAspectType() {
+        BasicComponentType() {
             this->sizeof_ = sizeof(T);
         }
 

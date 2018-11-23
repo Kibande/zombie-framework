@@ -39,7 +39,7 @@ namespace zfw
 //    class IAspectVisitor
 //    {
 //        public:
-//            virtual void Visit(IAspectType* type, void* data) = 0;
+//            virtual void Visit(IComponentType* type, void* data) = 0;
 //
 //            template <typename AspectStruct>
 //            void operator () (AspectStruct& data) {
