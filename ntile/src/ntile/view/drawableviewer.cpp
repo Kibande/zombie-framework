@@ -2,7 +2,7 @@
 
 #include "../world.hpp"
 
-#include <framework/components/drawable.hpp>
+#include <framework/components/model3d.hpp>
 #include <framework/components/position.hpp>
 #include <framework/entityworld2.hpp>
 
@@ -11,7 +11,7 @@ namespace ntile {
 
     void DrawableViewer::Draw(RenderingKit::IRenderingManager* rm, zfw::IEntityWorld2* world, intptr_t entityId) {
         if (!drawable) {
-            drawable = world->GetEntityComponent<Drawable>(entityId);
+            drawable = world->GetEntityComponent<Model3D>(entityId);
             position = world->GetEntityComponent<Position>(entityId);
             zombie_assert(drawable);
         }

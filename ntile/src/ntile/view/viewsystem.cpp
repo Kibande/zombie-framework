@@ -11,7 +11,7 @@
 
 #include <framework/broadcasthandler.hpp>
 #include <framework/colorconstants.hpp>
-#include <framework/components/drawable.hpp>
+#include <framework/components/model3d.hpp>
 #include <framework/components/position.hpp>
 #include <framework/entityworld2.hpp>
 #include <framework/resourcemanager2.hpp>
@@ -140,14 +140,14 @@ namespace ntile {
         ibh->SubscribeToMessageType<BlockStateChangeEvent>(this);
         ibh->SubscribeToMessageType<WorldSwitchedEvent>(this);
 
-        ibh->SubscribeToComponentType<Drawable>(this);
+        ibh->SubscribeToComponentType<Model3D>(this);
 
         return true;
     }
 
     void ViewSystem::OnComponentEvent(intptr_t entityId, IComponentType &type, void *data, ComponentEvent event) {
-        if (&type == &Drawable::GetType()) {
-            auto drawable = reinterpret_cast<Drawable*>(data);
+        if (&type == &Model3D::GetType()) {
+            auto drawable = reinterpret_cast<Model3D*>(data);
 
             switch (event) {
                 case ComponentEvent::created:

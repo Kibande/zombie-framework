@@ -5,7 +5,7 @@
 
 #include <framework/broadcasthandler.hpp>
 #include <framework/colorconstants.hpp>
-#include <framework/components/drawable.hpp>
+#include <framework/components/model3d.hpp>
 #include <framework/components/position.hpp>
 #include <framework/entityworld2.hpp>
 #include <framework/errorcheck.hpp>
@@ -1141,7 +1141,7 @@ namespace ntile
 
         auto player = g_ew->CreateEntity();
         g_ew->SetEntityComponent(player, Position{Int3(worldSize * Int2(128, 128), 0)});
-        g_ew->SetEntityComponent(player, Drawable{"ntile/models/player"});
+        g_ew->SetEntityComponent(player, Model3D{"ntile/models/player"});
         g_ew->SetEntityComponent(player, Motion {});
         g_ew->SetEntityComponent(player, AabbCollision {Float3(-6.0f, -6.0f, 0.0f), Float3(6.0f, 6.0f, 24.0f)});
         g_world.playerEntity = player;

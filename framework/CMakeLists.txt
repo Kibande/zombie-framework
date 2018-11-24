@@ -20,7 +20,7 @@ set(sources
 
         include/framework/abstractentity.hpp
         include/framework/app.hpp
-        include/framework/components/drawable.hpp
+        include/framework/components/model3d.hpp
         include/framework/components/position.hpp
         include/framework/componenttype.hpp
         include/framework/base.hpp
@@ -80,7 +80,7 @@ set(sources
 
         include/ztype/ztype.hpp
 
-        src/framework/components/drawable.cpp
+        src/framework/components/model3d.cpp
         src/framework/components/position.cpp
         src/framework/asprintf.cpp
         src/framework/broadcasthandler.cpp

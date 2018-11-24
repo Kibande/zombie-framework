@@ -1,5 +1,5 @@
-#ifndef framework_components_drawable_hpp
-#define framework_components_drawable_hpp
+#ifndef framework_components_model3d_hpp
+#define framework_components_model3d_hpp
 
 #include <framework/base.hpp>
 
@@ -7,7 +7,7 @@
 
 namespace zfw
 {
-    struct Drawable
+    struct Model3D
     {
         std::string modelPath;
 

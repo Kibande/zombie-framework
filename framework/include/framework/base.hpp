@@ -152,7 +152,7 @@ namespace zfw
     class IScene;
 
     // built-in components
-    struct Drawable;
+    struct Model3D;
     struct Position;
 
     template <int type>
