@@ -161,7 +161,7 @@ namespace ntile
 
     static bool ViewInit()
     {
-        unique_ptr<IViewSystem> ivs_(IViewSystem::Create(g_world));
+        unique_ptr<IViewSystem> ivs_(IViewSystem::Create(*g_res, g_world));
         ivs = ivs_.get();
 
         if (!ivs->Startup(g_sys, g_eb, g_msgQueue.get()))

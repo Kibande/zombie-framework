@@ -15,7 +15,7 @@ namespace ntile {
      */
     class IViewSystem : public zfw::ISystem {
     public:
-        static IViewSystem* Create(World& world);
+        static IViewSystem* Create(zfw::IResourceManager2& resourceManager, World& world);
 
         /**
          * Start up rendering & event input. Register VideoHandler etc.

@@ -68,14 +68,20 @@ namespace zfw
             template <class Pixmap_t>
             static bool LoadFromFile(IEngine* sys, Pixmap_t* pm, const char* fileName)
             {
-                // FIXME: Error description on error
-
-                auto imch = sys->GetMediaCodecHandler(true);
-
                 unique_ptr<InputStream> stream(sys->OpenInput(fileName));
 
                 if (!stream)
                     return false;
+
+                return Pixmap::LoadFromStream(sys, pm, stream.get(), fileName);
+            }
+
+            template <class Pixmap_t>
+            static bool LoadFromStream(IEngine* sys, Pixmap_t* pm, InputStream* stream, const char* fileNameOrNull)
+            {
+                // FIXME: Error description on error
+
+                auto imch = sys->GetMediaCodecHandler(true);
 
                 uint8_t signature[8];
 
@@ -83,12 +89,12 @@ namespace zfw
                     return false;
 
                 auto decoder = imch->GetDecoderByFileSignature<IPixmapDecoder>(signature, li_lengthof(signature),
-                    fileName, kCodecRequired);
+                                                                               fileNameOrNull, kCodecRequired);
 
                 if (!decoder)
                     return false;
 
-                return decoder->DecodePixmap(pm, stream.get(), fileName) == IDecoder::kOK;
+                return decoder->DecodePixmap(pm, stream, fileNameOrNull) == IDecoder::kOK;
             }
     };
 }

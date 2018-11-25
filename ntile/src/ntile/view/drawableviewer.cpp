@@ -6,63 +6,86 @@
 #include <framework/components/position.hpp>
 #include <framework/engine.hpp>
 #include <framework/entityworld2.hpp>
+#include <framework/resourcemanager2.hpp>
+
+#include <RenderingKit/Model.hpp>
 
 namespace ntile {
+    using namespace RenderingKit;
     using std::make_unique;
 
-    void DrawableViewer::Draw(RenderingKit::IRenderingManager* rm, zfw::IEntityWorld2* world, intptr_t entityId) {
+    void DrawableViewer::Draw(IRenderingManager* rm, zfw::IEntityWorld2* world, intptr_t entityId) {
+        auto transform = (this->position) ?
+                         glm::translate({}, this->position->pos) * glm::mat4_cast(this->position->rotation) :
+                         glm::mat4x4();
+
+        if (this->blockyModel) {
+            this->blockyModel->Draw(transform);
+        }
+
+        if (this->model) {
+            this->model->Draw(transform);
+        }
+    }
+
+    void DrawableViewer::OnTicks(int ticks) {
+        if (blockyModel) {
+            while (ticks--) {
+                blockyModel->AnimationTick();
+            }
+        }
+    }
+
+    bool DrawableViewer::p_TryLoadBlockyModel() {
+        this->blockyModel = make_unique<CharacterModel>(g_eb, g_res.get());
+
+        if (this->blockyModel->Load(model3d->modelPath.c_str())) {
+            auto anim = blockyModel->GetAnimationByName("standing");
+
+            if (anim != nullptr)
+                blockyModel->StartAnimation(anim);
+
+            return true;
+        }
+        else {
+            this->blockyModel.reset();
+            return false;
+        }
+    }
+
+    bool DrawableViewer::p_TryLoadModel(IResourceManager2 &res) {
+        model = res.GetResourceByPath<IModel>(model3d->modelPath.c_str(), 0);
+
+        return model != nullptr;
+    }
+
+    void DrawableViewer::Realize(IEntityWorld2& world, intptr_t entityId, IResourceManager2 &res) {
         if (!model3d) {
-            model3d = world->GetEntityComponent<Model3D>(entityId);
-            position = world->GetEntityComponent<Position>(entityId);
-            zombie_assert(model3d);
+            model3d = world.GetEntityComponent<Model3D>(entityId);
+            position = world.GetEntityComponent<Position>(entityId);
+            zombie_assert(model3d);             // why call if you've got nothing to say ?!
         }
 
         if (mustReload) {
             mustReload = false;
 
             // TODO: resource management is being given zero thought here
-            this->model = make_unique<CharacterModel>(g_eb, g_res.get());
 
-            if (this->model->Load(model3d->modelPath.c_str())) {
-                auto anim = model->GetAnimationByName("standing");
-
-                if (anim != nullptr)
-                    model->StartAnimation(anim);
+            if (!p_TryLoadBlockyModel()) {
+                if (!p_TryLoadModel(res)) {
+                    g_sys->Printf(kLogWarning, "Failed to load model '%s'", model3d->modelPath.c_str());
+                }
             }
-            else {
-                this->model.reset();
-                g_sys->Log(kLogWarning, "Failed to load model '%s'", model3d->modelPath.c_str());
-            }
-        }
-
-        if (this->model) {
-            if (position) {
-                this->model->Draw(glm::translate({}, position->pos) * glm::mat4_cast(position->rotation));
-            } else {
-                this->model->Draw(glm::mat4x4());
-            }
-        }
-    }
-
-    void DrawableViewer::OnTicks(int ticks) {
-        if (!model) {
-            return;
-        }
-
-        while (ticks--) {
-            model->AnimationTick();
         }
     }
 
     void DrawableViewer::TriggerAnimation(const char* animationName) {
-        if (!model) {
-            return;
-        }
+        if (blockyModel) {
+            auto anim = blockyModel->GetAnimationByName(animationName);
 
-        auto anim = model->GetAnimationByName(animationName);
-
-        if (anim) {
-            model->StartAnimation(anim);
+            if (anim) {
+                blockyModel->StartAnimation(anim);
+            }
         }
     }
 }

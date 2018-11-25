@@ -43,19 +43,25 @@ namespace ntile {
         unique_ptr<RenderingKit::IGeomChunk> gc;
     };
 
+    // The irony of this class; its instances are currently scattered around memory, negating any caching advantage of ECS
     class DrawableViewer : public IViewer {
     public:
         void Draw(RenderingKit::IRenderingManager* rm, IEntityWorld2* world, intptr_t entityId);
         void OnTicks(int ticks);
+        void Realize(IEntityWorld2& world, intptr_t entityId, IResourceManager2& res);
         void TriggerAnimation(const char* animationName);
 
     private:
+        bool p_TryLoadBlockyModel();
+        bool p_TryLoadModel(IResourceManager2 &res);
+
         Model3D* model3d = nullptr;
         Position* position = nullptr;
 
         bool mustReload = true;
 
-        unique_ptr<CharacterModel> model;
+        unique_ptr<CharacterModel> blockyModel;
+        RenderingKit::IModel* model;
     };
 }
 

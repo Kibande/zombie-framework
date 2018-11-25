@@ -7,6 +7,7 @@
  *  Copyright (c) 2013, 2014, 2016, 2018 Minexew Games
  */
 
+#include <RenderingKit/Model.hpp>
 #include <RenderingKit/RenderingKit.hpp>
 
 #include <framework/errorbuffer.hpp>
@@ -165,7 +166,13 @@ namespace RenderingKit
     class IGLMaterial : public IMaterial
     {
         public:
-            virtual void GLSetup(const MaterialSetupOptions& options, const glm::mat4x4& projection_out, const glm::mat4x4& modelView_out) = 0;
+            virtual void GLSetup(const MaterialSetupOptions& options, const glm::mat4x4& projection, const glm::mat4x4& modelView) = 0;
+    };
+
+    class IGLModel : public IModel
+    {
+        public:
+            static unique_ptr<IGLModel> Create(RenderingKit* rk, const char* path);
     };
 
     class IGLRenderBuffer : public IRenderBuffer
@@ -228,6 +235,7 @@ namespace RenderingKit
             virtual bool Startup() = 0;
             virtual bool CheckErrors(const char* caller) = 0;
 
+            virtual void GetModelViewProjectionMatrices(glm::mat4x4** projection_out, glm::mat4x4** modelView_out) = 0;
             virtual void OnWindowResized(Int2 newSize) = 0;
             virtual void SetupMaterial(IGLMaterial* material, const MaterialSetupOptions& options) = 0;
 

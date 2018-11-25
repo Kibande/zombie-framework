@@ -72,6 +72,7 @@ namespace zfw
             virtual void ReleaseScene() = 0;
 
             // Logging functions
+            // TODO: this split is a long-standing mess. Just control the printing based on logType.
             virtual int Printf(LogType_t logType, const char* format, ...) = 0;
             virtual int Printfv(LogType_t logType, const char* format, va_list args) = 0;
             virtual void Log(LogType_t logType, const char* format, ...) = 0;

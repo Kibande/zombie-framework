@@ -49,7 +49,7 @@ namespace ntile {
 
     class ViewSystem : public IBroadcastSubscriber, public IViewSystem {
     public:
-        ViewSystem(World& world) : world(world) {}
+        ViewSystem(zfw::IResourceManager2& resourceManager, World& world) : res(resourceManager), world(world) {}
 
         bool Startup(zfw::IEngine* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) override;
 
@@ -64,6 +64,7 @@ namespace ntile {
     private:
         void p_OnBlockStateChange(WorldBlock* block, BlockStateChange change);
 
+        IResourceManager2& res;
         World& world;
 
         unique_ptr<IRenderingKit> rk;
@@ -91,8 +92,8 @@ namespace ntile {
     //  class ViewSystem
     // ====================================================================== //
 
-    IViewSystem* IViewSystem::Create(World& world) {
-        return new ViewSystem(world);
+    IViewSystem* IViewSystem::Create(zfw::IResourceManager2& res, World& world) {
+        return new ViewSystem(res, world);
     }
 
     bool ViewSystem::Startup(zfw::IEngine* sys, zfw::ErrorBuffer_t* eb, zfw::MessageQueue* eventQueue) {
@@ -213,6 +214,7 @@ namespace ntile {
 
         // TODO: Draw entities
         for (const auto& pair : drawableViewers) {
+            pair.second->Realize(*g_ew, pair.first, res);
             pair.second->Draw(rm, g_ew.get(), pair.first);
         }
 

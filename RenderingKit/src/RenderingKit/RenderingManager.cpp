@@ -107,6 +107,11 @@ namespace RenderingKit
             virtual void OnWindowResized(Int2 newSize) override;
             virtual void SetupMaterial(IGLMaterial* material, const MaterialSetupOptions& options) override;
 
+            void GetModelViewProjectionMatrices(glm::mat4x4** projection_out, glm::mat4x4** modelView_out) final {
+                *projection_out = projectionCurrent;
+                *modelView_out = modelViewCurrent;
+            }
+
             GlobalCache& GetGlobalCache() override { return globalCache; }
             size_t GetNumGlobalUniforms() override { return globalUniforms.size(); }
             const char* GetGlobalUniformNameByIndex(size_t index) override { return globalUniforms[index].name.c_str(); }
@@ -520,7 +525,7 @@ namespace RenderingKit
 
     IResource2* RenderingManager::CreateResource(IResourceManager2* res, const std::type_index& resourceClass, const char* recipe, int flags)
     {
-        if (resourceClass == typeid(IMaterial))
+        if (resourceClass == typeid(IGLMaterial) || resourceClass == typeid(IMaterial))
         {
             std::string shaderRecipe;
             std::vector<std::pair<std::string, std::string>> textures;
@@ -557,6 +562,22 @@ namespace RenderingKit
             }
 
             return material.release();
+        }
+        else if (resourceClass == typeid(IModel))
+        {
+            std::string path;
+
+            const char *key, *value;
+
+            while (Params::Next(recipe, key, value))
+            {
+                if (strcmp(key, "path") == 0)
+                    path = value;
+            }
+
+            zombie_assert(!path.empty());
+
+            return IGLModel::Create(rk, path.c_str()).release();
         }
         else if (resourceClass == typeid(IShader) || resourceClass == typeid(IGLShaderProgram))
         {
@@ -928,6 +949,8 @@ namespace RenderingKit
     {
         static const std::type_index resourceClasses[] = {
             typeid(IMaterial), typeid(IShader), typeid(ITexture), typeid(IWorldGeometry),
+            typeid(IGLMaterial),
+            typeid(IModel),
             typeid(IGLShaderProgram), typeid(IGLTexture),
         };
 

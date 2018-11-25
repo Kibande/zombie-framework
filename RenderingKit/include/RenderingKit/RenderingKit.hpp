@@ -46,6 +46,7 @@ namespace RenderingKit
     class IGeomBuffer;
     class IGeomChunk;
     class IMaterial;
+    class IModel;
     class IRKUIThemer;
     class IShader;
     class ITexture;
@@ -113,7 +114,6 @@ namespace RenderingKit
         kRenderBufferColourTexture = 1,
         kRenderBufferDepthTexture = 2,
     };
-
 
     /**
      * It is possible to either set name and keep location as -1, or set location and clear name to nullptr.

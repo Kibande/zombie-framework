@@ -4,6 +4,7 @@ project(RenderingKit)
 set(CMAKE_CXX_STANDARD 14)
 
 set(RENDERING_KIT_USE_OPENGL_ES_SUBSET OFF CACHE BOOL "Use OpenGL ES-compatible subset")
+set(WITH_TINYGLTF ON CACHE BOOL "Enable TinyGLTF loader")
 
 if (RENDERING_KIT_USE_OPENGL_ES_SUBSET OR EMSCRIPTEN)
     set(USING_OPENGL_ES ON)
@@ -21,7 +22,6 @@ file(GLOB sources
     ${PROJECT_SOURCE_DIR}/src/RenderingKit/*.hpp
     ${PROJECT_SOURCE_DIR}/src/RenderingKit/gameui/*.cpp
 
-    ${PROJECT_SOURCE_DIR}/include/RenderingKit/*.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/gameui/*.hpp
     ${PROJECT_SOURCE_DIR}/include/RenderingKit/utility/*.hpp
 )
@@ -31,10 +31,16 @@ if (USING_OPENGL_ES)
 endif()
 
 list(APPEND sources
+        include/RenderingKit/Model.hpp
+        include/RenderingKit/RenderingKit.hpp
+        include/RenderingKit/RenderingKitUtility.hpp
+        include/RenderingKit/TypeReflection.hpp
+        include/RenderingKit/WorldGeometry.hpp
         include/RenderingKit/utility/ShaderGlobal.hpp
         include/RenderingKit/utility/VertexFormat.hpp
 
         src/RenderingKit/GlobalCache.cpp
+        src/RenderingKit/Model.cpp
         src/RenderingKit/wm/WindowManager_SDL2.cpp
         )
 
@@ -103,6 +109,14 @@ if (NOT EMSCRIPTEN)
 
     target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${SDL2_INCLUDE_DIR}")
     target_link_libraries(${PROJECT_NAME} "${SDL2_LIBRARY}")
+endif()
+
+# tinygltf
+if (WITH_TINYGLTF)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE TINYGLTF_NOEXCEPTION=1)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE TINYGLTF_NO_STB_IMAGE=1)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE TINYGLTF_NO_STB_IMAGE_WRITE=1)
+    target_include_directories(${PROJECT_NAME} PRIVATE dependencies/tinygltf)
 endif()
 
 if((CMAKE_CXX_COMPILER_ID MATCHES Clang) OR (CMAKE_CXX_COMPILER_ID STREQUAL GNU))
