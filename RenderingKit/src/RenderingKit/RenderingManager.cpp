@@ -182,11 +182,11 @@ namespace RenderingKit
 
     RenderingManager::RenderingManager(ErrorBuffer_t* eb, RenderingKit* rk)
     {
-        this->appName = rk->GetSys()->GetVarSystem()->GetVariableOrEmptyString("appName");
+        this->appName = rk->GetEngine()->GetVarSystem()->GetVariableOrEmptyString("appName");
         this->eb = eb;
         this->rk = rk;
 
-        fpsTimer.reset(rk->GetSys()->CreateTimer());
+        fpsTimer.reset(rk->GetEngine()->CreateTimer());
 
         cam = p_CreateCamera(eb, rk, this, "RenderingManager/cam");
 
@@ -243,7 +243,7 @@ namespace RenderingKit
 
         if (err != GL_NO_ERROR)
         {
-            rk->GetSys()->Printf(kLogError, "OpenGL error %04Xh, detected in %s\n", err, caller);
+            rk->GetEngine()->Printf(kLogError, "OpenGL error %04Xh, detected in %s\n", err, caller);
             return false;
         }
 
@@ -497,7 +497,7 @@ namespace RenderingKit
 
             Pixmap_t pm;
 
-			if (!Pixmap::LoadFromFile(rk->GetSys(), &pm, path))
+			if (!Pixmap::LoadFromFile(rk->GetEngine(), &pm, path))
                 return nullptr;
 
             auto texture = p_CreateTexture(eb, rk, this, path);
@@ -1039,7 +1039,7 @@ namespace RenderingKit
 
     bool RenderingManager::Startup()
     {
-        rk->GetSys()->Printf(kLogInfo, "Rendering Kit: %s | %s | %s", glGetString(GL_VERSION), glGetString(GL_RENDERER), glGetString(GL_VENDOR));
+        rk->GetEngine()->Printf(kLogInfo, "Rendering Kit: %s | %s | %s", glGetString(GL_VERSION), glGetString(GL_RENDERER), glGetString(GL_VENDOR));
 
 #ifdef RENDERING_KIT_USING_OPENGL_ES
 		rk->GetSys()->Printf(kLogInfo, "Rendering Kit: Using OpenGL ES-compatible subset");
@@ -1082,7 +1082,7 @@ namespace RenderingKit
         CheckErrors(li_functionName);
 
         // Initialize shared ResourceManager2
-        sharedResourceManager2.reset(rk->GetSys()->CreateResourceManager2());
+        sharedResourceManager2.reset(rk->GetEngine()->CreateResourceManager2());
         sharedResourceManager2->SetTargetState(IResource2::REALIZED);
         this->RegisterResourceProviders(sharedResourceManager2.get());
 

@@ -273,7 +273,7 @@ namespace RenderingKit
         {
             //We'll need the Rasterizer right now
 
-            unique_ptr<InputStream> is(rk->GetSys()->OpenInput(path));
+            unique_ptr<InputStream> is(rk->GetEngine()->OpenInput(path));
 
             if (is == nullptr)
                 return ErrorBuffer::SetError(eb, EX_ASSET_OPEN_ERR, "desc", (const char*) sprintf_t<255>("Failed to open font file '%s'.", path),

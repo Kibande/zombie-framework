@@ -287,7 +287,7 @@ namespace RenderingKit
     {
         //const int bit_depth = 32;
 
-        auto ivs = rk->GetSys()->GetVarSystem();
+        auto ivs = rk->GetEngine()->GetVarSystem();
 
         // TODO: Shut down all existing rendering etc etc
 

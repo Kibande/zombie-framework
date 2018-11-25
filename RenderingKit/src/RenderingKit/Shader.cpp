@@ -132,7 +132,7 @@ namespace RenderingKit
         {
             shaderPreprocessor->ReleaseShader(vertexSource);
 
-            rk->GetSys()->Printf(kLogError, "Shader preprocessing failed - shader program '%s'", path);
+            rk->GetEngine()->Printf(kLogError, "Shader preprocessing failed - shader program '%s'", path);
             return false;
         }
 
@@ -191,8 +191,8 @@ namespace RenderingKit
             glDeleteProgram(handle);
             handle = 0;
 
-            rk->GetSys()->Printf(kLogError, "Shader linking failed - path=%s", path);
-            rk->GetSys()->Printf(kLogError, "Program compilation log:\n%s", log.getPtr());
+            rk->GetEngine()->Printf(kLogError, "Shader linking failed - path=%s", path);
+            rk->GetEngine()->Printf(kLogError, "Program compilation log:\n%s", log.getPtr());
 
             return ErrorBuffer::SetError(eb, EX_SHADER_COMPILE_ERR,
                     "desc", (const char*) sprintf_t<255>("Failed to link shader program '%s'.", path),
@@ -292,8 +292,8 @@ namespace RenderingKit
 
             glDeleteShader(shader);
 
-            rk->GetSys()->Printf(kLogError, "Shader compilation failed - filename=%s,type=0x%04X", filename, type);
-            rk->GetSys()->Printf(kLogError, "Shader compilation log:\n%s", log.getPtr());
+            rk->GetEngine()->Printf(kLogError, "Shader compilation failed - filename=%s,type=0x%04X", filename, type);
+            rk->GetEngine()->Printf(kLogError, "Shader compilation log:\n%s", log.getPtr());
 
             return ErrorBuffer::SetError(eb, EX_SHADER_COMPILE_ERR,
                     "desc", (const char*) sprintf_t<255>("Failed to compile shader '%s'.", filename),

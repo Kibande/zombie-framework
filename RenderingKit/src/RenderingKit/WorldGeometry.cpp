@@ -139,7 +139,7 @@ namespace RenderingKit {
         // ================================================================== //
 
         std::string materialsPath = sprintf_255("%s/materials", path.c_str());
-        std::unique_ptr<InputStream> materials(rk->GetSys()->OpenInput(materialsPath.c_str()));
+        std::unique_ptr<InputStream> materials(rk->GetEngine()->OpenInput(materialsPath.c_str()));
 
         if (materials == nullptr) {
             return ErrorBuffer::SetError3(EX_ASSET_CORRUPTED, 2,
@@ -183,7 +183,7 @@ namespace RenderingKit {
         // ================================================================== //
 
         std::string verticesPath = sprintf_255("%s/geometry", path.c_str());
-        std::unique_ptr<InputStream> vertices(rk->GetSys()->OpenInput(verticesPath.c_str()));
+        std::unique_ptr<InputStream> vertices(rk->GetEngine()->OpenInput(verticesPath.c_str()));
 
         if (vertices == nullptr) {
             return ErrorBuffer::SetError3(EX_ASSET_CORRUPTED, 2,

@@ -278,8 +278,8 @@ namespace RenderingKit
             virtual IWindowManager*     GetWindowManager() override { return wm.get(); }
 
             //zfw::Env* GetEnv() { return sys->GetEnv(); }
+            zfw::IEngine* GetEngine() { return sys; }
             zfw::ShaderPreprocessor* GetShaderPreprocessor();
-            zfw::IEngine* GetSys() { return sys; }
 
             IRenderingManagerBackend*   GetRenderingManagerBackend() { return rm.get(); }
             IWindowManagerBackend*      GetWindowManagerBackend() { return wm.get(); }
