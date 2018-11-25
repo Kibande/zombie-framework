@@ -4,35 +4,43 @@
 
 #include <framework/components/model3d.hpp>
 #include <framework/components/position.hpp>
+#include <framework/engine.hpp>
 #include <framework/entityworld2.hpp>
 
 namespace ntile {
     using std::make_unique;
 
     void DrawableViewer::Draw(RenderingKit::IRenderingManager* rm, zfw::IEntityWorld2* world, intptr_t entityId) {
-        if (!drawable) {
-            drawable = world->GetEntityComponent<Model3D>(entityId);
+        if (!model3d) {
+            model3d = world->GetEntityComponent<Model3D>(entityId);
             position = world->GetEntityComponent<Position>(entityId);
-            zombie_assert(drawable);
+            zombie_assert(model3d);
         }
 
-        if (!model) {
+        if (mustReload) {
+            mustReload = false;
+
             // TODO: resource management is being given zero thought here
-
             this->model = make_unique<CharacterModel>(g_eb, g_res.get());
-            this->model->Load(drawable->modelPath.c_str());
 
-            auto anim = model->GetAnimationByName("standing");
+            if (this->model->Load(model3d->modelPath.c_str())) {
+                auto anim = model->GetAnimationByName("standing");
 
-            if (anim != nullptr)
-                model->StartAnimation(anim);
+                if (anim != nullptr)
+                    model->StartAnimation(anim);
+            }
+            else {
+                this->model.reset();
+                g_sys->Log(kLogWarning, "Failed to load model '%s'", model3d->modelPath.c_str());
+            }
         }
 
-        if (position) {
-            this->model->Draw(glm::translate({}, position->pos) * glm::mat4_cast(position->rotation));
-        }
-        else {
-            this->model->Draw(glm::mat4x4());
+        if (this->model) {
+            if (position) {
+                this->model->Draw(glm::translate({}, position->pos) * glm::mat4_cast(position->rotation));
+            } else {
+                this->model->Draw(glm::mat4x4());
+            }
         }
     }
 

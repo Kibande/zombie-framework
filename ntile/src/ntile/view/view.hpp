@@ -50,8 +50,10 @@ namespace ntile {
         void TriggerAnimation(const char* animationName);
 
     private:
-        Model3D* drawable = nullptr;
+        Model3D* model3d = nullptr;
         Position* position = nullptr;
+
+        bool mustReload = true;
 
         unique_ptr<CharacterModel> model;
     };
