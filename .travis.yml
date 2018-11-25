@@ -26,6 +26,7 @@ os:
 env:
   - COMPONENT=examples/minimal TARGET=minimal
   - COMPONENT=examples/rendering-kit-demo TARGET=rendering-kit-demo
+  - COMPONENT=examples/ContainerDeferredShading TARGET=ContainerDeferredShading
   - COMPONENT=examples/ContainerHelloWorld TARGET=ContainerHelloWorld
   - COMPONENT=ntile TARGET=ntile
   - COMPONENT=tools/mapcompiler TARGET=mapcompiler
