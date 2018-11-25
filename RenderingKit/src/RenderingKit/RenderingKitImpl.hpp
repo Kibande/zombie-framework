@@ -4,7 +4,7 @@
  *  Rendering Kit II
  *
  *  Part of Zombie Framework
- *  Copyright (c) 2013, 2014, 2016 Minexew Games
+ *  Copyright (c) 2013, 2014, 2016, 2018 Minexew Games
  */
 
 #include <RenderingKit/RenderingKit.hpp>

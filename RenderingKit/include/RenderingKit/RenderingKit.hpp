@@ -212,6 +212,7 @@ namespace RenderingKit
 
     // Interfaces
 
+    // TODO: Why does this exist when zfw::Pixmap_t is a thing?
     class IPixmap
     {
         public:

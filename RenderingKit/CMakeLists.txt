@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.1)
 project(RenderingKit)
 
 set(CMAKE_CXX_STANDARD 14)
-set(library ${PROJECT_NAME})
 
 set(RENDERING_KIT_USE_OPENGL_ES_SUBSET OFF CACHE BOOL "Use OpenGL ES-compatible subset")
 
@@ -43,16 +42,16 @@ if (NOT EMSCRIPTEN)
     list(APPEND sources ${PROJECT_SOURCE_DIR}/dependencies/glew-2.0.0/src/glew.c)
 endif()
 
-add_library(${library} STATIC ${sources})
-add_dependencies(${library} zombie_framework)
-target_link_libraries(${library} zombie_framework)
+add_library(${PROJECT_NAME} STATIC ${sources})
+add_dependencies(${PROJECT_NAME} zombie_framework)
+target_link_libraries(${PROJECT_NAME} zombie_framework)
 
-target_compile_definitions(${library} PUBLIC RENDERING_KIT_STATIC=1)
-target_compile_definitions(${library} PUBLIC STX_NO_STD_VARIANT=1)
-target_compile_definitions(${library} PRIVATE GLEW_STATIC=1)
+target_compile_definitions(${PROJECT_NAME} PUBLIC RENDERING_KIT_STATIC=1)
+target_compile_definitions(${PROJECT_NAME} PUBLIC STX_NO_STD_VARIANT=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE GLEW_STATIC=1)
 
 if (USING_OPENGL_ES)
-    target_compile_definitions(${library} PUBLIC RENDERING_KIT_USING_OPENGL_ES)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC RENDERING_KIT_USING_OPENGL_ES)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -65,9 +64,9 @@ endif()
 
 # OpenGL
 if (WIN32)
-    target_link_libraries(${library} opengl32)
+    target_link_libraries(${PROJECT_NAME} opengl32)
 else()
-    target_link_libraries(${library} GL)
+    target_link_libraries(${PROJECT_NAME} GL)
 endif()
 
 # SDL2
@@ -102,8 +101,8 @@ if (NOT EMSCRIPTEN)
 
     find_package(SDL2 REQUIRED)
 
-    target_include_directories(${library} SYSTEM PRIVATE "${SDL2_INCLUDE_DIR}")
-    target_link_libraries(${library} "${SDL2_LIBRARY}")
+    target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "${SDL2_INCLUDE_DIR}")
+    target_link_libraries(${PROJECT_NAME} "${SDL2_LIBRARY}")
 endif()
 
 if((CMAKE_CXX_COMPILER_ID MATCHES Clang) OR (CMAKE_CXX_COMPILER_ID STREQUAL GNU))

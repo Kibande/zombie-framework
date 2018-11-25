@@ -3,15 +3,6 @@
 
 #include <littl/String.hpp>
 
-// Uncomment to enable debug messages in this unit
-#define DEBUG_GEOMBUFFER
-
-#ifdef DEBUG_GEOMBUFFER
-#define Debug_Printk(text) printf text
-#else
-#define Debug_Printk(text)
-#endif
-
 namespace RenderingKit
 {
     using namespace zfw;
