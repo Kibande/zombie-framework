@@ -139,8 +139,7 @@ namespace ntile
 
     void MotionSystem::OnTicks(int ticks) {
         while (ticks--) {
-            this->world->IterateEntitiesByComponent(Motion::GetType(), [this](intptr_t entityId, void *component_data) {
-                auto motion = static_cast<Motion*>(component_data);
+            this->world->IterateEntitiesByComponent<Motion>([this](intptr_t entityId, Motion& motion) {
                 auto position = this->world->GetEntityComponent<Position>(entityId);
                 auto aabbCollision = this->world->GetEntityComponent<AabbCollision>(entityId);
 
@@ -148,27 +147,27 @@ namespace ntile
                     return;
                 }
 
-                if (motion->ticksRemaining != 0) {
-                    const Float3 newPos = position->pos + motion->speed;
+                if (motion.ticksRemaining != 0) {
+                    const Float3 newPos = position->pos + motion.speed;
 
                     position->pos = newPos;
 
-                    motion->ticksRemaining--;
+                    motion.ticksRemaining--;
                 }
 
-                if (motion->ticksRemaining == 0) {
-                    if (motion->nudgeDirection.x != 0 || motion->nudgeDirection.y != 0) {
+                if (motion.ticksRemaining == 0) {
+                    if (motion.nudgeDirection.x != 0 || motion.nudgeDirection.y != 0) {
                         // Just to be sure
-                        motion->nudgeDirection.x = std::min(1, std::max(-1, motion->nudgeDirection.x));
-                        motion->nudgeDirection.y = std::min(1, std::max(-1, motion->nudgeDirection.y));
+                        motion.nudgeDirection.x = std::min(1, std::max(-1, motion.nudgeDirection.x));
+                        motion.nudgeDirection.y = std::min(1, std::max(-1, motion.nudgeDirection.y));
 
                         // Update player angle
-                        auto angle = (float) atan2(-motion->nudgeDirection.y, motion->nudgeDirection.x);
+                        auto angle = (float) atan2(-motion.nudgeDirection.y, motion.nudgeDirection.x);
                         position->rotation = glm::fquat(Float3(0.0f, 0.0f, -angle));
 
                         auto pos = position->pos;
-                        auto newX = pos.x + TILE_SIZE_H * (float) motion->nudgeDirection.x;
-                        auto newY = pos.y + TILE_SIZE_V * (float) motion->nudgeDirection.y;
+                        auto newX = pos.x + TILE_SIZE_H * (float) motion.nudgeDirection.x;
+                        auto newY = pos.y + TILE_SIZE_V * (float) motion.nudgeDirection.y;
 
                         Float3 newPos = Float3(newX, newY, pos.z);
 
@@ -189,13 +188,13 @@ namespace ntile
                         }
 
                         // Move for 16 ticks
-                        motion->speed = (newPos - pos) * (1.0f / 16);
-                        motion->ticksRemaining = 16;
+                        motion.speed = (newPos - pos) * (1.0f / 16);
+                        motion.ticksRemaining = 16;
 
                         AnimationTrigerEvent trigger;
                         trigger.entityId = entityId;
-                        trigger.animationName = (motion->lastAnim == 0) ? "step" : "step2";
-                        motion->lastAnim = 1 - motion->lastAnim;
+                        trigger.animationName = (motion.lastAnim == 0) ? "step" : "step2";
+                        motion.lastAnim = 1 - motion.lastAnim;
                         broadcastHandler->BroadcastMessage(trigger);
                     }
                 }

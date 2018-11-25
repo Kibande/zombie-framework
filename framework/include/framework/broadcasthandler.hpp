@@ -33,7 +33,7 @@ namespace zfw
 
         template <typename ComponentDataStruct>
         void SubscribeToComponentType(IBroadcastSubscriber *sub) {
-            this->SubscribeToComponentType(sub, ComponentDataStruct::GetType());
+            this->SubscribeToComponentType(sub, GetComponentType<ComponentDataStruct>());
         }
 
         template <typename MessageStruct>

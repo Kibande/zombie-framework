@@ -4,9 +4,13 @@
 
 namespace zfw
 {
-    static BasicComponentType<AabbCollision> type;
+    namespace
+    {
+        BasicComponentType<ntile::AabbCollision> type;
+    }
 
-    IComponentType& AabbCollision::GetType() {
+    template <>
+    IComponentType& GetComponentType<ntile::AabbCollision>() {
         return type;
     }
 }

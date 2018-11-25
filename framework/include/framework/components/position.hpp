@@ -12,8 +12,6 @@ namespace zfw
         Float3 pos;
         glm::fquat rotation;
         Float3 scale = {1, 1, 1};
-
-        static IComponentType& GetType();
     };
 }
 

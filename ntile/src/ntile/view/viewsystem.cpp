@@ -146,7 +146,7 @@ namespace ntile {
     }
 
     void ViewSystem::OnComponentEvent(intptr_t entityId, IComponentType &type, void *data, ComponentEvent event) {
-        if (&type == &Model3D::GetType()) {
+        if (&type == &GetComponentType<Model3D>()) {
             auto drawable = reinterpret_cast<Model3D*>(data);
 
             switch (event) {

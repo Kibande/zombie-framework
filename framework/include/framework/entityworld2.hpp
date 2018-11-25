@@ -41,12 +41,19 @@ namespace zfw
 
             template <typename ComponentStruct>
             ComponentStruct* GetEntityComponent(intptr_t id) {
-                return static_cast<ComponentStruct*>(this->GetEntityComponent(id, ComponentStruct::GetType()));
+                return static_cast<ComponentStruct*>(this->GetEntityComponent(id, GetComponentType<ComponentStruct>()));
+            }
+
+            template <class ComponentStruct>
+            void IterateEntitiesByComponent(std::function<void(intptr_t entityId, ComponentStruct& component_data)> callback) {
+                this->IterateEntitiesByComponent(GetComponentType<ComponentStruct>(), [callback](intptr_t entityId, void* component_data) {
+                    callback(entityId, *static_cast<ComponentStruct*>(component_data));
+                });
             }
 
             template <typename ComponentStruct>
             void SetEntityComponent(intptr_t id, const ComponentStruct &data) {
-                this->SetEntityComponent(id, ComponentStruct::GetType(), &data);
+                this->SetEntityComponent(id, GetComponentType<ComponentStruct>(), &data);
             }
     };
 }

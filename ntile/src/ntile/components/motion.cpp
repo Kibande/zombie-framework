@@ -4,9 +4,13 @@
 
 namespace zfw
 {
-    static BasicComponentType<Motion> type;
+    namespace
+    {
+        BasicComponentType<ntile::Motion> type;
+    }
 
-    IComponentType& Motion::GetType() {
+    template <>
+    IComponentType& GetComponentType<ntile::Motion>() {
         return type;
     }
 }

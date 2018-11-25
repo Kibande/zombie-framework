@@ -10,8 +10,6 @@ namespace zfw
     struct Model3D
     {
         std::string modelPath;
-
-        static IComponentType& GetType();
     };
 }
 

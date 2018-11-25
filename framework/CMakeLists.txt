@@ -80,13 +80,12 @@ set(sources
 
         include/ztype/ztype.hpp
 
-        src/framework/components/model3d.cpp
-        src/framework/components/position.cpp
         src/framework/asprintf.cpp
         src/framework/broadcasthandler.cpp
         src/framework/codecs/bmpcodec.cpp
         src/framework/codecs/jfifcodec.cpp
         src/framework/codecs/lodepngcodec.cpp
+        src/framework/components/builtins.cpp
         src/framework/datamodel.cpp
         src/framework/engine.cpp
         src/framework/entityhandler.cpp

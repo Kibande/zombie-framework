@@ -3,13 +3,11 @@
 
 #include <framework/datamodel.hpp>
 
-namespace zfw
+namespace ntile
 {
     struct AabbCollision
     {
-        Float3 min, max;
-
-        static IComponentType& GetType();
+        zfw::Float3 min, max;
     };
 }
 

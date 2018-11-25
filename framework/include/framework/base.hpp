@@ -166,6 +166,9 @@ namespace zfw
         return typeid(C);
     }
 
+    template <typename ComponentStruct>
+    IComponentType& GetComponentType();
+
     // h-values for mouse, keyboard events:
     //  h <= -2:    no widget was affected by this event (yet)
     static const int h_new = -2;
