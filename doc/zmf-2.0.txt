@@ -1,0 +1,297 @@
+
+================================================================================
+
+                       Zombie Media File Format Version 2
+
+    Version 2.0 (format version 100h)
+    Copyright (c) 2013 Minexew Games. Some rights reserved. CC-BY-SA
+
+================================================================================
+
+
+    Design goals
+    ------------
+        flexible, universal, structured file format
+        allow file modification without having to rebuild from scratch
+        rich metadata capability
+        fast section data access
+        content format extensibility
+        support for compression & encryption via format extensions
+
+    Logical structure
+    -----------------
+        The contents of a media file are made up from
+            1) metadata, which are text-based key-value pairs stored
+                in a special part of the file, and
+            2) named sections, containing streams of data, possibly compressed
+                and/or encrypted
+
+     == Sections
+        Each file can contain one or more sections. The section can contain any
+        data; it's completely up to the application to handle it.
+        Each section has a name. The format allows multiple sections sharing
+        the same name. Section names are UTF-8 string, though for practical
+        reasons it is recommended to use only alphanumeric ASCII characters
+        and basic punctuation.
+
+        Beyond these requirements, the naming of sections is up to
+        the application. The convention is to prefix the section name with
+        a preferably unique namespace identifier followed by a full stop (.)
+        to prevent future section naming conflicts.
+
+     == Metadata
+        File metadata are key-value pairs containing non-critical information.
+        It is not recommended to use the metadata section for entries longer
+        than about 2^7 (128) bytes, though the actual limit is much higher.
+        
+        This specification defines keys for commonly stored meta-information.
+        These keys are cross-application portable and therefore should be used
+        whenever possible, but only for their specified purpose.
+        In addition to these so-called "pre-defined" keys, custom application-
+        specific keys can be used.
+        The keys can contain the alphanumeric characters a-z A-Z 0-9,
+        full stop (.), hyphen (-) and underscore (_); the key must start
+        with a letter.
+        Key comparison is case-sensitive, but it is strongly discouraged to
+        use multiple keys differing only in case. The length of the key must
+        be between 1 and 255 bytes, inclusive.
+        
+        The following pre-defined keys are recognized:
+        (keys marked with ! should be always specified, though this is not
+        enforced; keys marked with * should be specified if applicable)
+        
+            media.original_name (!)
+                Original name of the asset. It is recommended to use the
+                original filename. (without extension)
+
+                example: 'character_model_0'
+
+            media.authored_using (!)
+                Signature of the application used to generate this file.
+                Specified as a list of comma-separated key-value pairs
+                delimited with the character '='.
+                
+                The following attributes are recognized:
+                    name        (!) human-readable product name
+                    version     (!) numerical version (e.g. '1.0.3', 'r25560')
+                    vendor      (!) developer or company name
+                    website
+                    library         (e.g. 'Zombie Framework 2013.02')
+
+                example: 'name=Rendering Kit Demo,version=1.0,vendor=...'
+
+            media.authored_by
+                Name of the whomever created the original file. Can contain
+                multiple names separated by semicolons.
+
+                example: 'John Doe <john.doe@company.com>;Jane Doe'
+
+            media.copyright (*)
+                Media copyright information.
+
+                example: '2010, 2011 Company Inc.;2012 Jane Doe'
+
+            media.license (*)
+                Full name of the license covering the work when published.
+
+            media.displayed_name
+                Human-readable media name.
+
+            media.description
+                Human-readable content description.
+
+    Limits
+    ------
+        Total file size:                (2^32-1) * sector size
+        Sector size:                    256 .. 2^31 bytes
+        Metadata entry length:          2^15-1 bytes
+        Section description length:     2^15-1 bytes
+        Section data length:            2^64-1 bytes
+        Control block data length:      2^64-1 bytes
+
+    On-disk structure
+    -----------------
+        All integers are little-endian. For all structures specified in this
+        document, assume 1-byte alignment.
+
+        The media file is partitioned into fixed-size sectors. The first sector
+        is always reserved for file header (described below)
+
+     == Blocks
+        The header is followed by multiple data streams called "blocks".
+        Blocks that are always present are the Section Map, Metadata and
+        Reclaimed Sectors. Additionaly, for each section in the file, one
+        additional block will be used.
+
+        A block is further divided into spans, each consisting of one or more
+        consecutive sectors.
+
+        A sector span is defined using the following structure:
+        
+            struct zmfSpan_t {
+                uint32_t    sect_first;
+                uint32_t    sect_count;
+            };  // 8 bytes
+
+        The fields of this structure are described below:
+            - 'sect_first' is the first sector allocated for this span
+                (numbered from 0 which is reserved for the file header)
+            - 'sect_count' is the number of sectors in this span
+
+        A block is specified using the following structure:
+        
+            struct zmfBlock_t {
+                uint64_t    length;
+                zmfSpan_t   first_span;
+            };  // 16 bytes
+
+        The fields of this structure are described below:
+            - 'length' is the total length of the stream, in bytes
+            - 'first_span' is the first span allocated for this block
+
+        If a block requires multiple spans, the last 8 bytes of every span
+        except the last one is reserved for another zmfSpan_t structure pointing
+        to the next span in this block.
+
+        It is allowed to pre-allocate more sectors for a span than required for
+        the actual data.
+
+        If the length of the block is zero, both fields within 'first_span' must
+        be set to 0; if the length of a block is non-zero, these fields must
+        have values other than 0.
+
+        When a section is truncated or removed, one or more spans may become
+        no longer neccessary. In that case, they will be unlinked and marked
+        in the Reclaimed Sectors block (see below) for re-usage.
+
+     == File header
+        The file header always starts at offset 0 in the file. It also marks
+        the beginning of the first sector which is unavailable for any other
+        data.
+
+        The actual structure of the file header depends on the bitstream
+        version. (the first two fields will be always present)
+        For version 100h, it has the following structure:
+
+            struct zmfHeader_t {
+                uint8_t     signature[4];
+                uint32_t    bitstream;
+                uint32_t    sect_size;
+                uint32_t    ctlsect;
+
+                zmfBlock_t  metadata;
+                zmfBlock_t  section_map;
+                zmfBlock_t  reclaimed_sects;
+            };  // 64 bytes
+
+        The first 4 fields of this structure are described below:
+            - 'signature' is always set to the four ASCII characters "ZMF2",
+                marking the file as a Zombie Media
+            - 'bitstream' specifies the bitstream version; for version 100h,
+                this is 0x0100 shifted left by 16 bits, bitwise-OR'd with 0x0A89
+                (to mark the format as binary)
+
+                Incompatible revisions of the format will use a different value
+                in the higher 16 bits. Values under 100h will never be used.
+
+            - 'sect_size' is the sector size in bytes; this number is currently
+                required to be a power of 2
+            - 'ctlsect' is reserved for declaring a control sector; this field
+                must be set to 0
+
+        The other 3 fields describe the mandatory blocks in the file - their
+        structure is specified further below:
+            - 'metadata' describes the Metadata block
+            - 'section_map' describes the Section Map block
+            - 'reclaimed_sects' describes the Reclaimed Sectors block
+
+     == Metadata block
+        Metadata entries have variable length. They always start with a fixed
+        header, followed by UTF-8-encoded entry data, consisting of the key,
+        a single space and the value. The total number of entries must be
+        determined using the block length.
+
+        IMPORTANT: The data is always NUL-padded to a multiple of 32 bytes!
+        
+        The entry header has the following structure:
+
+            struct zmfMetaEntry_t
+            {
+                uint16_t    entrydata_len;
+                uint16_t    key_crc;
+            };  // 4 bytes
+
+        The fields of this structure are described below:
+            - 'entrydata_len' is the length of the entry data (in bytes),
+                not including the header and padding.
+                (length = key_length + 1 + value_length)
+
+                If the highest bit is set (length & 0x8000), the entry has
+                been invalidated and must be skipped when reading.
+
+            - 'key_crc' is a CRC16-CCITT hash of the key
+
+     == Section Map block
+        The Section Map block contains information about all sections
+        in the file.
+        Section Map entries have variable length. They always start with
+        a fixed header, followed by section description. The total number
+        of entries must be determined using the block length.
+
+        The section description is a list of comma-separated key-value pairs
+        delimited with the character '='.
+
+        The following attributes are specified:
+            name            section name (required); MUST always come first
+            m-encryption    encryption method (reserved for future revisions)
+                can contain method-specific information after ':'
+
+        Attributes starting with 'm-' are considered mandatory. All mandatory
+        attributes must be recognized by the decoder to be able to correctly
+        read the section data.
+
+        IMPORTANT: Section description is always NUL-padded to a multiple of
+                    32 bytes!
+
+        The entry header has the following structure:
+
+            struct zmfSectionEntry_t
+            {
+                uint16_t    desc_len;
+                uint16_t    name_crc;
+                uint8_t     compression[4];
+                uint64_t    data_length;
+
+                zmfBlock_t  block;
+            };  // 32 bytes
+        
+        The fields of this structure are described below:
+            - 'desc_len' is the length of section description in bytes
+                (not including padding)
+
+                If the highest bit is set (desc_len & 0x8000), the entry has
+                been invalidated and must be skipped when reading.
+
+            - 'name_crc' is a CRC16-CCITT hash of the section name
+            - 'compression' is the FourCC code of the compression method used;
+                if the data is uncompressed, all four bytes must be set to 0.
+                The only compression method currently allowed is using Zlib
+                (using the FourCC "ZLIB")
+            - 'data_length' - length of the UNCOMPRESSED data - as opposed to
+                block.length (see below) which is the on-disk data length
+            - 'block' describes the block allocated for this section
+
+     == Reclaimed Sectors
+        The only kind of block that doesn't directly represent a higher-level
+        data structure is the Reclaimed Sectors block. Its purpose is to mark
+        which parts of the file currently don't conatin any valid data and can
+        be reused when creating or extending blocks.
+
+        An entry is represented by the structure 'zmfSpan_t'. (see above)
+        The number of entries must be determined from the block length.
+
+        Every entry specifies a sector range within the file that is available
+        for allocation.
+        Whenever the field 'sect_first' is 0, 'sect_count' must be 0 as well
+        and vice versa. In that case, this entry has been invalidated and must
+        be skipped when reading.

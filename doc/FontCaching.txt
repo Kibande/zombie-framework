@@ -1,0 +1,112 @@
+ztype Font Rendering & Caching Framework
+ ========================================
+
+2012 Minexew Games etc.
+2nd Revision.
+
+font desc = {src filename, size, flags, range}
+
+1. on app boot (asynchronously via zfw::IStartupTask)
+    ztype::FontCache::BuildUpdateList(font desc list)
+        -> group by font source file
+        -> compare checksums stored in db vs source file
+        -> make a list of fonts to rebuild
+        -> if any
+            -> FontCache:UpdateCache
+
+2. font consumption (loading, rendering)
+    ztype::CreateFont(font desc)
+        -> is a cached version available?
+            -> YES: load it
+            -> NO: are we linked against ztype::Renderer & FreeType
+                    AND allowed to rasterize fonts at runtime?
+                -> yes: build cache in-memory and save if allowed to
+                -> no: raise an error
+
+3. offline font caching
+    do what happens on App Boot, but offline from command line
+
+4. late glyph rendering (if enabled)
+    - make an "order" to render additional glyphs
+    - retrieve raw rgba values, add to main texture
+    - expand texture when full
+        - reuse existing texture data
+        - divide all known U or V coordinates (depending on the direction of expansion) by 2
+
+Other Side Of The Wall - CoreRenderer font handling
+    - uses 256-glyph buckets (20:6:6 bit addressing)
+    - when one or more requested glyphs are unavailable:
+        - make a list of them and ask ztype to do late rasterization
+        - in a worker thread, ztype does the rasterization
+        - once in a while, ztype collects all newly rasterized glyphs and adds them to their cache file
+
+Special Case - boot fonts
+    - same cache file format etc, not affected by auto-rebuild, required for startup
+    - limited to ASCII cahracters (U+20 to U+7F) to reduce file size and loading time
+
+Binary font files:
+    'fontcache' directory by default
+    "{src filename md5}_{size}_{flags}.ztype"
+                                      .tex      (32-bit RGBA encoded with libpng)
+
+    all offsets are absolute positions in file
+    all numerical values are Intel/little-endian
+
+    [header + main section table]
+
+    uint32_t magic = "F087CACE" -> 0xCECA87F0 little-endian
+
+    uint32_t num_sections
+        -> for each
+        char FourCC[4]
+        uint32_t offset
+
+    [source file hash]
+    section "Hash":
+        16 bytes MD5 hash of source (TTF) file
+
+    [face metrics]
+    section "Metr": (struct ztype::FaceMetrics)
+        int16_t ascent
+        int16_t descent
+        int16_t lineheight
+        int16_t reserved
+
+    [glyph & texture mapping information (chained)]
+    section "Head":
+        uint32_t number of ranges stored
+            -> for each
+            uint32_t cp_first
+            uint32_t count
+                -> for each (struct ztype::CharEntry)
+                    Float2 uv[2]
+                    uint16_t width, height
+                    int16_t draw_x, draw_y
+                    int16_t advance
+                    int16_t reserved[3]
+        uint32_t chain_next (file offset, 0 if N/A)
+
+    [obsolete (not chained); texture mapping information]
+    section "FTex":
+        uint32_t number of ranges stored
+            -> for each
+            uint32_t cp_first
+            uint32_t count
+                -> for each (struct ztype::CharEntry)
+                    Float2 uv[2]
+                    uint16_t width, height
+                    int16_t draw_x, draw_y
+                    int16_t advance
+                    int16_t reserved[5]
+
+    [for composite files - currently not implemented]
+    section "Comp":
+        uint32_t number of faces in composite file
+            -> for each
+            int8_t name (0 = regular, 1 = bold, 2 = italic, 3 = bold italic)
+            uint8_t reserved[3]
+            uint32_t section_table_offset for this face (can be 4 to reuse the main section table)
+
+Left To Do:
+    Intuitive (= per-line) horizontal alignment
+    Inline face swapping
