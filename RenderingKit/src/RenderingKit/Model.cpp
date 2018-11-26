@@ -17,6 +17,8 @@ namespace RenderingKit
 {
     using namespace zfw;
 
+    enum { kMaxJoints = 20 };
+
     static GLenum ps_AccessorComponentTypeToGLType(int componentType) {
         switch (componentType) {
             case TINYGLTF_COMPONENT_TYPE_BYTE:              return GL_BYTE;
@@ -56,6 +58,9 @@ namespace RenderingKit
         }
         else if (name == "POSITION") {
             return "in_Position";
+        }
+        else if (name == "TEXCOORD_0") {
+            return "in_UV";
         }
         else if (name == "WEIGHTS_0") {
             return "in_Weights0";
@@ -119,7 +124,9 @@ namespace RenderingKit
 
         private:
             // Private methods
-            void p_DrawNode(tinygltf::Node& node, const glm::mat4x4& projection, const glm::mat4x4& modelView);
+            void p_DrawNode(int node_index, const glm::mat4x4& projection, const glm::mat4x4& modelView);
+            void p_UpdateNodeMatrixRecursive(int node_index, const glm::mat4x4& parent);
+            void p_UpdateSkin(int skin_index, const glm::mat4x4& mesh_matrix, glm::mat4x4* jointMatrix);
 
             RenderingKit* rk;
             std::string path;
@@ -132,6 +139,7 @@ namespace RenderingKit
             // realized
             GLuint geometryBuffer;
             std::vector<IGLMaterial*> materials;            // TODO: how to resource-manage?
+            std::vector<glm::mat4x4> node_matrix;
 
             friend class IResource2;
     };
@@ -156,36 +164,25 @@ namespace RenderingKit
 
         for (auto& scene : this->model->scenes) {
             for (auto node_index : scene.nodes) {
-                p_DrawNode(this->model->nodes[node_index], *projection, myModelView);
+                p_UpdateNodeMatrixRecursive(node_index, {});
+            }
+            for (auto node_index : scene.nodes) {
+                p_DrawNode(node_index, *projection, myModelView);
             }
         }
     }
 
-    void GLModel::p_DrawNode(tinygltf::Node& node, const glm::mat4x4& projection, const glm::mat4x4& modelView_in) {
+    void GLModel::p_DrawNode(int node_index, const glm::mat4x4& projection, const glm::mat4x4& modelView) {
         auto rm = rk->GetRenderingManagerBackend();
-
-        glm::mat4x4 modelView;
-
-        if (!node.matrix.empty()) {
-            zombie_assert(node.matrix.size() == 16);
-            zombie_assert(node.translation.empty());
-            zombie_assert(node.rotation.empty());
-            zombie_assert(node.scale.empty());
-
-            modelView = modelView_in * glm::mat4x4(node.matrix[0], node.matrix[1], node.matrix[2], node.matrix[3],
-                                                   node.matrix[4], node.matrix[5], node.matrix[6], node.matrix[7],
-                                                   node.matrix[8], node.matrix[9], node.matrix[10], node.matrix[11],
-                                                   node.matrix[12], node.matrix[13], node.matrix[14], node.matrix[15]);
-        }
-        else {
-            auto T = (node.translation.size() == 3) ? glm::translate({}, Float3(node.translation[0], node.translation[1], node.translation[2])) : glm::mat4x4();
-            auto R = (node.rotation.size() == 4) ? glm::fquat(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]) : glm::fquat();
-            auto S = (node.scale.size() == 3) ? glm::scale({}, Float3(node.scale[0], node.scale[1], node.scale[2])) : glm::mat4x4();
-
-            modelView = modelView_in * T * glm::mat4_cast(R) * S;
-        }
+        auto& node = this->model->nodes[node_index];
 
         if (node.mesh >= 0) {
+            glm::mat4x4 jointMatrices[kMaxJoints];
+
+            if (node.skin >= 0) {
+                p_UpdateSkin(node.skin, this->node_matrix[node_index], jointMatrices);
+            }
+
             auto& mesh = this->model->meshes[node.mesh];
 
             for (auto& primitive : mesh.primitives) {
@@ -197,7 +194,11 @@ namespace RenderingKit
                 GLStateTracker::BindArrayBuffer(geometryBuffer);
 
                 int index = 0;
-                for (const auto& [name, accessor_index] : primitive.attributes) {
+                for (const auto& pair : primitive.attributes) {
+                    // TODO[C++17]
+                    const auto& name = pair.first;
+                    const auto accessor_index = pair.second;
+
                     int location = rm->GetGlobalCache().GetAttribLocationByName(ps_MapAttributeName(name));
 
                     auto& accessor = this->model->accessors[accessor_index];
@@ -229,7 +230,13 @@ namespace RenderingKit
                 MaterialSetupOptions options {};
                 options.type = MaterialSetupOptions::kNone;
 
-                material->GLSetup(options, projection, modelView);
+                material->GLSetup(options, projection, modelView * this->node_matrix[node_index]);
+
+                // Upload joint matrices
+                if (node.skin >= 0) {
+                    auto location = static_cast<IGLShaderProgram*>(material->GetShader())->GetUniformLocation("jointMatrices");
+                    glUniformMatrix4fv(location, kMaxJoints, false, reinterpret_cast<const float*>(jointMatrices));
+                }
 
                 auto componentType = ps_AccessorComponentTypeToGLType(accessor.componentType);
                 //auto elementData = reinterpret_cast<unsigned short*>(&this->model->buffers[0].data[0] + bufferView.byteOffset + accessor.byteOffset);
@@ -245,8 +252,62 @@ namespace RenderingKit
             }
         }
 
-        for (auto node_index : node.children) {
-            p_DrawNode( this->model->nodes[node_index], projection, modelView);
+        for (auto child_index : node.children) {
+            p_DrawNode(child_index, projection, modelView);
+        }
+    }
+
+    void GLModel::p_UpdateNodeMatrixRecursive(int node_index, const glm::mat4x4& parent_matrix)
+    {
+        auto& node = this->model->nodes[node_index];
+
+        if (!node.matrix.empty()) {
+            zombie_assert(node.matrix.size() == 16);
+            zombie_assert(node.translation.empty());
+            zombie_assert(node.rotation.empty());
+            zombie_assert(node.scale.empty());
+
+            this->node_matrix[node_index] = parent_matrix * glm::mat4x4(
+                                            node.matrix[0], node.matrix[1], node.matrix[2], node.matrix[3],
+                                            node.matrix[4], node.matrix[5], node.matrix[6], node.matrix[7],
+                                            node.matrix[8], node.matrix[9], node.matrix[10], node.matrix[11],
+                                            node.matrix[12], node.matrix[13], node.matrix[14], node.matrix[15]);
+        }
+        else {
+            auto T = (node.translation.size() == 3) ? glm::translate({}, Float3(node.translation[0], node.translation[1], node.translation[2])) : glm::mat4x4();
+            auto R = (node.rotation.size() == 4) ? glm::fquat(node.rotation[3], node.rotation[0], node.rotation[1], node.rotation[2]) : glm::fquat();
+            auto S = (node.scale.size() == 3) ? glm::scale({}, Float3(node.scale[0], node.scale[1], node.scale[2])) : glm::mat4x4();
+
+            this->node_matrix[node_index] = parent_matrix * T * glm::mat4_cast(R) * S;
+        }
+
+        for (auto child_index : node.children) {
+            p_UpdateNodeMatrixRecursive(child_index, this->node_matrix[node_index]);
+        }
+    }
+
+    void GLModel::p_UpdateSkin(int skin_index, const glm::mat4x4& mesh_matrix, glm::mat4x4* jointMatrix) {
+        auto& skin = this->model->skins[skin_index];
+        zombie_assert(skin.joints.size() < kMaxJoints);
+
+        auto& inverseBindMatrixAccessor = this->model->accessors[skin.inverseBindMatrices];
+        zombie_assert(inverseBindMatrixAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+        zombie_assert(inverseBindMatrixAccessor.count == skin.joints.size());
+        zombie_assert(inverseBindMatrixAccessor.type == TINYGLTF_TYPE_MAT4);
+        zombie_assert(this->model->bufferViews[inverseBindMatrixAccessor.bufferView].byteStride == 0);
+
+        auto& bufferView = this->model->bufferViews[inverseBindMatrixAccessor.bufferView];
+        auto& buffer = this->model->buffers[bufferView.buffer];
+
+        for (int j = 0; j < skin.joints.size(); j++) {
+            glm::mat4 inverseBindMatrix;
+            memcpy(&inverseBindMatrix,
+                   &buffer.data[bufferView.byteOffset + inverseBindMatrixAccessor.byteOffset + j * sizeof(glm::mat4)],
+                   sizeof(glm::mat4));
+
+            jointMatrix[j] = glm::inverse(mesh_matrix) *
+                             this->node_matrix[skin.joints[j]] *
+                             inverseBindMatrix;
         }
     }
 
@@ -311,10 +372,12 @@ namespace RenderingKit
 
         // Initialize materials
         for (auto& material : model->materials) {
-            auto rkMaterial = rk->GetRenderingManagerBackend()->GetSharedResourceManager2()->GetResource<IGLMaterial>("shader=path=ntile/shaders/world", 0);
+            auto rkMaterial = rk->GetRenderingManagerBackend()->GetSharedResourceManager2()->GetResource<IGLMaterial>("shader=path=ntile/shaders/skinned", 0);
             zombie_assert(rkMaterial);
             this->materials.push_back(rkMaterial);
         }
+
+        this->node_matrix.resize(this->model->nodes.size());
 
         return true;
     }
