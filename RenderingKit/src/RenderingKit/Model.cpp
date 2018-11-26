@@ -18,6 +18,9 @@ namespace RenderingKit
     using namespace zfw;
 
     enum { kMaxJoints = 20 };
+    auto magic_constant = 0.016f;
+    auto magic_constant2 = 3.0f;
+    auto magic_string = "";
 
     static GLenum ps_AccessorComponentTypeToGLType(int componentType) {
         switch (componentType) {
@@ -106,6 +109,11 @@ namespace RenderingKit
             // IModel
             void Draw(const glm::mat4x4& transform) final;
 
+            bool IsAnimationPlaying();
+            void PlayAnimation(const char* name);
+            void StopAnimation();
+            void ResetPose();
+
             // IResource2
             bool BindDependencies(IResourceManager2* resMgr) { return true; }
             bool Preload(IResourceManager2* resMgr);
@@ -125,6 +133,11 @@ namespace RenderingKit
         private:
             // Private methods
             void p_DrawNode(int node_index, const glm::mat4x4& projection, const glm::mat4x4& modelView);
+            void p_GetKeyframesForTime(const tinygltf::Accessor& timeAccessor,
+                                       float animationTime,
+                                       std::pair<size_t, size_t>* keyframes_out,
+                                       float* t_out);
+            void p_UpdateAnimation(float step);
             void p_UpdateNodeMatrixRecursive(int node_index, const glm::mat4x4& parent);
             void p_UpdateSkin(int skin_index, const glm::mat4x4& mesh_matrix, glm::mat4x4* jointMatrix);
 
@@ -140,6 +153,8 @@ namespace RenderingKit
             GLuint geometryBuffer;
             std::vector<IGLMaterial*> materials;            // TODO: how to resource-manage?
             std::vector<glm::mat4x4> node_matrix;
+            int animationIndex = -1;
+            float animationTime;
 
             friend class IResource2;
     };
@@ -169,6 +184,10 @@ namespace RenderingKit
             for (auto node_index : scene.nodes) {
                 p_DrawNode(node_index, *projection, myModelView);
             }
+        }
+
+        if (this->animationIndex >= 0) {
+            p_UpdateAnimation(magic_constant);
         }
     }
 
@@ -257,6 +276,138 @@ namespace RenderingKit
         }
     }
 
+    void GLModel::p_GetKeyframesForTime(const tinygltf::Accessor& timeAccessor,
+                                        float animationTime,
+                                        std::pair<size_t, size_t>* keyframes_out,
+                                        float* t_out) {
+        zombie_assert(timeAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+        zombie_assert(timeAccessor.type == TINYGLTF_TYPE_SCALAR);
+
+        auto& bufferView = this->model->bufferViews[timeAccessor.bufferView];
+        auto& buffer = this->model->buffers[bufferView.buffer];
+
+        auto p_floats = reinterpret_cast<float*>(
+                &buffer.data[bufferView.byteOffset + timeAccessor.byteOffset]);
+
+        // Binary search
+        size_t min = 0;
+        size_t max = timeAccessor.count;
+
+        if (animationTime < p_floats[min]) {
+            *keyframes_out = {min, min};
+            *t_out = 0;
+            return;
+        }
+        else if (animationTime >= p_floats[max-1]) {
+            *keyframes_out = {max-1, max-1};
+            *t_out = 0;
+            return;
+        }
+
+        while (max - min > 1) {
+            size_t middle = (min + max) / 2;
+            if (animationTime >= p_floats[middle]) {
+                min = middle;
+            }
+            else {
+                max = middle;
+            }
+        }
+
+        zombie_assert(p_floats[min] <= animationTime);
+        zombie_assert(p_floats[max] >= animationTime);
+        zombie_assert(max < timeAccessor.count);
+
+        *keyframes_out = {min, max};
+        if (min != max) {
+            *t_out = (animationTime - p_floats[min]) / (p_floats[max] - p_floats[min]);
+        }
+        else {
+            *t_out = 0;
+        }
+    }
+
+    void GLModel::p_UpdateAnimation(float step) {
+        this->animationTime += step;
+
+        if (this->animationTime > magic_constant2) {
+            this->animationTime = 0;
+        }
+
+        auto& anim = this->model->animations[animationIndex];
+
+        for (auto& channel : anim.channels) {
+            auto& sampler = anim.samplers[channel.sampler];
+
+            auto& timeAccessor = this->model->accessors[sampler.input];
+
+            std::pair<size_t, size_t> keyframes;
+            float t;
+            p_GetKeyframesForTime(timeAccessor, this->animationTime, &keyframes, &t);
+
+            auto& valueAccessor = this->model->accessors[sampler.output];
+            auto& bufferView = this->model->bufferViews[valueAccessor.bufferView];
+            auto& buffer = this->model->buffers[bufferView.buffer];
+
+            if (valueAccessor.type == TINYGLTF_TYPE_VEC3) {
+                zombie_assert(valueAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+
+                glm::vec3 values[2];
+                memcpy(&values[0], &buffer.data[bufferView.byteOffset +
+                       valueAccessor.byteOffset + keyframes.first * sizeof(glm::vec3)],
+                       sizeof(glm::vec3));
+                memcpy(&values[1], &buffer.data[bufferView.byteOffset +
+                       valueAccessor.byteOffset + keyframes.second * sizeof(glm::vec3)],
+                       sizeof(glm::vec3));
+
+                auto interp = values[0] * (1 - t) + values[1] * t;
+
+                if (channel.target_path == "translation") {
+                    model->nodes[channel.target_node].translation.resize(3);
+                    model->nodes[channel.target_node].translation[0] = interp.x;
+                    model->nodes[channel.target_node].translation[1] = interp.y;
+                    model->nodes[channel.target_node].translation[2] = interp.z;
+                }
+                else if (channel.target_path == "scale") {
+                    model->nodes[channel.target_node].scale.resize(3);
+                    model->nodes[channel.target_node].scale[0] = interp.x;
+                    model->nodes[channel.target_node].scale[1] = interp.y;
+                    model->nodes[channel.target_node].scale[2] = interp.z;
+                }
+                else {
+                    zombie_assert(channel.target_path != channel.target_path);
+                }
+            }
+            else if (valueAccessor.type == TINYGLTF_TYPE_VEC4) {
+                zombie_assert(valueAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+
+                glm::vec4 values[2];
+                memcpy(&values[0], &buffer.data[bufferView.byteOffset +
+                       valueAccessor.byteOffset + keyframes.first * sizeof(glm::vec4)],
+                       sizeof(glm::vec4));
+                memcpy(&values[1], &buffer.data[bufferView.byteOffset +
+                       valueAccessor.byteOffset + keyframes.second * sizeof(glm::vec4)],
+                       sizeof(glm::vec4));
+
+                auto interp = values[0] * (1 - t) + values[1] * t;
+
+                if (channel.target_path == "rotation") {
+                    model->nodes[channel.target_node].rotation.resize(4);
+                    model->nodes[channel.target_node].rotation[0] = interp.x;
+                    model->nodes[channel.target_node].rotation[1] = interp.y;
+                    model->nodes[channel.target_node].rotation[2] = interp.z;
+                    model->nodes[channel.target_node].rotation[3] = interp.w;
+                }
+                else {
+                    zombie_assert(channel.target_path != channel.target_path);
+                }
+            }
+            else {
+                zombie_assert(valueAccessor.type != valueAccessor.type);
+            }
+        }
+    }
+
     void GLModel::p_UpdateNodeMatrixRecursive(int node_index, const glm::mat4x4& parent_matrix)
     {
         auto& node = this->model->nodes[node_index];
@@ -308,6 +459,20 @@ namespace RenderingKit
             jointMatrix[j] = glm::inverse(mesh_matrix) *
                              this->node_matrix[skin.joints[j]] *
                              inverseBindMatrix;
+        }
+    }
+
+    void GLModel::PlayAnimation(const char* name) {
+        if (!this->model) {
+            return;
+        }
+
+        for (size_t i = 0; i < this->model->animations.size(); i++) {
+            if (this->model->animations[i].name == name) {
+                this->animationIndex = i;
+                this->animationTime = 0;
+                break;
+            }
         }
     }
 
@@ -379,6 +544,7 @@ namespace RenderingKit
 
         this->node_matrix.resize(this->model->nodes.size());
 
+        this->PlayAnimation(magic_string);
         return true;
     }
 
