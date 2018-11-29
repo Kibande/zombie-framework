@@ -42,9 +42,9 @@ namespace RenderingKit
         return true;
     }
 
-    IRenderingManager* RenderingKit::StartupRendering()
+    IRenderingManager* RenderingKit::StartupRendering(CoordinateSystem coordSystem)
     {
-        rm.reset(CreateRenderingManager(eb, this));
+        rm = IRenderingManagerBackend::Create(eb, this, coordSystem);
 
         if (!rm->Startup()) {
             return nullptr;

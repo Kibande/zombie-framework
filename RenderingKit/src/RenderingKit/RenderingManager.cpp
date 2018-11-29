@@ -35,7 +35,7 @@ namespace RenderingKit
                              public zfw::IResourceProvider, public zfw::IResourceProvider2
     {
         public:
-            RenderingManager(zfw::ErrorBuffer_t* eb, RenderingKit* rk);
+            RenderingManager(zfw::ErrorBuffer_t* eb, RenderingKit* rk, CoordinateSystem coordSystem);
             ~RenderingManager();
 
 #if ZOMBIE_API_VERSION < 201701
@@ -132,6 +132,8 @@ namespace RenderingKit
                                                const char* recipe, int flags) override;
 
         private:
+            CoordinateSystem coordSystem;
+
             // State (objects)
             Stack<IGLRenderBuffer*> renderBufferStack;
             unique_ptr<zfw::IResourceManager> sharedResourceManager;
@@ -180,12 +182,15 @@ namespace RenderingKit
     //  class RenderingManager
     // ====================================================================== //
 
-    IRenderingManagerBackend* CreateRenderingManager(zfw::ErrorBuffer_t* eb, RenderingKit* rk)
+    unique_ptr<IRenderingManagerBackend> IRenderingManagerBackend::Create(zfw::ErrorBuffer_t* eb,
+                                                                          RenderingKit* rk,
+                                                                          CoordinateSystem coordSystem)
     {
-        return new RenderingManager(eb, rk);
+        return make_unique<RenderingManager>(eb, rk, coordSystem);
     }
 
-    RenderingManager::RenderingManager(ErrorBuffer_t* eb, RenderingKit* rk)
+    RenderingManager::RenderingManager(ErrorBuffer_t* eb, RenderingKit* rk, CoordinateSystem coordSystem)
+            : coordSystem(coordSystem)
     {
         this->appName = rk->GetEngine()->GetVarSystem()->GetVariableOrEmptyString("appName");
         this->eb = eb;
@@ -193,7 +198,7 @@ namespace RenderingKit
 
         fpsTimer.reset(rk->GetEngine()->CreateTimer());
 
-        cam = p_CreateCamera(eb, rk, this, "RenderingManager/cam");
+        cam = p_CreateCamera(eb, rk, this, "RenderingManager/cam", coordSystem);
 
         vertexCache.vertexFormat = nullptr;
         vertexCache.material = nullptr;
@@ -291,7 +296,7 @@ namespace RenderingKit
 
     shared_ptr<ICamera> RenderingManager::CreateCamera(const char* name)
     {
-        return p_CreateCamera(eb, rk, this, name);
+        return p_CreateCamera(eb, rk, this, name, coordSystem);
     }
 
     shared_ptr<IDeferredShadingManager> RenderingManager::CreateDeferredShadingManager()
@@ -830,7 +835,7 @@ namespace RenderingKit
     {
         if (!sharedResourceManager)
         {
-            sharedResourceManager.reset(rk->GetSys()->CreateResourceManager("RenderingManager::sharedResourceManager"));
+            sharedResourceManager.reset(rk->GetEngine()->CreateResourceManager("RenderingManager::sharedResourceManager"));
             this->RegisterResourceProviders(sharedResourceManager.get());
         }
 
@@ -1065,7 +1070,7 @@ namespace RenderingKit
         rk->GetEngine()->Printf(kLogInfo, "Rendering Kit: %s | %s | %s", glGetString(GL_VERSION), glGetString(GL_RENDERER), glGetString(GL_VENDOR));
 
 #ifdef RENDERING_KIT_USING_OPENGL_ES
-		rk->GetSys()->Printf(kLogInfo, "Rendering Kit: Using OpenGL ES-compatible subset");
+		rk->GetEngine()->Printf(kLogInfo, "Rendering Kit: Using OpenGL ES-compatible subset");
 #endif
 
         /*if (GLEW_ARB_debug_output)

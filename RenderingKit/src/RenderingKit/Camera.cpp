@@ -19,7 +19,7 @@ namespace RenderingKit
         RenderingKit* rk;
         IRenderingManagerBackend* rm;
         String name;
-        int32_t numRefs;
+        CoordinateSystem coordSystem;
 
         RKProjectionType_t proj;
         Float3 eye, center, up;
@@ -32,7 +32,8 @@ namespace RenderingKit
         void BuildModelView();
 
         public:
-            GLCamera(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name);
+            GLCamera(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
+                     CoordinateSystem coordSystem);
             
             virtual const char* GetName() override { return name.c_str(); }
 
@@ -77,11 +78,11 @@ namespace RenderingKit
         else if (pitch < -f_pi * 0.5f + 10e-4f)
             pitch = -f_pi * 0.5f;
 
-        const float ca = cos( yaw );
-        const float sa = sin( yaw );
+        const float ca = std::cos( yaw );
+        const float sa = std::sin( yaw );
 
-        const float ca2 = cos( pitch );
-        const float sa2 = sin( pitch );
+        const float ca2 = std::cos( pitch );
+        const float sa2 = std::sin( pitch );
 
         const float radius = ca2 * eyeDistance;
         const float upRadius = radius - sa2;
@@ -90,7 +91,7 @@ namespace RenderingKit
 
         eye_out = center + cam;
 
-        if (fabs(radius) > 10e-5f)
+        if (std::fabs(radius) > 10e-5f)
             up = Float3( ca * upRadius - cam.x, -sa * upRadius - cam.y, ca2 );
     }
 
@@ -99,21 +100,22 @@ namespace RenderingKit
         const Float3 cam = eye - center;
 
         dist = glm::length( cam );
-        angle = atan2( -cam.y, cam.x );
-        angle2 = atan2( cam.z, glm::length( glm::vec2( cam ) ) );
+        angle = std::atan2( -cam.y, cam.x );
+        angle2 = std::atan2( cam.z, glm::length( glm::vec2( cam ) ) );
     }
 
-    shared_ptr<ICamera> p_CreateCamera(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)
+    shared_ptr<ICamera> p_CreateCamera(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm,
+                                       const char* name, CoordinateSystem coordSystem)
     {
-        return std::make_shared<GLCamera>(eb, rk, rm, name);
+        return std::make_shared<GLCamera>(eb, rk, rm, name, coordSystem);
     }
 
-    GLCamera::GLCamera(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)
-            : name(name)
+    GLCamera::GLCamera(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name,
+                       CoordinateSystem coordSystem)
+            : name(name), coordSystem(coordSystem)
     {
         this->rk = rk;
         this->rm = rm;
-        numRefs = 1;
 
         proj = kProjectionInvalid;
         nearZ = 1.0f;
@@ -123,8 +125,18 @@ namespace RenderingKit
 
     void GLCamera::BuildModelView()
     {
-        modelView = glm::lookAt( Float3( eye.x, -eye.y, eye.z ), Float3( center.x, -center.y, center.z ), Float3( up.x, -up.y, up.z ) );
-        modelView = glm::scale( modelView, Float3( 1.0f, -1.0f, 1.0f ) );
+        switch (coordSystem)
+        {
+            case CoordinateSystem::leftHanded:
+                // TODO: isn't this needlessly complicated? we should be able to just flip Z in clip space or something
+                modelView = glm::lookAt( Float3( eye.x, -eye.y, eye.z ), Float3( center.x, -center.y, center.z ), Float3( up.x, -up.y, up.z ) );
+                modelView = glm::scale( modelView, Float3( 1.0f, -1.0f, 1.0f ) );
+                break;
+
+            case CoordinateSystem::rightHanded:
+                modelView = glm::lookAt( eye, center, up );
+                break;
+        }
     }
 
     float GLCamera::CameraGetDistance()
@@ -200,7 +212,7 @@ namespace RenderingKit
             case kProjectionOrthoFakeFov:
             {
                 const float aspectRatio = (float) viewportSize.x / viewportSize.y;
-                const float vfovHeight = CameraGetDistance() * tan(vfov);
+                const float vfovHeight = CameraGetDistance() * std::tan(vfov);
 
                 const Float2 vfov( -vfovHeight / 2, vfovHeight / 2 );
                 const Float2 hfov( vfov * aspectRatio );
@@ -218,7 +230,7 @@ namespace RenderingKit
             {
                 const float aspectRatio = (float) viewportSize.x / viewportSize.y;
 
-                const float vfov2 = ( float )( nearZ * tan(this->vfov / 2.0f) );
+                const float vfov2 = ( float )( nearZ * std::tan(this->vfov / 2.0f) );
                 const float hfov2 = vfov2 * aspectRatio;
 
                 projection = glm::frustum(-hfov2, hfov2, -vfov2, vfov2, nearZ, farZ);

@@ -105,7 +105,7 @@ namespace ntile {
         wm->LoadDefaultSettings(nullptr);
         wm->ResetVideoOutput();
 
-        this->rm = rk->StartupRendering();
+        this->rm = rk->StartupRendering(CoordinateSystem::leftHanded);
         zombie_ErrorCheck(rm);
         irm = rm;
 

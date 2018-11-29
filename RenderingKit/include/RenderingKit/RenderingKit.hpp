@@ -115,6 +115,12 @@ namespace RenderingKit
         kRenderBufferDepthTexture = 2,
     };
 
+    enum class CoordinateSystem
+    {
+        leftHanded,
+        rightHanded,
+    };
+
     /**
      * It is possible to either set name and keep location as -1, or set location and clear name to nullptr.
      * If both are set, their precedence is undefined.
@@ -245,6 +251,8 @@ namespace RenderingKit
 
     /**
      * TODO: No need to be this opaque. Camera should be entirely a client-side utility.
+     * TODO: It is unclear which methods need to be called and in which order. This should be simplified and perhaps
+     *       made less stateful (there is little to gain by caching the matrices).
      */
     class ICamera
     {
@@ -272,7 +280,7 @@ namespace RenderingKit
 
             virtual void SetClippingDist(float nearClip, float farClip) = 0;
             virtual void SetOrtho(float left, float right, float top, float bottom) = 0;
-            virtual void SetOrthoFakeFOV() = 0;
+            virtual void SetOrthoFakeFOV() = 0;                 // this weirdly-named thing is used for toggleable persp/ortho 3D views
             virtual void SetOrthoScreenSpace() = 0;
             virtual void SetPerspective() = 0;
             virtual void SetVFov(float vfov_radians) = 0;
@@ -609,7 +617,7 @@ namespace RenderingKit
             virtual bool Init(zfw::IEngine* sys, zfw::ErrorBuffer_t* eb, IRenderingKitHost* host) = 0;
 
 #if ZOMBIE_API_VERSION >= 201901
-            virtual IRenderingManager*  StartupRendering() = 0;
+            virtual IRenderingManager*  StartupRendering(CoordinateSystem coordSystem) = 0;
 #else
             virtual IRenderingManager*  GetRenderingManager() = 0;
 #endif
