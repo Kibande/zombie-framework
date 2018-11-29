@@ -134,6 +134,8 @@ namespace RenderingKit
 
         glDrawArrays(mode, gc->index, gc->count);
         ZFW_ASSERT(glGetError() == GL_NO_ERROR);
+
+        GLStateTracker::IncreaseDrawCallCounter(gc->count / 3);
     }
 
     shared_ptr<IGLGeomBuffer> p_CreateGeomBuffer(zfw::ErrorBuffer_t* eb, RenderingKit* rk, IRenderingManagerBackend* rm, const char* name)

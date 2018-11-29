@@ -232,7 +232,12 @@ namespace RenderingKit
                 float fps = 1000.0f / (frameTimeMs);
 
                 char buffer[200];
-                snprintf(buffer, sizeof(buffer), "%s / %.1f FPS / %.2f ms", appName.c_str(), glm::round(fps), frameTimeMs);
+                snprintf(buffer, sizeof(buffer), "%s | %.1f FPS | %.2f ms | %d primitives | %d calls",
+                         appName.c_str(),
+                         glm::round(fps),
+                         frameTimeMs,
+                         GLStateTracker::GetNumPrimitivesDrawn(),
+                         GLStateTracker::GetNumDrawCalls());
 
                 rk->GetWindowManagerBackend()->SetWindowCaption(buffer);
 
@@ -866,6 +871,7 @@ namespace RenderingKit
 
         // Ignore bytesUsed, we're tracking this ourselves (don't have to ask VertexFormat this way)
         glDrawArrays(primitiveTypeToGLMode[vertexCache.primitiveType], 0, vertexCache.numVertices);
+        GLStateTracker::IncreaseDrawCallCounter(vertexCache.numVertices / 3);
         this->CheckErrors("glDrawArrays");
 
         vertexCache.material = nullptr;

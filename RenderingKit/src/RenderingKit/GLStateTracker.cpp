@@ -5,7 +5,7 @@ namespace RenderingKit
 {
     static const GLenum StateMapping[ST_MAX] = { GL_BLEND, GL_DEPTH_TEST };
 
-    int numTextureBinds, numVboBinds, numDrawCalls;
+    static int numTextureBinds, numVboBinds, numDrawCalls, numPrimitivesDrawn;
 
     static unsigned int activeTexture;
     static GLuint currentProgram, currentTex[MAX_TEX], currentIBO, currentVBO;
@@ -64,6 +64,23 @@ namespace RenderingKit
         numTextureBinds = 0;
         numVboBinds = 0;
         numDrawCalls = 0;
+        numPrimitivesDrawn = 0;
+    }
+
+    int GLStateTracker::GetNumDrawCalls()
+    {
+        return numDrawCalls;
+    }
+
+    int GLStateTracker::GetNumPrimitivesDrawn()
+    {
+        return numPrimitivesDrawn;
+    }
+
+    void GLStateTracker::IncreaseDrawCallCounter(int numPrimitives)
+    {
+        numDrawCalls++;
+        numPrimitivesDrawn += numPrimitives;
     }
 
     void GLStateTracker::InvalidateTexture(GLuint handle)

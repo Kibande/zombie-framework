@@ -84,6 +84,9 @@ namespace RenderingKit
             static void BindElementArrayBuffer(GLuint handle);
             static void BindTexture(int unit, GLuint handle);
             static void ClearStats();
+            static int GetNumDrawCalls();
+            static int GetNumPrimitivesDrawn();
+            static void IncreaseDrawCallCounter(int numPrimitives);
             static void InvalidateTexture(GLuint handle);
             static void SetActiveTexture(int unit);
             static void SetState(State state, bool enabled);
