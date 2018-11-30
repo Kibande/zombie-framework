@@ -65,7 +65,7 @@ namespace ntile
 //                }
 //            }
 
-        static const float HEIGHT_THRESHOLD = 8.0f;
+        static const float HEIGHT_THRESHOLD = 0.5f;
 
         const int minX = std::max<int>((int)floor(min.x / TILE_SIZE_H - 0.5f), 0);
         const int minY = std::max<int>((int)floor(min.y / TILE_SIZE_V - 0.5f), 0);
@@ -115,10 +115,10 @@ namespace ntile
                     p_tile_east = (block_east != nullptr) ? &block_east->tiles[yy % TILES_IN_BLOCK_V][0] : nullptr;
                 }
 
-                if (fabs(p_tile->elev - newPos.z) > HEIGHT_THRESHOLD)
+                if (fabs(p_tile->elev / 16.0f - newPos.z) > HEIGHT_THRESHOLD)
                     return true;
                 else
-                    newZ = std::max(newZ, (float) p_tile->elev);
+                    newZ = std::max(newZ, p_tile->elev / 16.0f);
 
                 p_tile++;
 
@@ -166,8 +166,8 @@ namespace ntile
                         position->rotation = glm::fquat(Float3(0.0f, 0.0f, -angle));
 
                         auto pos = position->pos;
-                        auto newX = pos.x + TILE_SIZE_H * (float) motion.nudgeDirection.x;
-                        auto newY = pos.y + TILE_SIZE_V * (float) motion.nudgeDirection.y;
+                        auto newX = pos.x + TILE_SIZE * (float) motion.nudgeDirection.x;
+                        auto newY = pos.y + TILE_SIZE * (float) motion.nudgeDirection.y;
 
                         Float3 newPos = Float3(newX, newY, pos.z);
 
@@ -188,8 +188,8 @@ namespace ntile
                         }
 
                         // Move for 16 ticks
-                        motion.speed = (newPos - pos) * (1.0f / 16);
                         motion.ticksRemaining = 16;
+                        motion.speed = (newPos - pos) * (1.0f / motion.ticksRemaining);
 
                         AnimationTrigerEvent trigger;
                         trigger.entityId = entityId;

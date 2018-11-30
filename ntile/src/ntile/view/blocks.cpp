@@ -10,15 +10,17 @@ namespace ntile {
     static const Normal_t normal_max = 32767;
     static const Normal_t normal_min = -32768;
 
+    constexpr float height_scale = (1.0f/16.0f);
+
     void InitAllTiles(Short2 blockXY, WorldVertex* p_vertices) {
         //WorldBlock* block = &blocks[blockXY.y * worldSize.x + blockXY.x];
 
         for (int y = 0; y < TILES_IN_BLOCK_V; y++) {
-            int32_t xx1 = TILE_SIZE_H / 2 + blockXY.x * TILES_IN_BLOCK_H * TILE_SIZE_H;
-            int32_t xx2 = xx1 + TILE_SIZE_H;
+            float xx1 = TILE_SIZE_H / 2.0f + blockXY.x * TILES_IN_BLOCK_H * TILE_SIZE_H;
+            float xx2 = xx1 + TILE_SIZE_H;
 
-            const int32_t yy1 = TILE_SIZE_V / 2 + (blockXY.y * TILES_IN_BLOCK_V + y) * TILE_SIZE_V;
-            const int32_t yy2 = yy1 + TILE_SIZE_V;
+            const float yy1 = TILE_SIZE_V / 2.0f + (blockXY.y * TILES_IN_BLOCK_V + y) * TILE_SIZE_V;
+            const float yy2 = yy1 + TILE_SIZE_V;
 
             for (int x = 0; x < TILES_IN_BLOCK_H; x++) {
                 for (int i = 0; i < 18; i++)
@@ -140,8 +142,8 @@ namespace ntile {
 
                 p_vertices += 18;
 
-                xx1 += 16;
-                xx2 += 16;
+                xx1 += TILE_SIZE;
+                xx2 += TILE_SIZE;
             }
         }
     }
@@ -150,7 +152,7 @@ namespace ntile {
     {
         for (int i = 0; i < 6; i++)
         {
-            p_vertices[i].z = tile->elev;
+            p_vertices[i].z = tile->elev * height_scale;
 
             memcpy(&p_vertices[i].rgba[0], &tile->colour[0], 3);
         }
@@ -171,13 +173,13 @@ namespace ntile {
             memcpy(&p_vertices[4].rgba[0], &tile->colour[0], 3);
             memcpy(&p_vertices[5].rgba[0], &tile->colour[0], 3);
 
-            p_vertices[0].z = tile->elev;
-            p_vertices[1].z = tile_east->elev;
-            p_vertices[2].z = tile_east->elev;
+            p_vertices[0].z = tile->elev * height_scale;
+            p_vertices[1].z = tile_east->elev * height_scale;
+            p_vertices[2].z = tile_east->elev * height_scale;
 
-            p_vertices[3].z = tile_east->elev;
-            p_vertices[4].z = tile->elev;
-            p_vertices[5].z = tile->elev;
+            p_vertices[3].z = tile_east->elev * height_scale;
+            p_vertices[4].z = tile->elev * height_scale;
+            p_vertices[5].z = tile->elev * height_scale;
         }
         else
         {
@@ -191,13 +193,13 @@ namespace ntile {
             memcpy(&p_vertices[4].rgba[0], &tile->colour[0], 3);
             memcpy(&p_vertices[5].rgba[0], &tile->colour[0], 3);
 
-            p_vertices[0].z = tile->elev;
+            p_vertices[0].z = tile->elev * height_scale;
             p_vertices[1].z = 0;
             p_vertices[2].z = 0;
 
             p_vertices[3].z = 0;
-            p_vertices[4].z = tile->elev;
-            p_vertices[5].z = tile->elev;
+            p_vertices[4].z = tile->elev * height_scale;
+            p_vertices[5].z = tile->elev * height_scale;
         }
 
         p_vertices[0].n[0] = normal_x;
@@ -223,13 +225,13 @@ namespace ntile {
             memcpy(&p_vertices[4].rgba[0], &tile->colour[0], 3);
             memcpy(&p_vertices[5].rgba[0], &tile->colour[0], 3);
 
-            p_vertices[0].z = tile->elev;
-            p_vertices[1].z = tile_south->elev;
-            p_vertices[2].z = tile_south->elev;
+            p_vertices[0].z = tile->elev * height_scale;
+            p_vertices[1].z = tile_south->elev * height_scale;
+            p_vertices[2].z = tile_south->elev * height_scale;
 
-            p_vertices[3].z = tile_south->elev;
-            p_vertices[4].z = tile->elev;
-            p_vertices[5].z = tile->elev;
+            p_vertices[3].z = tile_south->elev * height_scale;
+            p_vertices[4].z = tile->elev * height_scale;
+            p_vertices[5].z = tile->elev * height_scale;
         }
         else
         {
@@ -242,13 +244,13 @@ namespace ntile {
             memcpy(&p_vertices[4].rgba[0], &tile->colour[0], 3);
             memcpy(&p_vertices[5].rgba[0], &tile->colour[0], 3);
 
-            p_vertices[0].z = tile->elev;
+            p_vertices[0].z = tile->elev * height_scale;
             p_vertices[1].z = 0;
             p_vertices[2].z = 0;
 
             p_vertices[3].z = 0;
-            p_vertices[4].z = tile->elev;
-            p_vertices[5].z = tile->elev;
+            p_vertices[4].z = tile->elev * height_scale;
+            p_vertices[5].z = tile->elev * height_scale;
         }
 
         p_vertices[0].n[1] = normal_y;

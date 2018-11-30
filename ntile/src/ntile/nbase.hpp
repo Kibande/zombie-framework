@@ -25,8 +25,9 @@ namespace ntile
     {
         TILES_IN_BLOCK_H = 16,
         TILES_IN_BLOCK_V = 16,
-        TILE_SIZE_H = 16,
-        TILE_SIZE_V = 16,
+        TILE_SIZE_H = 1,
+        TILE_SIZE_V = 1,
+        TILE_SIZE = 1,
     };
 
     enum

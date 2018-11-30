@@ -13,7 +13,7 @@ namespace ntile {
 
     struct WorldVertex
     {
-        int32_t x, y, z;
+        float x, y, z;
         int16_t n[4];
         uint8_t rgba[4];
         float u, v;

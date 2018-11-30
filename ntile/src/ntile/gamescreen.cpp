@@ -1140,14 +1140,14 @@ namespace ntile
         isTitle = false;
 
         auto player = g_ew->CreateEntity();
-        g_ew->SetEntityComponent(player, Position{Int3(worldSize * Int2(128, 128), 0)});
+        g_ew->SetEntityComponent(player, Position{Int3(worldSize * Int2(8, 8), 0)});
         g_ew->SetEntityComponent(player, Model3D{"ntile/models/player"});
         g_ew->SetEntityComponent(player, Motion {});
-        g_ew->SetEntityComponent(player, AabbCollision {Float3(-6.0f, -6.0f, 0.0f), Float3(6.0f, 6.0f, 24.0f)});
+        g_ew->SetEntityComponent(player, AabbCollision {Float3(-0.4f, -0.4f, 0.0f), Float3(0.375f, 0.375f, 24.0f)});
         g_world.playerEntity = player;
 
         auto elephant = g_ew->CreateEntity();
-        g_ew->SetEntityComponent(elephant, Position{Int3(worldSize * Int2(128, 128) + Int2(-50, -50), 0)});
+        g_ew->SetEntityComponent(elephant, Position{Int3(worldSize * Int2(8, 8) + Int2(-3, -3), 0)});
         g_ew->SetEntityComponent(elephant, Model3D{"ntile/models/shiroi/shiroi_elephant"});
         g_ew->SetEntityComponent(elephant, Motion {});
 

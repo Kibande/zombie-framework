@@ -20,11 +20,12 @@ namespace ntile {
                          glm::mat4x4();
 
         if (this->blockyModel) {
-            this->blockyModel->Draw(transform);
+            Float3 designScale {TILE_SIZE / 16.0f, TILE_SIZE / 16.0f, TILE_SIZE / 16.0f};
+            this->blockyModel->Draw(transform * glm::scale({}, designScale));
         }
 
         if (this->model) {
-            Float3 designScale {16.0f, 16.0f, 16.0f};
+            Float3 designScale {TILE_SIZE, TILE_SIZE, TILE_SIZE};
             this->model->Draw(transform * glm::scale(glm::rotate(glm::mat4 {}, f_pi / 2, Float3 {1, 0, 0}), designScale));
         }
     }

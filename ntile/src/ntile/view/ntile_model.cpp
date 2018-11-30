@@ -25,7 +25,7 @@ namespace ntile
 
     static const VertexAttrib_t modelVertexAttribs[] =
     {
-        {"in_Position", 0,  RK_ATTRIB_FLOAT_3, RK_ATTRIB_NOT_NORMALIZED},
+        {"in_Position", 0,  RK_ATTRIB_FLOAT_3},
         {"in_Normal",   12, RK_ATTRIB_SHORT_3},
         {"in_Color",    20, RK_ATTRIB_UBYTE_4},
         {"in_UV",       24, RK_ATTRIB_FLOAT_3},

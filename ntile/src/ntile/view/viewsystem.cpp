@@ -29,7 +29,7 @@ namespace ntile {
 
     VertexFormat<4> WorldVertex::format {
         sizeof(WorldVertex), {{
-            {"in_Position", 0,  RK_ATTRIB_INT_3,    RK_ATTRIB_NOT_NORMALIZED},
+            {"in_Position", 0,  RK_ATTRIB_FLOAT_3,  0},
             {"in_Normal",   12, RK_ATTRIB_SHORT_3,  0},
             {"in_Color",    20, RK_ATTRIB_UBYTE_4,  0},
             {"in_UV",       24, RK_ATTRIB_FLOAT_2,  0},
@@ -129,9 +129,9 @@ namespace ntile {
 
         bp3d.Init(rm);
 
-        camPos = Float3(worldSize.x * 128.0f, worldSize.y * 128.0f, 0.0f);
+        camPos = Float3(worldSize.x * 8.0f, worldSize.y * 8.0f, 0.0f);
         cam = rm->CreateCamera("ViewSystem::cam");
-        cam->SetClippingDist(200, 2000);
+        cam->SetClippingDist(12, 120);
         cam->SetPerspective();
         cam->SetVFov(45.0f / 180.0f * 3.14f);
 
@@ -190,7 +190,7 @@ namespace ntile {
             camPos = playerPos->pos;
         }
 
-        auto camEye = Float3(0.0f, -300.0f, 300.0f);
+        auto camEye = Float3(0.0f, -20.0f, 20.0f);
         cam->SetView(camPos + camEye, camPos, Float3(0.0f, 0.707f, 0.707f));
         rm->SetCamera(cam.get());
 
