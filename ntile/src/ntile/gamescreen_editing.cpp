@@ -598,10 +598,10 @@ namespace ntile
                     NOT_IMPLEMENTED();
                     //ent->SetPos(glm::round(camPos / tileSize) * tileSize);
 
-                    ICommonEntity* ice = dynamic_cast<ICommonEntity*>(ent.get());
-
-                    if (ice != nullptr && g_allowEditingMode)
-                        ice->EditingModeInit();
+//                    ICommonEntity* ice = dynamic_cast<ICommonEntity*>(ent.get());
+//
+//                    if (ice != nullptr && g_allowEditingMode)
+//                        ice->EditingModeInit();
 
                     NOT_IMPLEMENTED();
                     //world->AddEntity(ent);

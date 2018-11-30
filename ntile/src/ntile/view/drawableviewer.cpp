@@ -16,7 +16,7 @@ namespace ntile {
 
     void DrawableViewer::Draw(IRenderingManager* rm, zfw::IEntityWorld2* world, intptr_t entityId) {
         auto transform = (this->position) ?
-                         glm::translate({}, this->position->pos) * glm::mat4_cast(this->position->rotation) :
+                         glm::translate({}, this->position->pos) * glm::mat4_cast(this->position->rotation) * glm::scale({}, this->position->scale) :
                          glm::mat4x4();
 
         if (this->blockyModel) {

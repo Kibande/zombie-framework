@@ -27,11 +27,6 @@
 
 namespace ntile
 {
-    namespace entities
-    {
-        class char_player;
-    }
-
     struct WorldBlock;
 
     extern IEngine* g_sys;

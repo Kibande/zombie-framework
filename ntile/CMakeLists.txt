@@ -11,18 +11,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dist)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-file(GLOB sources
-    ${PROJECT_SOURCE_DIR}/src/ntile/entities/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/studio/*.cpp
-
-    ${PROJECT_SOURCE_DIR}/src/ntile/*.hpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/entities/*.hpp
-    ${PROJECT_SOURCE_DIR}/src/ntile/studio/*.hpp
-)
-
 set(sources
-        ${sources}
-
         dependencies/glew-2.0.0/src/glew.c
 
         src/ntile/blocks.cpp
@@ -34,12 +23,17 @@ set(sources
         src/ntile/gamescreen.hpp
         src/ntile/gamescreen_editing.cpp
         src/ntile/gamescreen_map.cpp
+        src/ntile/items.hpp
+        src/ntile/lua_rpc_handler.hpp
         src/ntile/luascript.cpp
         src/ntile/luascript.hpp
         src/ntile/main.cpp
+        src/ntile/nbase.hpp
+        src/ntile/ntile.hpp
         src/ntile/ntile_mkfont.cpp
-        src/ntile/resourceprovider.cpp
         src/ntile/scriptapi.cpp
+        src/ntile/stats.cpp
+        src/ntile/stats.hpp
         src/ntile/systems/motionsystem.hpp
         src/ntile/systems/motionsystem.cpp
         src/ntile/viewsystem.hpp

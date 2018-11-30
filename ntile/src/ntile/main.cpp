@@ -4,7 +4,6 @@
 #endif
 
 #include "gamescreen.hpp"
-#include "resourceprovider.hpp"
 #include "systems/motionsystem.hpp"
 #include "viewsystem.hpp"
 
@@ -38,8 +37,6 @@ namespace ntile
     NanoUI nui;
 
     Int2 r_pixelRes, r_mousePos;
-
-    ResourceProvider resourceProvider;
 
     static bool SysInit(int argc, char** argv)
     {

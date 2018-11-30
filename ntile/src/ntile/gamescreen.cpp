@@ -162,11 +162,11 @@ namespace ntile
 
         IEntityHandler* ieh = g_sys->GetEntityHandler(true);
 
-        ieh->Register("abstract_base",      &CreateInstance<entities::abstract_base>);
+//        ieh->Register("abstract_base",      &CreateInstance<entities::abstract_base>);
         ieh->RegisterExternal("ntile/entities/spawn_player", 0);
 
-        ieh->Register("prop_base",          &CreateInstance<entities::prop_base>);
-        ieh->Register("prop_treasurechest", &CreateInstance<entities::prop_treasurechest>);
+//        ieh->Register("prop_base",          &CreateInstance<entities::prop_base>);
+//        ieh->Register("prop_treasurechest", &CreateInstance<entities::prop_treasurechest>);
         //Entity::Register("prop_tree",           &entities::prop_tree::Create);
         //ieh->Register("water_body",         &CreateInstance<entities::water_body>);
         ieh->RegisterExternal("ntile/entities/door_base", 0);
@@ -756,10 +756,10 @@ namespace ntile
                                     Edit_SelectEntity(mouseEntity);
                                 }
 
-                                ICommonEntity* ent = dynamic_cast<ICommonEntity*>(mouseEntity);
-
-                                if (ent != nullptr)
-                                    ent->OnClicked(this, MOUSEBTN_LEFT);
+//                                ICommonEntity* ent = dynamic_cast<ICommonEntity*>(mouseEntity);
+//
+//                                if (ent != nullptr)
+//                                    ent->OnClicked(this, MOUSEBTN_LEFT);
                             }
                         }
                         /*else if (button == MOUSEBTN_RIGHT && pressed)
