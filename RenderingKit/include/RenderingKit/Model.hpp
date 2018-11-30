@@ -12,6 +12,9 @@ namespace RenderingKit
         virtual ~IModel() {}
 
         virtual void Draw(const glm::mat4x4& transform) = 0;
+
+        // TODO: not quite sure if this the right way
+        virtual void OnFrame(float dt) = 0;
     };
 }
 

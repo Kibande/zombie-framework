@@ -1021,7 +1021,9 @@ namespace zfw
 			profiler->EnterSection(profOnFrame);
 		}
 
-		scene->OnFrame(p_Update());
+		auto dt = p_Update();
+
+		scene->OnFrame(dt);
 
 		if (frameCounter == profileFrame)
 		{
@@ -1055,7 +1057,7 @@ namespace zfw
 
         for (const auto& system : systems)
         {
-            system->OnFrame();
+            system->OnFrame(dt);
         }
 
 		if (frameCounter == profileFrame)

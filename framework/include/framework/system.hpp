@@ -12,7 +12,7 @@ namespace zfw {
     public:
         virtual ~ISystem() {}
 
-        virtual void OnFrame() {}
+        virtual void OnFrame(float dt) {}
         virtual void OnTicks(int ticks) {}
     };
 }

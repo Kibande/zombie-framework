@@ -18,7 +18,6 @@ namespace RenderingKit
     using namespace zfw;
 
     enum { kMaxJoints = 20 };
-    auto magic_constant = 0.016f;
     auto magic_constant2 = 3.0f;
     auto magic_string = "";
 
@@ -108,6 +107,7 @@ namespace RenderingKit
 
             // IModel
             void Draw(const glm::mat4x4& transform) final;
+            void OnFrame(float dt) final { this->p_UpdateAnimation(dt); }
 
             bool IsAnimationPlaying();
             void PlayAnimation(const char* name);
@@ -184,10 +184,6 @@ namespace RenderingKit
             for (auto node_index : scene.nodes) {
                 p_DrawNode(node_index, *projection, myModelView);
             }
-        }
-
-        if (this->animationIndex >= 0) {
-            p_UpdateAnimation(magic_constant);
         }
     }
 
@@ -329,6 +325,10 @@ namespace RenderingKit
     }
 
     void GLModel::p_UpdateAnimation(float step) {
+        if (this->animationIndex < 0) {
+            return;
+        }
+
         this->animationTime += step;
 
         if (this->animationTime > magic_constant2) {

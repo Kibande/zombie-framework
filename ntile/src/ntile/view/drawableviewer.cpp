@@ -30,6 +30,12 @@ namespace ntile {
         }
     }
 
+    void DrawableViewer::OnFrame(float dt) {
+        if (model) {
+            model->OnFrame(dt);
+        }
+    }
+
     void DrawableViewer::OnTicks(int ticks) {
         if (blockyModel) {
             while (ticks--) {

@@ -58,7 +58,7 @@ namespace ntile {
         void OnMessageBroadcast(intptr_t type, const void* payload) final;
 
         // zfw::ISystem
-        void OnFrame() final;
+        void OnFrame(float dt) final;
         void OnTicks(int ticks) final;
 
     private:
@@ -161,7 +161,7 @@ namespace ntile {
         }
     }
 
-    void ViewSystem::OnFrame() {
+    void ViewSystem::OnFrame(float dt) {
         ambient.SetTime(world.daytime);
         Float3 backgroundColour;
         Float3 sun_ambient;
@@ -219,6 +219,12 @@ namespace ntile {
         }
 
         // TODO: Draw UI
+
+        // When all drawing commands are sent out, do the bookkeeping
+
+        for (const auto& pair : drawableViewers) {
+            pair.second->OnFrame(dt);
+        }
     }
 
     void ViewSystem::OnMessageBroadcast(intptr_t type, const void* payload) {
