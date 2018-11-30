@@ -5,7 +5,7 @@
 namespace ntile {
     static const Normal_t normal_up[4] =    { 0, 0, INT16_MAX, 0 };
     static const Normal_t normal_east[4] =  { INT16_MAX, 0, 0, 0 };
-    static const Normal_t normal_south[4] = { 0, INT16_MAX, 0, 0 };
+    static const Normal_t normal_south[4] = { 0, -INT16_MAX, 0, 0 };
 
     static const Normal_t normal_max = 32767;
     static const Normal_t normal_min = -32768;
@@ -37,25 +37,25 @@ namespace ntile {
                 p_vertices[0].u = 0.0f;
                 p_vertices[0].v = 0.0f;
 
-                p_vertices[1].x = xx1;
+                p_vertices[1].x = xx2;
                 p_vertices[1].y = yy2;
-                p_vertices[1].u = 0.0f;
+                p_vertices[1].u = 1.0f;
                 p_vertices[1].v = 1.0f;
 
-                p_vertices[2].x = xx2;
+                p_vertices[2].x = xx1;
                 p_vertices[2].y = yy2;
-                p_vertices[2].u = 1.0f;
+                p_vertices[2].u = 0.0f;
                 p_vertices[2].v = 1.0f;
 
-                p_vertices[3].x = xx1;
-                p_vertices[3].y = yy1;
-                p_vertices[3].u = 0.0f;
-                p_vertices[3].v = 0.0f;
+                p_vertices[3].x = xx2;
+                p_vertices[3].y = yy2;
+                p_vertices[3].u = 1.0f;
+                p_vertices[3].v = 1.0f;
 
-                p_vertices[4].x = xx2;
-                p_vertices[4].y = yy2;
-                p_vertices[4].u = 1.0f;
-                p_vertices[4].v = 1.0f;
+                p_vertices[4].x = xx1;
+                p_vertices[4].y = yy1;
+                p_vertices[4].u = 0.0f;
+                p_vertices[4].v = 0.0f;
 
                 p_vertices[5].x = xx2;
                 p_vertices[5].y = yy1;
@@ -76,24 +76,24 @@ namespace ntile {
                 p_vertices[6].v = 0.0f;
 
                 p_vertices[7].x = xx2;
-                p_vertices[7].y = yy2;
-                p_vertices[7].u = 0.0f;
+                p_vertices[7].y = yy1;
+                p_vertices[7].u = 1.0f;
                 p_vertices[7].v = 1.0f;
 
                 p_vertices[8].x = xx2;
-                p_vertices[8].y = yy1;
-                p_vertices[8].u = 1.0f;
+                p_vertices[8].y = yy2;
+                p_vertices[8].u = 0.0f;
                 p_vertices[8].v = 1.0f;
 
                 p_vertices[9].x = xx2;
-                p_vertices[9].y = yy2;
-                p_vertices[9].u = 0.0f;
-                p_vertices[9].v = 0.0f;
+                p_vertices[9].y = yy1;
+                p_vertices[9].u = 1.0f;
+                p_vertices[9].v = 1.0f;
 
                 p_vertices[10].x = xx2;
-                p_vertices[10].y = yy1;
-                p_vertices[10].u = 1.0f;
-                p_vertices[10].v = 1.0f;
+                p_vertices[10].y = yy2;
+                p_vertices[10].u = 0.0f;
+                p_vertices[10].v = 0.0f;
 
                 p_vertices[11].x = xx2;
                 p_vertices[11].y = yy1;
@@ -113,25 +113,25 @@ namespace ntile {
                 p_vertices[12].u = 0.0f;
                 p_vertices[12].v = 0.0f;
 
-                p_vertices[13].x = xx1;
+                p_vertices[13].x = xx2;
                 p_vertices[13].y = yy2;
-                p_vertices[13].u = 0.0f;
+                p_vertices[13].u = 1.0f;
                 p_vertices[13].v = 1.0f;
 
-                p_vertices[14].x = xx2;
+                p_vertices[14].x = xx1;
                 p_vertices[14].y = yy2;
-                p_vertices[14].u = 1.0f;
+                p_vertices[14].u = 0.0f;
                 p_vertices[14].v = 1.0f;
 
-                p_vertices[15].x = xx1;
+                p_vertices[15].x = xx2;
                 p_vertices[15].y = yy2;
-                p_vertices[15].u = 0.0f;
-                p_vertices[15].v = 0.0f;
+                p_vertices[15].u = 1.0f;
+                p_vertices[15].v = 1.0f;
 
-                p_vertices[16].x = xx2;
+                p_vertices[16].x = xx1;
                 p_vertices[16].y = yy2;
-                p_vertices[16].u = 1.0f;
-                p_vertices[16].v = 1.0f;
+                p_vertices[16].u = 0.0f;
+                p_vertices[16].v = 0.0f;
 
                 p_vertices[17].x = xx2;
                 p_vertices[17].y = yy2;
@@ -167,16 +167,16 @@ namespace ntile {
             memcpy(&p_vertices[1].rgba[0], &tile_east->colour[0], 3);
             memcpy(&p_vertices[2].rgba[0], &tile_east->colour[0], 3);
 
-            memcpy(&p_vertices[3].rgba[0], &tile->colour[0], 3);
-            memcpy(&p_vertices[4].rgba[0], &tile_east->colour[0], 3);
+            memcpy(&p_vertices[3].rgba[0], &tile_east->colour[0], 3);
+            memcpy(&p_vertices[4].rgba[0], &tile->colour[0], 3);
             memcpy(&p_vertices[5].rgba[0], &tile->colour[0], 3);
 
             p_vertices[0].z = tile->elev;
             p_vertices[1].z = tile_east->elev;
             p_vertices[2].z = tile_east->elev;
 
-            p_vertices[3].z = tile->elev;
-            p_vertices[4].z = tile_east->elev;
+            p_vertices[3].z = tile_east->elev;
+            p_vertices[4].z = tile->elev;
             p_vertices[5].z = tile->elev;
         }
         else
@@ -195,8 +195,8 @@ namespace ntile {
             p_vertices[1].z = 0;
             p_vertices[2].z = 0;
 
-            p_vertices[3].z = tile->elev;
-            p_vertices[4].z = 0;
+            p_vertices[3].z = 0;
+            p_vertices[4].z = tile->elev;
             p_vertices[5].z = tile->elev;
         }
 
@@ -219,16 +219,16 @@ namespace ntile {
             memcpy(&p_vertices[1].rgba[0], &tile_south->colour[0], 3);
             memcpy(&p_vertices[2].rgba[0], &tile_south->colour[0], 3);
 
-            memcpy(&p_vertices[3].rgba[0], &tile->colour[0], 3);
-            memcpy(&p_vertices[4].rgba[0], &tile_south->colour[0], 3);
+            memcpy(&p_vertices[3].rgba[0], &tile_south->colour[0], 3);
+            memcpy(&p_vertices[4].rgba[0], &tile->colour[0], 3);
             memcpy(&p_vertices[5].rgba[0], &tile->colour[0], 3);
 
             p_vertices[0].z = tile->elev;
             p_vertices[1].z = tile_south->elev;
             p_vertices[2].z = tile_south->elev;
 
-            p_vertices[3].z = tile->elev;
-            p_vertices[4].z = tile_south->elev;
+            p_vertices[3].z = tile_south->elev;
+            p_vertices[4].z = tile->elev;
             p_vertices[5].z = tile->elev;
         }
         else
@@ -246,8 +246,8 @@ namespace ntile {
             p_vertices[1].z = 0;
             p_vertices[2].z = 0;
 
-            p_vertices[3].z = tile->elev;
-            p_vertices[4].z = 0;
+            p_vertices[3].z = 0;
+            p_vertices[4].z = tile->elev;
             p_vertices[5].z = tile->elev;
         }
 

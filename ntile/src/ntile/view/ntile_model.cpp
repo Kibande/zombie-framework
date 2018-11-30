@@ -215,45 +215,45 @@ namespace ntile
         p_vertices[0].u = 0.0f;
         p_vertices[0].v = 0.0f;
 
-        p_vertices[1].x = corners[cornerB].x;
-        p_vertices[1].y = corners[cornerB].y;
-        p_vertices[1].z = corners[cornerB].z;
+        p_vertices[1].x = corners[cornerC].x;
+        p_vertices[1].y = corners[cornerC].y;
+        p_vertices[1].z = corners[cornerC].z;
         p_vertices[1].n[0] = (int16_t)(normal.x * INT16_MAX);
         p_vertices[1].n[1] = (int16_t)(normal.y * INT16_MAX);
         p_vertices[1].n[2] = (int16_t)(normal.z * INT16_MAX);
         p_vertices[1].n[3] = 0;
-        p_vertices[1].u = 0.0f;
+        p_vertices[1].u = 1.0f;
         p_vertices[1].v = 1.0f;
 
-        p_vertices[2].x = corners[cornerC].x;
-        p_vertices[2].y = corners[cornerC].y;
-        p_vertices[2].z = corners[cornerC].z;
+        p_vertices[2].x = corners[cornerB].x;
+        p_vertices[2].y = corners[cornerB].y;
+        p_vertices[2].z = corners[cornerB].z;
         p_vertices[2].n[0] = (int16_t)(normal.x * INT16_MAX);
         p_vertices[2].n[1] = (int16_t)(normal.y * INT16_MAX);
         p_vertices[2].n[2] = (int16_t)(normal.z * INT16_MAX);
         p_vertices[2].n[3] = 0;
-        p_vertices[2].u = 1.0f;
+        p_vertices[2].u = 0.0f;
         p_vertices[2].v = 1.0f;
 
-        p_vertices[3].x = corners[cornerC].x;
-        p_vertices[3].y = corners[cornerC].y;
-        p_vertices[3].z = corners[cornerC].z;
+        p_vertices[3].x = corners[cornerD].x;
+        p_vertices[3].y = corners[cornerD].y;
+        p_vertices[3].z = corners[cornerD].z;
         p_vertices[3].n[0] = (int16_t)(normal.x * INT16_MAX);
         p_vertices[3].n[1] = (int16_t)(normal.y * INT16_MAX);
         p_vertices[3].n[2] = (int16_t)(normal.z * INT16_MAX);
         p_vertices[3].n[3] = 0;
         p_vertices[3].u = 1.0f;
-        p_vertices[3].v = 1.0f;
+        p_vertices[3].v = 0.0f;
 
-        p_vertices[4].x = corners[cornerD].x;
-        p_vertices[4].y = corners[cornerD].y;
-        p_vertices[4].z = corners[cornerD].z;
+        p_vertices[4].x = corners[cornerC].x;
+        p_vertices[4].y = corners[cornerC].y;
+        p_vertices[4].z = corners[cornerC].z;
         p_vertices[4].n[0] = (int16_t)(normal.x * INT16_MAX);
         p_vertices[4].n[1] = (int16_t)(normal.y * INT16_MAX);
         p_vertices[4].n[2] = (int16_t)(normal.z * INT16_MAX);
         p_vertices[4].n[3] = 0;
         p_vertices[4].u = 1.0f;
-        p_vertices[4].v = 0.0f;
+        p_vertices[4].v = 1.0f;
 
         p_vertices[5].x = corners[cornerA].x;
         p_vertices[5].y = corners[cornerA].y;

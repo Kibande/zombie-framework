@@ -105,7 +105,7 @@ namespace ntile {
         wm->LoadDefaultSettings(nullptr);
         wm->ResetVideoOutput();
 
-        this->rm = rk->StartupRendering(CoordinateSystem::leftHanded);
+        this->rm = rk->StartupRendering(CoordinateSystem::rightHanded);
         zombie_ErrorCheck(rm);
         irm = rm;
 
@@ -190,8 +190,8 @@ namespace ntile {
             camPos = playerPos->pos;
         }
 
-        auto camEye = Float3(0.0f, 300.0f, 300.0f);
-        cam->SetView(camPos + camEye, camPos, Float3(0.0f, -0.707f, 0.707f));
+        auto camEye = Float3(0.0f, -300.0f, 300.0f);
+        cam->SetView(camPos + camEye, camPos, Float3(0.0f, 0.707f, 0.707f));
         rm->SetCamera(cam.get());
 
         // Draw terrain

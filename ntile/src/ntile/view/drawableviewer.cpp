@@ -24,7 +24,8 @@ namespace ntile {
         }
 
         if (this->model) {
-            this->model->Draw(transform);
+            Float3 designScale {16.0f, 16.0f, 16.0f};
+            this->model->Draw(transform * glm::scale(glm::rotate(glm::mat4 {}, f_pi / 2, Float3 {1, 0, 0}), designScale));
         }
     }
 

@@ -175,7 +175,7 @@ namespace RenderingKit
 
         glm::mat4x4* projection, * modelView;
         rm->GetModelViewProjectionMatrices(&projection, &modelView);
-        glm::mat4x4 myModelView = *modelView * transform * glm::scale({}, Float3(-16, -16, -16));
+        glm::mat4x4 myModelView = *modelView * transform;
 
         for (auto& scene : this->model->scenes) {
             for (auto node_index : scene.nodes) {
